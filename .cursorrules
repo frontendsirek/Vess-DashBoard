@@ -1,0 +1,45 @@
+- make sure repeated components are made reusable and  called where needed
+- Build like a senior engineer: maintain clean architecture, modularity and clear separation of concerns always.
+
+- Folder & File structure discipline is a HIGH PRIORITY requirement.
+
+- Never rebuild a component that has already been built unless I explicitly request a refactor or modification.
+
+- Never invent new colors, typography, spacings, utils, or naming tokens outside what we have already defined.
+
+- If a token is missing → ask before generating new ones.
+
+Design System Rules
+
+- All colors MUST come from /src/design/colors.ts
+
+- All typography tokens MUST come from /src/design/typography.ts
+
+- All spacing / utils MUST come from /src/design/utils.ts
+
+- If new tokens are needed → create proposed tokens inside these files FIRST, get approval, then use them.
+
+Code Style Requirements
+
+- Functional components, hooks-only (no class components)
+
+- Typescript ALWAYS
+
+- Clean naming, no abbreviation confusion (prefer clarity > shortness)
+
+- Avoid deeply nested code. Always refactor to smaller composable parts.
+
+- Use readability + maintainability as top priority.
+
+General AI Building Enforcement
+
+-Before generating new complex screens → always reason about file placement first.
+
+- If a file or component already exists → modify in place, do NOT recreate duplicates.
+
+-Ask clarifying questions if architecture decisions are ambiguous.
+
+- Treat structure + maintainability as the highest priority constraint.
+
+- Make sure whatever you build is responsive to both mobile and desktop devices.
+- Make sure to always get icon from the design file  that is tagged.
