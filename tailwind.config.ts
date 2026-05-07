@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss'
 import tailwindcssAnimate from 'tailwindcss-animate'
+import { vessColors } from './src/design/colors'
 import { fontFamily } from './src/design/typography'
 import { spacingPx } from './src/design/utils'
 
@@ -47,6 +48,13 @@ export default {
         card: {
           DEFAULT: 'hsl(var(--card) / <alpha-value>)',
           foreground: 'hsl(var(--card-foreground) / <alpha-value>)',
+        },
+        vess: {
+          primary: vessColors.primary,
+          secondary: vessColors.secondary,
+          grey: vessColors.grey,
+          red: vessColors.red,
+          green: vessColors.green,
         },
       },
       borderRadius: {

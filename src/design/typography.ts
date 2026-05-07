@@ -1,6 +1,6 @@
 export const fontFamily = {
-  sans: ["system-ui", "'Segoe UI'", "Roboto", "sans-serif"] as const,
-  heading: ["system-ui", "'Segoe UI'", "Roboto", "sans-serif"] as const,
+  sans: ["'Plus Jakarta Sans'", "system-ui", "'Segoe UI'", "Roboto", "sans-serif"] as const,
+  heading: ["'Plus Jakarta Sans'", "system-ui", "'Segoe UI'", "Roboto", "sans-serif"] as const,
   mono: ["ui-monospace", "Consolas", "monospace"] as const,
 }
 

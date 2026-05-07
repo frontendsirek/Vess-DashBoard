@@ -73,4 +73,38 @@ export const themeHsl = {
   },
 } as const
 
+/** VeSS product-specific palette (auth pages, branding, dashboard) */
+export const vessColors = {
+  primary: {
+    50: '#dfe5f7',
+    400: '#2e4977',
+    500: '#14233d',
+    600: '#101d34',
+  },
+  secondary: {
+    50: '#faf2ec',
+    500: '#c88d5e',
+  },
+  grey: {
+    50: '#ffffff',
+    100: '#f3f5f8',
+    200: '#e4e8ef',
+    400: '#b9c2d0',
+    500: '#97a3b6',
+    800: '#474f5f',
+    950: '#000000',
+  },
+  red: {
+    50: '#ffeaea',
+    500: '#ff6b6b',
+    800: '#963b3b',
+  },
+  green: {
+    50: '#e6faef',
+    500: '#00c853',
+    800: '#006e2c',
+    900: '#00491d',
+  },
+} as const
+
 export type ColorMode = keyof typeof themeHsl

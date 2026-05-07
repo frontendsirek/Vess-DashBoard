@@ -15,7 +15,7 @@ export function AppProviders({ children }: AppProvidersProps) {
       {children}
       {import.meta.env.DEV ? (
         <ReactQueryDevtools
-          buttonPosition="bottom-left"
+          buttonPosition="bottom-right"
           initialIsOpen={false}
         />
       ) : null}
