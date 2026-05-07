@@ -4,10 +4,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { LoginGlobe } from '@/components/auth/LoginGlobe'
-import { VessLogo } from '@/components/auth/VessLogo'
 import { TextInput } from '@/components/ui/text-input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { Checkbox } from '@/components/ui/checkbox'
+import { VessLogoFull } from '@/components/icons'
 
 const signInSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Enter a valid email'),
@@ -44,7 +44,7 @@ export default function SignInPage() {
 
         {/* Content block - absolute positioned, vertically centered */}
         <div className="absolute left-[51px] top-1/2 z-10 flex w-[590px] -translate-y-1/2 flex-col gap-[104px]">
-          <VessLogo className="h-[27.874px] w-[96.331px] shrink-0 text-vess-grey-50" />
+          <VessLogoFull className="h-[27.874px] w-[96.331px] shrink-0 text-vess-grey-50" />
 
           <div className="flex h-[725px] w-full flex-col justify-between">
             {/* Top: welcome message + paragraph */}
@@ -91,7 +91,7 @@ export default function SignInPage() {
         <div className="w-full max-w-[539px]">
           {/* Mobile-only logo */}
           <div className="mb-12 lg:hidden">
-            <VessLogo className="h-[27.874px] w-[96.331px] text-vess-grey-50" />
+            <VessLogoFull className="h-[27.874px] w-[96.331px] shrink-0" />
           </div>
 
           <div className="flex flex-col gap-[72px]">
