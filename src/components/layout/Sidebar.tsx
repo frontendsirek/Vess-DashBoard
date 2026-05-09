@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/ui-store'
 
 const primaryNav = [
-  { to: '/', label: 'Dashboard', icon: DashboardIcon, end: true },
+  { to: '/dashboard', label: 'Dashboard', icon: DashboardIcon, end: true },
   { to: '/test-management', label: 'Test Management', icon: TestManagementIcon },
   { to: '/device-management', label: 'Device Management', icon: DeviceIcon },
   { to: '/real-time-monitoring', label: 'Real-time Monitoring', icon: MonitoringIcon },

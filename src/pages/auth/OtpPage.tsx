@@ -40,7 +40,7 @@ export default function OtpPage() {
     if (otpValue.length < 6) return
     setIsVerifying(true)
     setTimeout(() => {
-      navigate('/')
+      navigate('/dashboard')
     }, 1000)
   }
 
