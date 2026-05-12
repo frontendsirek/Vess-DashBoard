@@ -21,49 +21,47 @@ function CreateNewTestModalBody({ onContinue }: Pick<CreateNewTestModalProps, 'o
   const [creationMethod, setCreationMethod] = useState<CreateTestStep1Draft['creationMethod'] | null>(null)
   const [testType, setTestType] = useState<CreateTestStep1Draft['testType']>(null)
 
-  const canContinue =
-    creationMethod !== null && (creationMethod === 'bulk' || (creationMethod === 'single' && testType !== null))
+  const canContinue = creationMethod !== null && testType !== null
 
   function handleContinue() {
-    if (!canContinue || creationMethod === null) return
-    onContinue({ creationMethod, testType: creationMethod === 'bulk' ? null : testType })
+    if (!canContinue || creationMethod === null || testType === null) return
+    onContinue({ creationMethod, testType })
   }
 
   return (
-    <div className="relative">
-      <DialogClose
-        className="absolute right-5 top-0 inline-flex text-vess-grey-950 transition-opacity hover:opacity-70 focus:outline-none"
-        aria-label="Close"
-      >
-        <CloseIcon className="size-6" />
-      </DialogClose>
-
-      <div className="flex flex-col gap-2 pr-8">
-        <DialogTitle
-          id="create-test-title"
-          className="text-[25px] font-semibold leading-[30px] text-vess-grey-950"
+    <div className="relative flex flex-col gap-10">
+      <div className="flex items-start justify-between gap-4 pr-1">
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <DialogTitle
+            id="create-test-title"
+            className="text-[25px] font-semibold leading-[30px] text-vess-grey-950"
+          >
+            Create New Test
+          </DialogTitle>
+          <DialogDescription className="text-[15px] font-light leading-[18px] text-vess-grey-950">
+            Step 1: Select how you want to create the test.
+          </DialogDescription>
+        </div>
+        <DialogClose
+          className="inline-flex shrink-0 text-vess-grey-950 opacity-70 transition-opacity hover:opacity-100 focus:outline-none"
+          aria-label="Close"
         >
-          Create New Test
-        </DialogTitle>
-        <DialogDescription className="text-[18px] font-normal leading-[21.6px] text-vess-grey-950">
-          Step 1: Select how you want to create the test.
-        </DialogDescription>
+          <CloseIcon className="size-6" />
+        </DialogClose>
       </div>
 
-      <div className="mt-8">
-        <CreateTestStep1Form
-          creationMethod={creationMethod}
-          onCreationMethodChange={setCreationMethod}
-          testType={testType}
-          onTestTypeChange={setTestType}
-        />
-      </div>
+      <CreateTestStep1Form
+        creationMethod={creationMethod}
+        onCreationMethodChange={setCreationMethod}
+        testType={testType}
+        onTestTypeChange={setTestType}
+      />
 
-      <div className="mt-10 flex flex-wrap items-center justify-between gap-3">
+      <div className="flex h-12 flex-wrap items-center justify-between gap-3">
         <DialogClose asChild>
           <button
             type="button"
-            className="inline-flex h-12 min-w-[116px] items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-950 transition-colors hover:bg-vess-grey-100"
+            className="inline-flex h-full items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-950 transition-colors hover:bg-vess-grey-100"
           >
             Cancel
           </button>
@@ -72,7 +70,7 @@ function CreateNewTestModalBody({ onContinue }: Pick<CreateNewTestModalProps, 'o
           type="button"
           disabled={!canContinue}
           onClick={handleContinue}
-          className="inline-flex h-12 items-center justify-center rounded-lg bg-vess-primary-500 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex h-full items-center justify-center rounded-lg bg-vess-primary-500 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           Continue
         </button>
@@ -89,7 +87,10 @@ export function CreateNewTestModal({ open, onClose, onContinue }: CreateNewTestM
         if (!isOpen) onClose()
       }}
     >
-      <DialogContent className='max-w-3xl max-h-[calc(100vh-2rem)]'>
+      <DialogContent
+        overlayClassName="bg-black/[0.12] backdrop-blur-[4px]"
+        className="max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-[675px] gap-0 overflow-y-auto rounded-2xl border-0 bg-vess-grey-50 px-6 py-8 shadow-xl sm:w-full"
+      >
         {open ? <CreateNewTestModalBody onContinue={onContinue} /> : null}
       </DialogContent>
     </Dialog>
