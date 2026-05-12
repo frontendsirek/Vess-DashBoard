@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { MinusIcon, PlusIcon } from '@/components/icons'
 import {
   Select,
   SelectContent,
@@ -7,19 +6,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { HeatmapMarkerStatus } from '@/data/real-time-monitoring'
-import { heatmapMarkers, heatmapPeriodOptions } from '@/data/real-time-monitoring'
+import { buildDeviceMapEmbedUrl, vessDemoMapCenter } from '@/data/device-management'
+import { heatmapPeriodOptions } from '@/data/real-time-monitoring'
 import { cn } from '@/lib/utils'
 
-const markerDot: Record<HeatmapMarkerStatus, string> = {
-  healthy: 'bg-vess-green-500',
-  warning: 'bg-vess-secondary-500',
-  offline: 'bg-vess-red-500',
-}
+const networkHeatmapMapEmbedUrl = buildDeviceMapEmbedUrl(
+  vessDemoMapCenter.latitude,
+  vessDemoMapCenter.longitude,
+)
 
 export function NetworkHeatmapCard() {
   const [period, setPeriod] = useState<string>(heatmapPeriodOptions[0])
-  const [zoom, setZoom] = useState(1)
 
   return (
     <section className="flex flex-col gap-6 rounded-2xl border-2 border-vess-grey-100 bg-vess-grey-50 p-4">
@@ -40,44 +37,13 @@ export function NetworkHeatmapCard() {
       </header>
 
       <div className="relative min-h-[260px] w-full overflow-hidden rounded-2xl border border-vess-grey-200 bg-vess-grey-100 sm:min-h-[320px]">
-        <img
-          src="/images/real-time-monitoring-heatmap.svg"
-          alt=""
-          className="h-full w-full object-cover"
-          style={{ transform: `scale(${zoom})`, transformOrigin: 'center center' }}
+        <iframe
+          title="Network heatmap map"
+          src={networkHeatmapMapEmbedUrl}
+          className="size-full min-h-[260px] border-0 sm:min-h-[320px]"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
         />
-        <div className="pointer-events-none absolute inset-0">
-          {heatmapMarkers.map((m) => (
-            <span
-              key={m.id}
-              className={cn(
-                'absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-vess-grey-50',
-                markerDot[m.status],
-              )}
-              style={{ left: `${m.leftPct}%`, top: `${m.topPct}%` }}
-              aria-hidden
-            />
-          ))}
-        </div>
-
-        <div className="absolute right-3 top-3 flex flex-col gap-2">
-          <button
-            type="button"
-            aria-label="Zoom in"
-            onClick={() => setZoom((z) => Math.min(z + 0.15, 1.5))}
-            className="flex size-9 items-center justify-center rounded-lg bg-vess-grey-50 text-vess-grey-950 shadow-md"
-          >
-            <PlusIcon className="size-4" />
-          </button>
-          <button
-            type="button"
-            aria-label="Zoom out"
-            onClick={() => setZoom((z) => Math.max(z - 0.15, 0.75))}
-            className="flex size-9 items-center justify-center rounded-lg bg-vess-grey-50 text-vess-grey-950 shadow-md"
-          >
-            <MinusIcon className="size-4" />
-          </button>
-        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-5 text-[13px] font-normal leading-[15.6px] text-vess-grey-950">
