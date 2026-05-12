@@ -153,6 +153,12 @@ export default function CreateTestSchedulePage() {
           testName: configure.testName,
           description: configure.description,
           callDurationSeconds: configure.callDurationSeconds,
+          messageText: configure.messageText,
+          dataTestMethod: configure.dataTestMethod,
+          dataTargetValue: configure.dataTargetValue,
+          payloadSizeKb: configure.payloadSizeKb,
+          sourceDevice: configure.sourceDevice,
+          destinationDevice: configure.destinationDevice,
         },
       },
     })

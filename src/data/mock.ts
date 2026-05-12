@@ -385,6 +385,41 @@ export function buildTestDetailFromWizard(draft: CreateTestScheduleDraft): TestD
         ? 'One-Time (immediate)'
         : `One-Time (${draft.scheduledDateTime || 'scheduled'})`
 
+  const typeLabel = draft.testType ?? 'Call'
+
+  const configRows: { label: string; value: string }[] = [
+    { label: 'Type', value: typeLabel },
+    { label: 'Description', value: draft.description.trim() || 'N/A' },
+    { label: 'Source Device', value: draft.sourceDevice || '—' },
+  ]
+
+  if (typeLabel !== 'Data') {
+    configRows.push({ label: 'Destination', value: draft.destinationDevice || '—' })
+  }
+
+  if (typeLabel === 'Call') {
+    configRows.push({ label: 'Call Duration', value: `${draft.callDurationSeconds}s` })
+  }
+
+  if (typeLabel === 'SMS') {
+    configRows.push({ label: 'Message Text', value: draft.messageText.trim() || '—' })
+  }
+
+  if (typeLabel === 'Data') {
+    const methodLabel = draft.dataTestMethod === 'ping' ? 'Ping' : 'Target URL'
+    const targetLabel = draft.dataTestMethod === 'ping' ? 'Host / IP' : 'Endpoint URL'
+    configRows.push(
+      { label: 'Test Method', value: methodLabel },
+      { label: targetLabel, value: draft.dataTargetValue.trim() || '—' },
+      { label: 'Payload (KB)', value: String(draft.payloadSizeKb) },
+    )
+  }
+
+  configRows.push(
+    { label: 'Schedule', value: scheduleSummary },
+    { label: 'Retry Attempts', value: draft.retryOnFailure.replace(/\D/g, '') || '0' },
+  )
+
   return {
     id: 'wizard',
     name: draft.testName || 'New Test',
@@ -393,15 +428,7 @@ export function buildTestDetailFromWizard(draft: CreateTestScheduleDraft): TestD
     successRate: '0%',
     avgDuration: '0s',
     totalRuns: '0',
-    configRows: [
-      { label: 'Type', value: draft.testType ?? 'Call' },
-      { label: 'Description', value: draft.description.trim() || 'N/A' },
-      { label: 'Source Device', value: draft.sourceDevice || '—' },
-      { label: 'Destination', value: draft.destinationDevice || '—' },
-      { label: 'Schedule', value: scheduleSummary },
-      { label: 'Call Duration', value: `${draft.callDurationSeconds}s` },
-      { label: 'Retry Attempts', value: draft.retryOnFailure.replace(/\D/g, '') || '0' },
-    ],
+    configRows,
     executions: [],
     executionsEmptyMessage: 'No executions yet',
   }

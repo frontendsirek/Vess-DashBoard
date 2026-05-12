@@ -1,7 +1,5 @@
 /** Mock data for Real-time Monitoring (Figma Desktop 78, node 708:25623). */
 
-export type HeatmapMarkerStatus = 'healthy' | 'warning' | 'offline'
-
 export type ActiveExecutionRow = {
   id: string
   title: string
@@ -82,14 +80,6 @@ export const activeExecutions: ActiveExecutionRow[] = [
     elapsedLabel: '628s elapsed / 30s',
     signalLabel: '-61 dBm · 5G',
   },
-]
-
-export const heatmapMarkers: { id: string; leftPct: number; topPct: number; status: HeatmapMarkerStatus }[] = [
-  { id: 'm1', leftPct: 42, topPct: 55, status: 'healthy' },
-  { id: 'm2', leftPct: 48, topPct: 48, status: 'warning' },
-  { id: 'm3', leftPct: 55, topPct: 52, status: 'offline' },
-  { id: 'm4', leftPct: 38, topPct: 62, status: 'healthy' },
-  { id: 'm5', leftPct: 52, topPct: 58, status: 'healthy' },
 ]
 
 export const heatmapPeriodOptions = ['Today', 'This week', 'This month'] as const

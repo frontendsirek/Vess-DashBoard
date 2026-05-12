@@ -9,7 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { CreateTestConfigureDraft, TestManagementConfigureState } from '@/types/create-test'
+import type {
+  CreateTestConfigureDraft,
+  DataTestMethod,
+  TestManagementConfigureState,
+} from '@/types/create-test'
 
 function FieldLabel({ children, required }: { children: string; required?: boolean }) {
   return (
@@ -20,6 +24,12 @@ function FieldLabel({ children, required }: { children: string; required?: boole
   )
 }
 
+function SubFieldLabel({ children }: { children: string }) {
+  return (
+    <span className="text-[15px] font-light leading-[18px] text-vess-grey-950">{children}</span>
+  )
+}
+
 const MOCK_DEVICES = [
   { value: 'device-alpha', label: 'Device Alpha' },
   { value: 'device-beta', label: 'Device Beta' },
@@ -27,6 +37,11 @@ const MOCK_DEVICES = [
 ]
 
 const NONE = '__none__'
+
+const DATA_METHOD_OPTIONS: { value: DataTestMethod; label: string }[] = [
+  { value: 'target-url', label: 'Target URL' },
+  { value: 'ping', label: 'Ping' },
+]
 
 function DeviceField({
   title,
@@ -60,11 +75,48 @@ function DeviceField({
         <div className="flex h-[88px] flex-col items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4">
           <div className="flex flex-wrap items-center justify-center gap-1.5 text-[15px] font-light leading-[18px] text-vess-grey-500">
             <span>No Device Found?</span>
-            <button type="button" className="text-[15px] font-light text-vess-primary-500 underline decoration-solid">
+            <button
+              type="button"
+              className="text-[15px] font-light text-vess-primary-500 underline decoration-solid"
+            >
               Create New device
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function NumberStepperRow({
+  value,
+  onIncrement,
+  onDecrement,
+}: {
+  value: number
+  onIncrement: () => void
+  onDecrement: () => void
+}) {
+  return (
+    <div className="flex h-[50px] w-full items-center justify-between rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4">
+      <span className="text-[15px] font-normal leading-[18px] text-vess-grey-950">{value}</span>
+      <div className="flex flex-col">
+        <button
+          type="button"
+          aria-label="Increase value"
+          className="flex size-[22px] items-center justify-center text-vess-grey-950"
+          onClick={onIncrement}
+        >
+          <ChevronDownIcon className="size-5 -rotate-180" />
+        </button>
+        <button
+          type="button"
+          aria-label="Decrease value"
+          className="flex size-[22px] items-center justify-center text-vess-grey-950"
+          onClick={onDecrement}
+        >
+          <ChevronDownIcon className="size-5" />
+        </button>
       </div>
     </div>
   )
@@ -76,19 +128,33 @@ export default function CreateTestConfigurePage() {
   const step1 = (location.state as TestManagementConfigureState | null)?.step1
   const restore = (location.state as TestManagementConfigureState | null)?.restore
 
+  const testType = step1?.testType ?? 'Call'
+
   const [testName, setTestName] = useState(restore?.testName ?? '')
   const [description, setDescription] = useState(restore?.description ?? '')
   const [callDuration, setCallDuration] = useState(restore?.callDurationSeconds ?? 60)
-  const [sourceDevice, setSourceDevice] = useState('')
-  const [destinationDevice, setDestinationDevice] = useState('')
+  const [sourceDevice, setSourceDevice] = useState(restore?.sourceDevice ?? '')
+  const [destinationDevice, setDestinationDevice] = useState(restore?.destinationDevice ?? '')
+  const [messageText, setMessageText] = useState(restore?.messageText ?? '')
+  const [dataTestMethod, setDataTestMethod] = useState<DataTestMethod>(
+    restore?.dataTestMethod ?? 'target-url',
+  )
+  const [dataTargetValue, setDataTargetValue] = useState(restore?.dataTargetValue ?? '')
+  const [payloadSizeKb, setPayloadSizeKb] = useState(restore?.payloadSizeKb ?? 1024)
 
   useEffect(() => {
     const s = location.state as TestManagementConfigureState | null
-    if (s?.restore) {
-      setTestName(s.restore.testName)
-      setDescription(s.restore.description)
-      setCallDuration(s.restore.callDurationSeconds)
-    }
+    if (!s?.restore) return
+    const r = s.restore
+    if (r.testName !== undefined) setTestName(r.testName)
+    if (r.description !== undefined) setDescription(r.description)
+    if (r.callDurationSeconds !== undefined) setCallDuration(r.callDurationSeconds)
+    if (r.sourceDevice !== undefined) setSourceDevice(r.sourceDevice)
+    if (r.destinationDevice !== undefined) setDestinationDevice(r.destinationDevice)
+    if (r.messageText !== undefined) setMessageText(r.messageText)
+    if (r.dataTestMethod !== undefined) setDataTestMethod(r.dataTestMethod)
+    if (r.dataTargetValue !== undefined) setDataTargetValue(r.dataTargetValue)
+    if (r.payloadSizeKb !== undefined) setPayloadSizeKb(r.payloadSizeKb)
   }, [location.key, location.state])
 
   useEffect(() => {
@@ -104,10 +170,26 @@ export default function CreateTestConfigurePage() {
       testName,
       description,
       sourceDevice,
-      destinationDevice,
-      callDurationSeconds: callDuration,
+      destinationDevice: testType === 'Data' ? '' : destinationDevice,
+      callDurationSeconds: testType === 'Call' ? callDuration : 0,
+      messageText,
+      dataTestMethod,
+      dataTargetValue,
+      payloadSizeKb: testType === 'Data' ? payloadSizeKb : 0,
     }
-  }, [step1, testName, description, callDuration, sourceDevice, destinationDevice])
+  }, [
+    step1,
+    testType,
+    testName,
+    description,
+    callDuration,
+    sourceDevice,
+    destinationDevice,
+    messageText,
+    dataTestMethod,
+    dataTargetValue,
+    payloadSizeKb,
+  ])
 
   if (!step1) return null
 
@@ -119,6 +201,11 @@ export default function CreateTestConfigurePage() {
     if (!configureDraft) return
     navigate('/test-management/new/schedule', { state: { configure: configureDraft } })
   }
+
+  const showCallDuration = testType === 'Call'
+  const showMessageText = testType === 'SMS'
+  const showDestinationDevice = testType !== 'Data'
+  const showDataTesting = testType === 'Data'
 
   return (
     <>
@@ -137,10 +224,12 @@ export default function CreateTestConfigurePage() {
 
           <div className="flex flex-col gap-1.5">
             <h1 className="text-[25px] font-semibold leading-[30px] text-vess-grey-950">Create New Test</h1>
-            <p className="text-[15px] font-light leading-[18px] text-vess-grey-500">Step 2 : Configuration</p>
+            <p className="text-[15px] font-light leading-[18px] text-vess-grey-950">
+              Step 2 : Configuration
+            </p>
           </div>
 
-          <div className="flex flex-col gap-8 rounded-2xl border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-6">
+          <div className="flex flex-col gap-6 rounded-2xl border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-6">
             <div className="flex w-full flex-col gap-3">
               <FieldLabel required>Test Name</FieldLabel>
               <div className="min-h-[50px] rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-3">
@@ -167,32 +256,97 @@ export default function CreateTestConfigurePage() {
             </div>
 
             <DeviceField title="Source Device" value={sourceDevice} onChange={setSourceDevice} />
-            <DeviceField title="Destination Device" value={destinationDevice} onChange={setDestinationDevice} />
 
-            <div className="flex w-full flex-col gap-3">
-              <FieldLabel required>Call Duration (seconds)</FieldLabel>
-              <div className="flex h-[50px] w-full items-center justify-between rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4">
-                <span className="text-[15px] font-normal leading-[18px] text-vess-grey-950">{callDuration}</span>
-                <div className="flex flex-col">
-                  <button
-                    type="button"
-                    aria-label="Increase duration"
-                    className="flex size-[22px] items-center justify-center text-vess-grey-950"
-                    onClick={() => setCallDuration((n) => n + 1)}
-                  >
-                    <ChevronDownIcon className="size-5 -rotate-180" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Decrease duration"
-                    className="flex size-[22px] items-center justify-center text-vess-grey-950"
-                    onClick={() => setCallDuration((n) => Math.max(1, n - 1))}
-                  >
-                    <ChevronDownIcon className="size-5" />
-                  </button>
+            {showDestinationDevice && (
+              <DeviceField
+                title="Destination Device"
+                value={destinationDevice}
+                onChange={setDestinationDevice}
+              />
+            )}
+
+            {showDataTesting && (
+              <div className="flex w-full flex-col gap-4">
+                <div className="flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px]">
+                  <span className="text-vess-grey-950">Data Testing </span>
+                  <span className="text-vess-red-500">*</span>
+                </div>
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                  <div className="flex flex-col gap-3">
+                    <SubFieldLabel>Test Method</SubFieldLabel>
+                    <Select
+                      value={dataTestMethod}
+                      onValueChange={(v) => setDataTestMethod(v as DataTestMethod)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DATA_METHOD_OPTIONS.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <SubFieldLabel>
+                      {dataTestMethod === 'ping' ? 'Host / IP Address' : 'Endpoint URL'}
+                    </SubFieldLabel>
+                    <div className="flex min-h-[50px] items-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-3">
+                      <input
+                        value={dataTargetValue}
+                        onChange={(e) => setDataTargetValue(e.target.value)}
+                        placeholder={
+                          dataTestMethod === 'ping'
+                            ? '192.168.1.1'
+                            : 'https://api.example.com/v1'
+                        }
+                        className="w-full bg-transparent text-[15px] leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-950 placeholder:opacity-20 outline-none"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {showDataTesting && (
+              <div className="flex w-full flex-col gap-3">
+                <FieldLabel>Payload Size (KB)</FieldLabel>
+                <NumberStepperRow
+                  value={payloadSizeKb}
+                  onIncrement={() => setPayloadSizeKb((n) => n + 1)}
+                  onDecrement={() => setPayloadSizeKb((n) => Math.max(1, n - 1))}
+                />
+              </div>
+            )}
+
+            {showMessageText && (
+              <div className="flex w-full flex-col gap-3">
+                <FieldLabel>Message Text</FieldLabel>
+                <div className="min-h-[127px] rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 p-4">
+                  <textarea
+                    value={messageText}
+                    onChange={(e) => setMessageText(e.target.value)}
+                    placeholder="Enter message"
+                    rows={4}
+                    className="w-full resize-none bg-transparent text-[15px] leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-950 placeholder:opacity-20 outline-none"
+                  />
+                </div>
+              </div>
+            )}
+
+            {showCallDuration && (
+              <div className="flex w-full flex-col gap-3">
+                <FieldLabel required>Call Duration (seconds)</FieldLabel>
+                <NumberStepperRow
+                  value={callDuration}
+                  onIncrement={() => setCallDuration((n) => n + 1)}
+                  onDecrement={() => setCallDuration((n) => Math.max(1, n - 1))}
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex h-12 flex-wrap items-center justify-between gap-3">

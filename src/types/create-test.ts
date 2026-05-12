@@ -2,11 +2,14 @@ import type { TestType } from '@/data/mock'
 
 export type CreationMethod = 'single' | 'bulk'
 
-/** After Step 1 modal (creation method + optional test type for single). */
+/** After Step 1 modal (creation method, optional bulk CSV, and test type). */
 export type CreateTestStep1Draft = {
   creationMethod: CreationMethod
   testType: TestType | null
 }
+
+/** Data Step 2 test method (Figma 707:20505, 631:9161). */
+export type DataTestMethod = 'target-url' | 'ping'
 
 /** After Step 2 configuration. */
 export type CreateTestConfigureDraft = CreateTestStep1Draft & {
@@ -15,7 +18,26 @@ export type CreateTestConfigureDraft = CreateTestStep1Draft & {
   sourceDevice: string
   destinationDevice: string
   callDurationSeconds: number
+  /** SMS Step 2 (Figma 707:20058). */
+  messageText: string
+  dataTestMethod: DataTestMethod
+  /** Endpoint URL when `target-url`, or Host/IP when `ping`. */
+  dataTargetValue: string
+  payloadSizeKb: number
 }
+
+export type ConfigureStepRestoreFields = Pick<
+  CreateTestConfigureDraft,
+  | 'testName'
+  | 'description'
+  | 'callDurationSeconds'
+  | 'messageText'
+  | 'dataTestMethod'
+  | 'dataTargetValue'
+  | 'payloadSizeKb'
+  | 'sourceDevice'
+  | 'destinationDevice'
+>
 
 export type ScheduleKind = 'one-time' | 'recurring'
 
@@ -33,7 +55,7 @@ export type CreateTestScheduleDraft = CreateTestConfigureDraft & {
 
 export type TestManagementConfigureState = {
   step1: CreateTestStep1Draft
-  restore?: Pick<CreateTestConfigureDraft, 'testName' | 'description' | 'callDurationSeconds'>
+  restore?: Partial<ConfigureStepRestoreFields>
 }
 
 export type TestManagementScheduleState = { configure: CreateTestConfigureDraft }
