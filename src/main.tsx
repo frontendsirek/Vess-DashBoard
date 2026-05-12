@@ -4,6 +4,8 @@ import { RouterProvider } from 'react-router-dom'
 import { applyThemeHslVariables, resolveInitialColorMode } from '@/lib/theme'
 import { AppProviders } from '@/providers/app-providers'
 import { router } from '@/router'
+import 'react-day-picker/style.css'
+import 'react-phone-number-input/style.css'
 import '@/index.css'
 
 applyThemeHslVariables(resolveInitialColorMode())

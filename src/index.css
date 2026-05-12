@@ -18,3 +18,25 @@
       'calt' 1;
   }
 }
+
+/* react-phone-number-input — map focus/accents to vessColors (primary 500 #14233d, grey 200/500) */
+@layer components {
+  .vess-phone-field.PhoneInput {
+    --PhoneInput-color--focus: #14233d;
+    --PhoneInputCountryFlag-borderColor: #e4e8ef;
+    --PhoneInputCountryFlag-borderColor--focus: #14233d;
+    --PhoneInputCountrySelectArrow-color: #97a3b6;
+    --PhoneInputCountrySelectArrow-color--focus: #14233d;
+    --PhoneInputCountrySelect-marginRight: 0.25rem;
+
+    @apply flex h-[50px] w-full items-center gap-2 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-3 transition-[border-color,box-shadow];
+  }
+
+  .vess-phone-field.PhoneInput:focus-within {
+    @apply border-vess-primary-500 ring-2 ring-vess-primary-500/20;
+  }
+
+  .vess-phone-field .PhoneInputCountry {
+    @apply mr-0 shrink-0 rounded-md bg-vess-grey-100 py-1.5 pl-2 pr-1;
+  }
+}

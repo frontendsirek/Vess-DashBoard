@@ -1,4 +1,5 @@
 import { EyeIcon } from '@/components/icons'
+import { ManagementCardRow } from '@/components/shared/ManagementCardRow'
 import { TestStatusBadge } from '@/components/test-management/TestStatusBadge'
 import { TestTypeCell } from '@/components/test-management/TestTypeCell'
 import { type TestRecord } from '@/data/mock'
@@ -17,18 +18,18 @@ export function TestCard({ test, onView }: TestCardProps) {
         </h3>
       </header>
       <dl className="flex flex-col gap-3 px-4 py-4 text-[15px] leading-[18px]">
-        <Row label="Type">
+        <ManagementCardRow label="Type">
           <TestTypeCell type={test.type} />
-        </Row>
-        <Row label="Source">
-          <span className="text-vess-grey-950">{test.source}</span>
-        </Row>
-        <Row label="Destination">
-          <span className="text-vess-grey-950">{test.destination}</span>
-        </Row>
-        <Row label="Last Run">
-          <span className="text-vess-grey-950">{test.lastRun}</span>
-        </Row>
+        </ManagementCardRow>
+        <ManagementCardRow label="Source">
+          <span>{test.source}</span>
+        </ManagementCardRow>
+        <ManagementCardRow label="Destination">
+          <span>{test.destination}</span>
+        </ManagementCardRow>
+        <ManagementCardRow label="Last Run">
+          <span>{test.lastRun}</span>
+        </ManagementCardRow>
       </dl>
       <div className="flex items-center justify-between border-t border-vess-grey-100 px-4 py-3 text-[15px] leading-[18px]">
         <span className="font-normal text-vess-grey-500">Status</span>
@@ -46,14 +47,5 @@ export function TestCard({ test, onView }: TestCardProps) {
         </button>
       </div>
     </article>
-  )
-}
-
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between">
-      <dt className="font-normal text-vess-grey-500">{label}</dt>
-      <dd className="font-normal">{children}</dd>
-    </div>
   )
 }

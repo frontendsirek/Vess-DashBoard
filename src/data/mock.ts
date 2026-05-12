@@ -1,3 +1,5 @@
+import type { CreateTestScheduleDraft } from '@/types/create-test'
+
 export type TestType = 'Call' | 'SMS' | 'Data'
 export type TestStatus = 'Running' | 'Scheduled' | 'Completed'
 
@@ -254,3 +256,181 @@ export const tests: TestRecord[] = [
     status: 'Completed',
   },
 ]
+
+export type TestDetailExecutionRow = {
+  id: string
+  success: boolean
+  timestamp: string
+  detail: string
+}
+
+export type TestDetailRecord = {
+  id: string
+  name: string
+  status: TestStatus
+  progressPercent?: number
+  lastExecutionLabel: string
+  successRate: string
+  avgDuration: string
+  totalRuns: string
+  configRows: { label: string; value: string }[]
+  /** Scheduled view: duplicate label row per Figma (second column placeholder). */
+  configRowsExtra?: { label: string; value: string; hideValue?: boolean }
+  executions: TestDetailExecutionRow[]
+  executionsEmptyMessage?: string
+}
+
+export const testDetailById: Record<string, TestDetailRecord> = {
+  't-1': {
+    id: 't-1',
+    name: 'Lagos-Abuja Call Test',
+    status: 'Running',
+    progressPercent: 93,
+    lastExecutionLabel: '13/03/2026, 16:45:23',
+    successRate: '98.5%',
+    avgDuration: '45.3s',
+    totalRuns: '5',
+    configRows: [
+      { label: 'Type', value: 'Call' },
+      { label: 'Description', value: 'N/A' },
+      { label: 'Source Device', value: 'Lagos-1' },
+      { label: 'Destination', value: 'Lagos-1' },
+      { label: 'Schedule', value: 'Recurring (hourly)' },
+      { label: 'Call Duration', value: '60s' },
+      { label: 'Retry Attempts', value: '2' },
+      { label: 'Execution Window', value: 'Business hours only' },
+    ],
+    executions: [
+      {
+        id: 'ex-1',
+        success: true,
+        timestamp: '13/03/2026, 18:15:23',
+        detail: 'Success (42s) | Signal: -65dBm',
+      },
+      {
+        id: 'ex-2',
+        success: true,
+        timestamp: '13/03/2026, 17:45:23',
+        detail: 'Success (48s) | Signal: -72dBm',
+      },
+      {
+        id: 'ex-3',
+        success: false,
+        timestamp: '13/03/2026, 17:15:23',
+        detail: 'Failed (Timeout) | Signal: -89dBm',
+      },
+      {
+        id: 'ex-4',
+        success: true,
+        timestamp: '13/03/2026, 16:45:23',
+        detail: 'Success (41s) | Signal: -68dBm',
+      },
+    ],
+  },
+  't-2': {
+    id: 't-2',
+    name: 'Lagos-Abuja Call Test',
+    status: 'Scheduled',
+    lastExecutionLabel: 'N/A',
+    successRate: '0%',
+    avgDuration: '0s',
+    totalRuns: '0',
+    configRows: [
+      { label: 'Type', value: 'Call' },
+      { label: 'Description', value: 'N/A' },
+      { label: 'Source Device', value: 'Lagos-1' },
+      { label: 'Destination', value: 'Lagos-1' },
+      { label: 'Schedule', value: 'One-Time' },
+      { label: 'Call Duration', value: '60s' },
+      { label: 'Retry Attempts', value: '2' },
+    ],
+    configRowsExtra: { label: 'Call Duration', value: '60s', hideValue: true },
+    executions: [],
+    executionsEmptyMessage: 'No executions yet',
+  },
+  't-4': {
+    id: 't-4',
+    name: 'Lagos-Abuja Call Test',
+    status: 'Completed',
+    lastExecutionLabel: '13/03/2026, 16:45:23',
+    successRate: '100.0%',
+    avgDuration: '45.3s',
+    totalRuns: '10',
+    configRows: [
+      { label: 'Type', value: 'Call' },
+      { label: 'Description', value: 'N/A' },
+      { label: 'Source Device', value: 'Lagos-1' },
+      { label: 'Destination', value: 'Lagos-1' },
+      { label: 'Schedule', value: 'Recurring (Daily)' },
+      { label: 'Call Duration', value: '60s' },
+      { label: 'Retry Attempts', value: '2' },
+      { label: 'Execution Window', value: 'Business hours only' },
+    ],
+    executions: [
+      {
+        id: 'ex-c1',
+        success: true,
+        timestamp: '13/03/2026, 18:15:23',
+        detail: 'Success (42s) | Signal: -65dBm',
+      },
+    ],
+  },
+}
+
+export function buildTestDetailFromWizard(draft: CreateTestScheduleDraft): TestDetailRecord {
+  const scheduleSummary =
+    draft.scheduleKind === 'recurring'
+      ? `Recurring (${draft.frequency.toLowerCase()})`
+      : draft.immediate
+        ? 'One-Time (immediate)'
+        : `One-Time (${draft.scheduledDateTime || 'scheduled'})`
+
+  return {
+    id: 'wizard',
+    name: draft.testName || 'New Test',
+    status: 'Scheduled',
+    lastExecutionLabel: 'N/A',
+    successRate: '0%',
+    avgDuration: '0s',
+    totalRuns: '0',
+    configRows: [
+      { label: 'Type', value: draft.testType ?? 'Call' },
+      { label: 'Description', value: draft.description.trim() || 'N/A' },
+      { label: 'Source Device', value: draft.sourceDevice || '—' },
+      { label: 'Destination', value: draft.destinationDevice || '—' },
+      { label: 'Schedule', value: scheduleSummary },
+      { label: 'Call Duration', value: `${draft.callDurationSeconds}s` },
+      { label: 'Retry Attempts', value: draft.retryOnFailure.replace(/\D/g, '') || '0' },
+    ],
+    executions: [],
+    executionsEmptyMessage: 'No executions yet',
+  }
+}
+
+export function resolveTestDetailRecord(testId: string): TestDetailRecord | undefined {
+  return testDetailById[testId]
+}
+
+export function buildFallbackTestDetail(record: TestRecord): TestDetailRecord {
+  return {
+    id: record.id,
+    name: record.name,
+    status: record.status,
+    progressPercent: record.status === 'Running' ? 50 : undefined,
+    lastExecutionLabel: record.status === 'Scheduled' ? 'N/A' : record.lastRun,
+    successRate: record.status === 'Completed' ? '—' : '0%',
+    avgDuration: '—',
+    totalRuns: '—',
+    configRows: [
+      { label: 'Type', value: record.type },
+      { label: 'Description', value: 'N/A' },
+      { label: 'Source Device', value: record.source },
+      { label: 'Destination', value: record.destination },
+      { label: 'Schedule', value: '—' },
+      { label: 'Call Duration', value: '—' },
+      { label: 'Retry Attempts', value: '—' },
+    ],
+    executions: [],
+    executionsEmptyMessage: 'No executions yet',
+  }
+}
