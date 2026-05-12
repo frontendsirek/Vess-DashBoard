@@ -8,6 +8,9 @@ import { TextInput } from '@/components/ui/text-input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { VessLogoFull } from '@/components/icons'
+import { authService } from '@/services/auth.service'
+import { useAuthStore } from '@/stores/auth-store'
+import { isAxiosError } from 'axios'
 
 const signInSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Enter a valid email'),
@@ -19,6 +22,8 @@ type SignInFormValues = z.infer<typeof signInSchema>
 export default function SignInPage() {
   const navigate = useNavigate()
   const [rememberMe, setRememberMe] = useState(false)
+  const [apiError, setApiError] = useState<string | null>(null)
+  const { setTokens, setPendingEmail } = useAuthStore()
 
   const {
     register,
@@ -28,9 +33,36 @@ export default function SignInPage() {
     resolver: zodResolver(signInSchema),
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function onSubmit(_data: SignInFormValues) {
-    navigate('/auth/verify')
+  async function onSubmit(data: SignInFormValues) {
+    setApiError(null)
+    try {
+      const res = await authService.login({
+        email: data.email,
+        password: data.password,
+      })
+
+      const { access_token, refresh_token } = res.data.data
+
+      if (access_token && refresh_token) {
+        // Login returned tokens directly (no OTP required)
+        setTokens(access_token, refresh_token)
+        navigate('/dashboard', { replace: true })
+      } else {
+        // Server requires OTP verification — stash the email
+        setPendingEmail(data.email)
+        navigate('/auth/verify')
+      }
+    } catch (err) {
+      if (isAxiosError(err)) {
+        const msg =
+          err.response?.data?.message ??
+          err.response?.data?.detail ??
+          'Invalid email or password'
+        setApiError(String(msg))
+      } else {
+        setApiError('Something went wrong. Please try again.')
+      }
+    }
   }
 
   return (
@@ -107,6 +139,13 @@ export default function SignInPage() {
 
             {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8" noValidate>
+              {/* API error banner */}
+              {apiError && (
+                <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-[14px] text-red-400">
+                  {apiError}
+                </div>
+              )}
+
               {/* Email */}
               <TextInput
                 label="Email address"

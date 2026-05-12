@@ -1,0 +1,570 @@
+{
+  "info": {
+    "name": "Vess Auth Service",
+    "_postman_id": "vess-auth-service-collection",
+    "description": "Complete collection for the Vess Auth Service API.\n\n**Setup:**\n1. Set the `baseUrl` collection variable to your deployment URL (default points to the ALB).\n2. Set `deviceServiceSecret` to match `DEVICE_SERVICE_SECRET` on the server (used for HMAC-signed service-to-service calls).\n3. Run requests in order — login/verify-otp responses auto-populate `accessToken` and `refreshToken` variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://vess-dev-alb-385758613.us-east-1.elb.amazonaws.com/auth",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "deviceServiceSecret",
+      "value": "device-secret-key",
+      "type": "string"
+    },
+    {
+      "key": "testEmail",
+      "value": "integration@vess-test.com",
+      "type": "string"
+    },
+    {
+      "key": "testPassword",
+      "value": "IntegrationPass123!",
+      "type": "string"
+    },
+    {
+      "key": "resetToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/health/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "health", ""]
+            },
+            "description": "Returns auth-service health status including database and cache checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Root Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health/",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", ""]
+            },
+            "description": "Simple liveness probe at the root path."
+          },
+          "response": []
+        },
+        {
+          "name": "System Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/system/health/",
+              "host": ["{{baseUrl}}"],
+              "path": ["system", "health", ""]
+            },
+            "description": "Deep system health check across all dependencies. May return 503 if a dependency is degraded."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('otp', body.data.otp_for_testing);",
+                  "    pm.collectionVariables.set('registeredUserId', body.data.user.id);",
+                  "    console.log('OTP:', body.data.otp_for_testing);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"password_confirm\": \"{{testPassword}}\",\n  \"first_name\": \"Integration\",\n  \"last_name\": \"Test\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register", ""]
+            },
+            "description": "Register a new user. Returns an OTP in `data.otp_for_testing` (dev/staging only). The OTP is auto-saved to the `otp` collection variable."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', body.data.access_token);",
+                  "    pm.collectionVariables.set('refreshToken', body.data.refresh_token);",
+                  "    console.log('Tokens saved from OTP verify.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"otp\": \"{{otp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/verify-otp/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "verify-otp", ""]
+            },
+            "description": "Verify the 6-digit OTP sent after registration. Activates the account and returns JWT tokens. Tokens are auto-saved to `accessToken` and `refreshToken`."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', body.data.access_token);",
+                  "    pm.collectionVariables.set('refreshToken', body.data.refresh_token);",
+                  "    console.log('Tokens saved from login.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login", ""]
+            },
+            "description": "Authenticate with email and password. Returns `access_token` and `refresh_token`. Both are auto-saved to collection variables."
+          },
+          "response": []
+        },
+        {
+          "name": "Google Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_token\": \"<google-oauth-id-token>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/google/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "google", ""]
+            },
+            "description": "Login or register via a Google OAuth2 ID token. Requires `GOOGLE_CLIENT_ID` to be configured on the server."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', body.data.access);",
+                  "    pm.collectionVariables.set('refreshToken', body.data.refresh);",
+                  "    console.log('Tokens rotated from refresh.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "refresh", ""]
+            },
+            "description": "Exchange a refresh token for a new access/refresh token pair. The old refresh token is blacklisted. New tokens are auto-saved."
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "logout", ""]
+            },
+            "description": "Invalidates the access token session in cache and blacklists the refresh token. Requires `Authorization: Bearer <accessToken>`."
+          },
+          "response": []
+        },
+        {
+          "name": "Password Reset — Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const body = pm.response.json();",
+                  "    if (body.data && body.data.token_for_testing) {",
+                  "        pm.collectionVariables.set('resetToken', body.data.token_for_testing);",
+                  "        console.log('Reset token saved:', body.data.token_for_testing);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/password-reset/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "password-reset", ""]
+            },
+            "description": "Request a password reset email. Always returns 200 to prevent account enumeration. In dev/staging, `data.token_for_testing` is returned and auto-saved."
+          },
+          "response": []
+        },
+        {
+          "name": "Password Reset — Confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"token\": \"{{resetToken}}\",\n  \"new_password\": \"NewPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/password-reset/confirm/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "password-reset", "confirm", ""]
+            },
+            "description": "Confirm a password reset using the token from the reset email (or `resetToken` variable). Sets the new password."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/me/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "me", ""]
+            },
+            "description": "Returns the authenticated user's profile. Requires a valid `accessToken`."
+          },
+          "response": []
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Updated\",\n  \"last_name\": \"Name\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/me/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "me", ""]
+            },
+            "description": "Partially update the authenticated user's profile. `email`, `id`, and `date_joined` are read-only."
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"{{testPassword}}\",\n  \"new_password\": \"NewPassword456!\",\n  \"new_password_confirm\": \"NewPassword456!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/change-password/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "change-password", ""]
+            },
+            "description": "Change the authenticated user's password. Requires the current password for verification."
+          },
+          "response": []
+        },
+        {
+          "name": "List Users (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/?search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", ""],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Optional email substring filter"
+                }
+              ]
+            },
+            "description": "List all users. Admin only (`is_staff=True`). Supports optional `?search=<email>` query param."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by ID (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/1/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "1", ""]
+            },
+            "description": "Retrieve a user by their numeric ID. Admin only."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User by ID (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Admin\",\n  \"last_name\": \"Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/1/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "1", ""]
+            },
+            "description": "Update a user by their numeric ID. Admin only."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Service-to-Service",
+      "item": [
+        {
+          "name": "Validate Token",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Build HMAC-SHA256 signature matching verify_hmac_signature() in utils.py",
+                  "// message = serviceId + timestamp + body",
+                  "const serviceId = 'device-service';",
+                  "const secret = pm.collectionVariables.get('deviceServiceSecret') || 'device-secret-key';",
+                  "const timestamp = String(Math.floor(Date.now() / 1000));",
+                  "const token = pm.collectionVariables.get('accessToken') || '';",
+                  "const body = JSON.stringify({ token });",
+                  "",
+                  "const message = serviceId + timestamp + body;",
+                  "",
+                  "const signature = CryptoJS.HmacSHA256(message, secret).toString(CryptoJS.enc.Hex);",
+                  "",
+                  "pm.request.headers.add({ key: 'X-Service-Id', value: serviceId });",
+                  "pm.request.headers.add({ key: 'X-Hmac-Signature', value: signature });",
+                  "pm.request.headers.add({ key: 'X-Timestamp', value: timestamp });",
+                  "",
+                  "// Overwrite the raw body with the exact string that was signed",
+                  "pm.request.body.raw = body;"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{accessToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/validate/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "validate", ""]
+            },
+            "description": "Service-to-service endpoint. Validates a JWT access token and checks its session is still active in cache.\n\nThe pre-request script automatically computes the HMAC-SHA256 signature using the `deviceServiceSecret` variable. Set that variable to match `DEVICE_SERVICE_SECRET` on the server."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Internal User",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const serviceId = 'device-service';",
+                  "const secret = pm.collectionVariables.get('deviceServiceSecret') || 'device-secret-key';",
+                  "const timestamp = String(Math.floor(Date.now() / 1000));",
+                  "const body = '';",
+                  "",
+                  "const message = serviceId + timestamp + body;",
+                  "const signature = CryptoJS.HmacSHA256(message, secret).toString(CryptoJS.enc.Hex);",
+                  "",
+                  "pm.request.headers.add({ key: 'X-Service-Id', value: serviceId });",
+                  "pm.request.headers.add({ key: 'X-Hmac-Signature', value: signature });",
+                  "pm.request.headers.add({ key: 'X-Timestamp', value: timestamp });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/internal/1/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "internal", "1", ""]
+            },
+            "description": "Fetch a user's details for internal service communication. Replace `1` with the target user ID. Requires valid HMAC headers (auto-generated by the pre-request script)."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
