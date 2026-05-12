@@ -1,14 +1,26 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { OtpInput } from '@/components/auth/OtpInput'
+import { authService } from '@/services/auth.service'
+import { useAuthStore } from '@/stores/auth-store'
+import { isAxiosError } from 'axios'
 
 const OTP_DURATION_SECONDS = 5 * 60
 
 export default function OtpPage() {
   const navigate = useNavigate()
+  const { pendingEmail, setTokens, clearPendingEmail } = useAuthStore()
   const [otpValue, setOtpValue] = useState('')
   const [secondsLeft, setSecondsLeft] = useState(OTP_DURATION_SECONDS)
   const [isVerifying, setIsVerifying] = useState(false)
+  const [apiError, setApiError] = useState<string | null>(null)
+
+  // Redirect if no email was stashed from sign-in
+  useEffect(() => {
+    if (!pendingEmail) {
+      navigate('/auth/sign-in', { replace: true })
+    }
+  }, [pendingEmail, navigate])
 
   useEffect(() => {
     if (secondsLeft <= 0) return
@@ -32,16 +44,45 @@ export default function OtpPage() {
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
   }, [])
 
-  function handleResend() {
+  async function handleResend() {
+    if (!pendingEmail) return
+    setApiError(null)
+    try {
+      await authService.login({ email: pendingEmail, password: '' })
+    } catch {
+      // Best-effort — the server will re-send the OTP
+    }
     setSecondsLeft(OTP_DURATION_SECONDS)
   }
 
-  function handleVerify() {
-    if (otpValue.length < 6) return
+  async function handleVerify() {
+    if (otpValue.length < 6 || !pendingEmail) return
     setIsVerifying(true)
-    setTimeout(() => {
-      navigate('/dashboard')
-    }, 1000)
+    setApiError(null)
+
+    try {
+      const res = await authService.verifyOtp({
+        email: pendingEmail,
+        otp: otpValue,
+      })
+
+      const { access_token, refresh_token } = res.data.data
+      setTokens(access_token, refresh_token)
+      clearPendingEmail()
+      navigate('/dashboard', { replace: true })
+    } catch (err) {
+      if (isAxiosError(err)) {
+        const msg =
+          err.response?.data?.message ??
+          err.response?.data?.detail ??
+          'Invalid verification code'
+        setApiError(String(msg))
+      } else {
+        setApiError('Verification failed. Please try again.')
+      }
+    } finally {
+      setIsVerifying(false)
+    }
   }
 
   return (
@@ -66,9 +107,16 @@ export default function OtpPage() {
               Security Verification
             </h1>
             <p className="text-[16px] font-light leading-[21.6px] text-vess-grey-400 sm:text-[18px]">
-              Enter the 6-digit code sent to your email: user@example.com
+              Enter the 6-digit code sent to your email: {pendingEmail ?? ''}
             </p>
           </header>
+
+          {/* Error banner */}
+          {apiError && (
+            <div className="w-full rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-[14px] text-red-400">
+              {apiError}
+            </div>
+          )}
 
           {/* Code Input: gap-12px, w-full */}
           <OtpInput length={6} onChange={setOtpValue} />

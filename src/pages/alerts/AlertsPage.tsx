@@ -1,7 +1,15 @@
 import { useState } from 'react'
 import { Topbar } from '@/components/layout/Topbar'
 import { PageTabs } from '@/components/shared/PageTabs'
-import { activeAlerts, stormDevices, type AlertSeverity } from '@/data/alerts-mock'
+import {
+  activeAlerts,
+  alertHistory,
+  alertRules,
+  stormDevices,
+  type AlertHistoryMock,
+  type AlertRuleMock,
+  type AlertSeverity,
+} from '@/data/alerts-mock'
 import { cn } from '@/lib/utils'
 
 const tabs = [
@@ -46,8 +54,8 @@ export default function AlertsPage() {
           </>
         )}
 
-        {tab === 'rules' && <PlaceholderCard title="Alert Rules" />}
-        {tab === 'history' && <PlaceholderCard title="Alert History" />}
+        {tab === 'rules' && <AlertRulesSection />}
+        {tab === 'history' && <AlertHistorySection />}
       </div>
     </>
   )
@@ -177,11 +185,238 @@ function ActiveAlertsSection() {
   )
 }
 
-function PlaceholderCard({ title }: { title: string }) {
+function AlertRulesSection() {
+  const [rules, setRules] = useState(alertRules)
+
+  function handleToggle(ruleId: string) {
+    setRules((prev) =>
+      prev.map((r) => (r.id === ruleId ? { ...r, enabled: !r.enabled } : r)),
+    )
+  }
+
   return (
-    <section className="rounded-2xl bg-vess-grey-50 p-12 text-center">
-      <p className="text-[16px] font-medium text-vess-grey-950">{title}</p>
-      <p className="mt-2 text-[13px] text-vess-grey-500">Coming next.</p>
+    <section className="rounded-2xl bg-vess-grey-50 p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-[18px] font-semibold leading-6 text-vess-grey-950">
+            Alert Rules
+          </h3>
+          <p className="mt-1 text-[13px] text-vess-grey-500">
+            Configure when and how alerts are triggered
+          </p>
+        </div>
+        <button
+          type="button"
+          className="rounded-xl bg-vess-primary-500 px-4 py-2 text-[14px] font-medium text-vess-grey-50 transition-colors hover:bg-vess-primary-400"
+        >
+          + New Rule
+        </button>
+      </div>
+
+      <div className="mt-5 flex flex-col gap-4">
+        {rules.map((rule) => (
+          <AlertRuleCard
+            key={rule.id}
+            rule={rule}
+            onToggle={() => handleToggle(rule.id)}
+          />
+        ))}
+      </div>
     </section>
+  )
+}
+
+function AlertRuleCard({
+  rule,
+  onToggle,
+}: {
+  rule: AlertRuleMock
+  onToggle: () => void
+}) {
+  return (
+    <article
+      className={cn(
+        'flex flex-col gap-3 rounded-xl border p-5 transition-colors',
+        rule.enabled
+          ? 'border-vess-grey-200 bg-vess-grey-50'
+          : 'border-vess-grey-200/60 bg-vess-grey-100/50',
+      )}
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <span
+            className={cn(
+              'rounded-md border px-2 py-0.5 text-[11px] font-medium tracking-[0.4px]',
+              severityChip[rule.severity],
+            )}
+          >
+            {severityLabel[rule.severity]}
+          </span>
+          <h4 className="text-[15px] font-semibold text-vess-grey-950">{rule.name}</h4>
+        </div>
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-label={`Toggle ${rule.name}`}
+          className={cn(
+            'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors',
+            rule.enabled ? 'bg-vess-green-500' : 'bg-vess-grey-300',
+          )}
+        >
+          <span
+            className={cn(
+              'pointer-events-none inline-block size-5 rounded-full bg-white shadow-sm transition-transform',
+              rule.enabled ? 'translate-x-[22px]' : 'translate-x-[2px]',
+              'mt-[2px]',
+            )}
+          />
+        </button>
+      </div>
+
+      <p className="text-[13px] text-vess-grey-800">{rule.description}</p>
+
+      <div className="flex flex-wrap items-center gap-4 text-[12px] text-vess-grey-500">
+        <span className="rounded-md bg-vess-grey-100 px-2 py-0.5 font-mono text-[11px]">
+          {rule.condition}
+        </span>
+        <span>Last triggered: {rule.lastTriggered}</span>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          className="text-[13px] font-medium text-vess-primary-500 transition-opacity hover:opacity-80"
+        >
+          Edit rule
+        </button>
+        <span className="text-vess-grey-300">|</span>
+        <button
+          type="button"
+          className="text-[13px] font-medium text-vess-red-500 transition-opacity hover:opacity-80"
+        >
+          Delete
+        </button>
+      </div>
+    </article>
+  )
+}
+
+function AlertHistorySection() {
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'acknowledged' | 'resolved'>('all')
+
+  const filtered =
+    statusFilter === 'all'
+      ? alertHistory
+      : alertHistory.filter((h) => h.status === statusFilter)
+
+  return (
+    <section className="rounded-2xl bg-vess-grey-50 p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-[18px] font-semibold leading-6 text-vess-grey-950">
+            Alert History
+          </h3>
+          <p className="mt-1 text-[13px] text-vess-grey-500">
+            Review past alerts and their resolution status
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {(['all', 'active', 'acknowledged', 'resolved'] as const).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setStatusFilter(s)}
+              className={cn(
+                'rounded-lg px-3 py-1.5 text-[13px] font-medium capitalize transition-colors',
+                statusFilter === s
+                  ? 'bg-vess-primary-500 text-vess-grey-50'
+                  : 'border border-vess-grey-200 bg-vess-grey-50 text-vess-grey-800 hover:bg-vess-grey-100',
+              )}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-5 overflow-x-auto">
+        <table className="w-full text-left text-[14px]">
+          <thead className="text-[13px] text-vess-grey-800">
+            <tr className="border-b border-vess-grey-200">
+              <th className="py-3 font-medium">Severity</th>
+              <th className="py-3 font-medium">Alert</th>
+              <th className="py-3 font-medium">Device</th>
+              <th className="py-3 font-medium">Status</th>
+              <th className="py-3 font-medium">Triggered</th>
+              <th className="py-3 font-medium">Resolved</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((entry) => (
+              <AlertHistoryRow key={entry.id} entry={entry} />
+            ))}
+          </tbody>
+        </table>
+
+        {filtered.length === 0 && (
+          <div className="py-12 text-center">
+            <p className="text-[14px] font-medium text-vess-grey-950">
+              No alerts found
+            </p>
+            <p className="mt-1 text-[13px] text-vess-grey-500">
+              No alerts match the selected filter.
+            </p>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+const statusChipClass: Record<AlertHistoryMock['status'], string> = {
+  active: 'bg-vess-red-50 text-vess-red-500',
+  acknowledged: 'bg-vess-secondary-50 text-vess-secondary-500',
+  resolved: 'bg-vess-green-50 text-vess-green-800',
+}
+
+function AlertHistoryRow({ entry }: { entry: AlertHistoryMock }) {
+  return (
+    <tr className="border-b border-vess-grey-200/70">
+      <td className="py-4">
+        <span
+          className={cn(
+            'rounded-md border px-2 py-0.5 text-[11px] font-medium tracking-[0.4px]',
+            severityChip[entry.severity],
+          )}
+        >
+          {severityLabel[entry.severity]}
+        </span>
+      </td>
+      <td className="py-4">
+        <div>
+          <p className="font-medium text-vess-grey-950">{entry.title}</p>
+          <p className="mt-0.5 text-[12px] text-vess-grey-500">{entry.body}</p>
+        </div>
+      </td>
+      <td className="py-4">
+        <span className="rounded-md bg-vess-grey-100 px-2 py-0.5 text-[12px] text-vess-grey-800">
+          {entry.deviceName}
+        </span>
+      </td>
+      <td className="py-4">
+        <span
+          className={cn(
+            'rounded-md px-2 py-0.5 text-[12px] font-medium capitalize',
+            statusChipClass[entry.status],
+          )}
+        >
+          {entry.status}
+        </span>
+      </td>
+      <td className="py-4 text-[13px] text-vess-grey-800">{entry.triggeredAt}</td>
+      <td className="py-4 text-[13px] text-vess-grey-800">
+        {entry.resolvedAt ?? '—'}
+      </td>
+    </tr>
   )
 }
