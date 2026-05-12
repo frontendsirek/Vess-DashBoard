@@ -1,16 +1,20 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ActiveTestsIcon, CheckCircleIcon, FailedTestsIcon, SpeedometerIcon } from '@/components/icons'
 import { KpiCard } from '@/components/dashboard/KpiCard'
 import { Topbar } from '@/components/layout/Topbar'
 import { Pagination } from '@/components/test-management/Pagination'
 import { TestCardGrid } from '@/components/test-management/TestCardGrid'
+import { CreateNewTestModal } from '@/components/test-management/create-test/CreateNewTestModal'
 import { TestFilterBar } from '@/components/test-management/TestFilterBar'
 import { TestManagementHeader } from '@/components/test-management/TestManagementHeader'
 import { TestTable } from '@/components/test-management/TestTable'
 import { type TestRecord, tests as allTests } from '@/data/mock'
 import { useUiStore } from '@/stores/ui-store'
+import type { CreateTestStep1Draft } from '@/types/create-test'
 
 export default function TestManagementPage() {
+  const navigate = useNavigate()
   const view = useUiStore((state) => state.testManagementView)
   const setView = useUiStore((state) => state.setTestManagementView)
 
@@ -18,6 +22,7 @@ export default function TestManagementPage() {
   const [typeFilter, setTypeFilter] = useState('All Types')
   const [statusFilter, setStatusFilter] = useState('All Status')
   const [currentPage, setCurrentPage] = useState(4)
+  const [createModalOpen, setCreateModalOpen] = useState(false)
 
   const filteredTests = useMemo<TestRecord[]>(() => {
     return allTests.filter((test) => {
@@ -28,12 +33,27 @@ export default function TestManagementPage() {
     })
   }, [search, typeFilter, statusFilter])
 
+  function handleViewTest(test: TestRecord) {
+    navigate(`/test-management/${test.id}`)
+  }
+
+  function handleContinueCreateTest(draft: CreateTestStep1Draft) {
+    setCreateModalOpen(false)
+    navigate('/test-management/new/configure', { state: { step1: draft } })
+  }
+
   return (
     <>
       <Topbar title="Test Management" subtitle="Test configuration & results" />
 
+      <CreateNewTestModal
+        open={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onContinue={handleContinueCreateTest}
+      />
+
       <div className="flex flex-col gap-4 px-5 py-6">
-        <TestManagementHeader />
+        <TestManagementHeader onNewTest={() => setCreateModalOpen(true)} />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <KpiCard label="Active Tests" value="42" icon={ActiveTestsIcon} iconBg="navy" />
@@ -69,9 +89,9 @@ export default function TestManagementPage() {
           </header>
 
           {view === 'list' ? (
-            <TestTable tests={filteredTests} />
+            <TestTable tests={filteredTests} onView={handleViewTest} />
           ) : (
-            <TestCardGrid tests={filteredTests} />
+            <TestCardGrid tests={filteredTests} onView={handleViewTest} />
           )}
 
           <Pagination
