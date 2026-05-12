@@ -77,6 +77,7 @@ export const themeHsl = {
 export const vessColors = {
   primary: {
     50: '#dfe5f7',
+    300: '#4b72b5',
     400: '#2e4977',
     500: '#14233d',
     600: '#101d34',

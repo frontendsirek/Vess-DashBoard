@@ -1,5 +1,12 @@
-import { ChevronDownIcon, SearchIcon } from '@/components/icons'
+import { SearchIcon } from '@/components/icons'
 import { ViewToggle } from '@/components/test-management/ViewToggle'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { type TestManagementView } from '@/stores/ui-store'
 import { cn } from '@/lib/utils'
 
@@ -66,24 +73,22 @@ function FilterSelect({
   className?: string
 }) {
   return (
-    <div
-      className={cn(
-        'relative flex h-11 items-center rounded-xl border border-vess-grey-200 bg-vess-grey-50 px-3 text-vess-grey-950',
-        className,
-      )}
-    >
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="appearance-none bg-transparent pr-7 text-[15px] font-normal leading-[18px] focus:outline-none"
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger
+        className={cn(
+          'h-11 w-fit max-w-[200px] shrink-0 rounded-xl border border-vess-grey-200 bg-vess-grey-50 px-3 text-[15px] font-normal leading-[18px] text-vess-grey-950',
+          className,
+        )}
       >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
         {options.map((option) => (
-          <option key={option} value={option}>
+          <SelectItem key={option} value={option}>
             {option}
-          </option>
+          </SelectItem>
         ))}
-      </select>
-      <ChevronDownIcon className="pointer-events-none absolute right-2 size-5 text-vess-grey-500" />
-    </div>
+      </SelectContent>
+    </Select>
   )
 }

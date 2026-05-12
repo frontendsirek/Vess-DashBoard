@@ -3,12 +3,16 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 
 export type TestManagementView = 'list' | 'grid'
 
+export type DeviceManagementView = 'list' | 'grid'
+
 type UiState = {
   sidebarOpen: boolean
   setSidebarOpen: (open: boolean) => void
   toggleSidebar: () => void
   testManagementView: TestManagementView
   setTestManagementView: (view: TestManagementView) => void
+  deviceManagementView: DeviceManagementView
+  setDeviceManagementView: (view: DeviceManagementView) => void
 }
 
 export const useUiStore = create<UiState>()(
@@ -20,6 +24,8 @@ export const useUiStore = create<UiState>()(
         set((state) => ({ sidebarOpen: !state.sidebarOpen })),
       testManagementView: 'list',
       setTestManagementView: (view) => set({ testManagementView: view }),
+      deviceManagementView: 'list',
+      setDeviceManagementView: (view) => set({ deviceManagementView: view }),
     }),
     {
       name: 'vess-ui',
@@ -27,6 +33,7 @@ export const useUiStore = create<UiState>()(
       partialize: (state) => ({
         sidebarOpen: state.sidebarOpen,
         testManagementView: state.testManagementView,
+        deviceManagementView: state.deviceManagementView,
       }),
     },
   ),
