@@ -6,7 +6,7 @@ import {
   DeviceIcon,
   LogoutIcon,
   MonitoringIcon,
-  RemoteDeviceIcon,
+  RemoteDeviceIcon2,
   ReportsIcon,
   SettingsIcon,
   TestManagementIcon,
@@ -26,7 +26,7 @@ const primaryNav = [
   { to: '/real-time-monitoring', label: 'Real-time Monitoring', icon: MonitoringIcon },
   { to: '/alerts', label: 'Alerts & Notifications', icon: AlertsIcon },
   { to: '/reports', label: 'Reports & Analytics', icon: ReportsIcon },
-  { to: '/remote-device-control', label: 'Remote Device Control', icon: RemoteDeviceIcon },
+  { to: '/remote-device-control', label: 'Remote Device Control', icon: RemoteDeviceIcon2 },
 ] as const
 
 const secondaryNav = [
