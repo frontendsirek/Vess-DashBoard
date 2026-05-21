@@ -1,26 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useFormContext, useWatch } from 'react-hook-form'
 import { CallIcon, CsvFileOutlineIcon, DataIcon, ExportDownloadIcon, SmsIcon } from '@/components/icons'
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form'
+import { triggerBlobDownload } from '@/lib/download-blob'
 import { cn } from '@/lib/utils'
-import type { TestType } from '@/data/mock'
-import type { CreationMethod } from '@/types/create-test'
+import { testService } from '@/services/test.service'
+import type { Step1FormValues } from '@/schemas/create-test/step1.schema'
 
-type CreateTestStep1FormProps = {
-  creationMethod: CreationMethod | null
-  onCreationMethodChange: (value: CreationMethod) => void
-  testType: TestType | null
-  onTestTypeChange: (value: TestType | null) => void
-}
+const formMessageClassName = 'text-[13px] font-normal leading-[16px] text-vess-red-500'
 
-const testTypes: {
-  type: TestType
-  title: string
-  description: string
-  icon: typeof CallIcon
-  iconBg: string
-  iconColor: string
-}[] = [
+const testTypes = [
   {
-    type: 'Call',
+    type: 'Call' as const,
     title: 'Call Test',
     description: 'Measures call success rate and quality',
     icon: CallIcon,
@@ -28,7 +24,7 @@ const testTypes: {
     iconColor: 'text-vess-primary-500',
   },
   {
-    type: 'SMS',
+    type: 'SMS' as const,
     title: 'SMS Test',
     description: 'Measures message delivery rate',
     icon: SmsIcon,
@@ -36,7 +32,7 @@ const testTypes: {
     iconColor: 'text-vess-secondary-500',
   },
   {
-    type: 'Data',
+    type: 'Data' as const,
     title: 'Data Test',
     description: 'Measures network speed & latency',
     icon: DataIcon,
@@ -45,65 +41,100 @@ const testTypes: {
   },
 ]
 
-export function CreateTestStep1Form({
-  creationMethod,
-  onCreationMethodChange,
-  testType,
-  onTestTypeChange,
-}: CreateTestStep1FormProps) {
+export function CreateTestStep1Form() {
+  const form = useFormContext<Step1FormValues>()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [templateDownloading, setTemplateDownloading] = useState(false)
+  const [templateDownloadError, setTemplateDownloadError] = useState<string | null>(null)
+  const creationMethod = useWatch({ control: form.control, name: 'creationMethod' })
 
   useEffect(() => {
     if (creationMethod === 'single' && fileInputRef.current) {
       fileInputRef.current.value = ''
+      form.setValue('bulkCsvFile', undefined)
+      form.clearErrors('bulkCsvFile')
     }
-  }, [creationMethod])
-
-  const assignCsvFile = useCallback((file: File | null | undefined) => {
-    if (!file) return
-    if (fileInputRef.current) {
-      const dt = new DataTransfer()
-      dt.items.add(file)
-      fileInputRef.current.files = dt.files
+    if (creationMethod === 'bulk') {
+      form.setValue('testType', null)
+      form.clearErrors('testType')
     }
-  }, [])
+  }, [creationMethod, form])
 
-  function downloadTemplate() {
-    const blob = new Blob(['column_a,column_b\n'], { type: 'text/csv;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = 'template.csv'
-    anchor.click()
-    URL.revokeObjectURL(url)
+  const assignCsvFile = useCallback(
+    (file: File | null | undefined) => {
+      if (!file) return
+      if (fileInputRef.current) {
+        const dt = new DataTransfer()
+        dt.items.add(file)
+        fileInputRef.current.files = dt.files
+      }
+      form.setValue('bulkCsvFile', file)
+      form.clearErrors('bulkCsvFile')
+    },
+    [form],
+  )
+
+  async function downloadTemplate() {
+    setTemplateDownloadError(null)
+    setTemplateDownloading(true)
+    try {
+      const { blob, filename } = await testService.downloadBulkTestsTemplate()
+      triggerBlobDownload(blob, filename)
+    } catch (err) {
+      const msg =
+        err instanceof Error && err.message.trim().length > 0 ?
+          err.message
+        : 'Could not download template. Sign in and try again.'
+      setTemplateDownloadError(msg)
+    } finally {
+      setTemplateDownloading(false)
+    }
   }
 
   return (
     <div className="flex w-full flex-col gap-8">
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px] text-vess-grey-950">
-          <span>Select Creation Method</span>
-          <span className="text-vess-red-500">*</span>
-        </div>
-        <div className="flex flex-wrap gap-8">
-          <RadioChoice
-            selected={creationMethod === 'single'}
-            onSelect={() => onCreationMethodChange('single')}
-            label="Single Creation"
-            name="creation"
-          />
-          <RadioChoice
-            selected={creationMethod === 'bulk'}
-            onSelect={() => onCreationMethodChange('bulk')}
-            label="Bulk Upload"
-            name="creation"
-          />
-        </div>
-      </div>
+      <FormField
+        control={form.control}
+        name="creationMethod"
+        render={({ field }) => (
+          <FormItem className="flex flex-col gap-4 space-y-0">
+            <div className="flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px] text-vess-grey-950">
+              <span>Select Creation Method</span>
+              <span className="text-vess-red-500">*</span>
+            </div>
+            <FormControl>
+              <div className="flex flex-wrap gap-8">
+                <RadioChoice
+                  selected={field.value === 'single'}
+                  onSelect={() => field.onChange('single')}
+                  label="Single Creation"
+                  name="creation"
+                />
+                <RadioChoice
+                  selected={field.value === 'bulk'}
+                  onSelect={() => field.onChange('bulk')}
+                  label="Bulk Upload"
+                  name="creation"
+                />
+              </div>
+            </FormControl>
+            <FormMessage className={formMessageClassName} />
+          </FormItem>
+        )}
+      />
 
       {creationMethod === 'bulk' && (
         <div className="flex w-full max-w-[627px] flex-col gap-6">
+          <FormField
+            control={form.control}
+            name="bulkCsvFile"
+            render={() => (
+              <FormItem className="space-y-0">
+                <FormMessage className={formMessageClassName} />
+              </FormItem>
+            )}
+          />
           <div className="flex flex-col gap-3">
             <p className="text-[18px] font-normal leading-[21.6px] text-vess-grey-950">Bulk Upload</p>
             <input
@@ -113,6 +144,10 @@ export function CreateTestStep1Form({
               accept=".csv,text/csv"
               className="sr-only"
               aria-label="Upload CSV file"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                assignCsvFile(file)
+              }}
             />
             <div
               role="button"
@@ -173,56 +208,69 @@ export function CreateTestStep1Form({
               </div>
               <button
                 type="button"
+                disabled={templateDownloading}
                 onClick={(e) => {
                   e.stopPropagation()
-                  downloadTemplate()
+                  void downloadTemplate()
                 }}
-                className="inline-flex shrink-0 text-vess-primary-500 transition-opacity hover:opacity-80"
+                className="inline-flex shrink-0 text-vess-primary-500 transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label="Download template.csv"
               >
                 <ExportDownloadIcon className="size-[19px]" />
               </button>
             </div>
           </div>
+          {templateDownloadError ?
+            <p className="text-[13px] font-normal leading-[16px] text-vess-red-500">{templateDownloadError}</p>
+          : null}
         </div>
       )}
 
-      {creationMethod !== null && (
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px] text-vess-grey-950">
-            <span>Select Test Type</span>
-            <span className="text-vess-red-500">*</span>
-          </div>
-          <div className="flex flex-col gap-5 sm:flex-row">
-            {testTypes.map(({ type, title, description, icon: Icon, iconBg, iconColor }) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => onTestTypeChange(type)}
-                className={cn(
-                  'flex w-full flex-1 flex-col items-center gap-6 rounded-2xl border-2 bg-vess-grey-50 px-4 py-5 text-left transition-colors',
-                  testType === type ? 'border-vess-primary-500' : 'border-vess-grey-100',
-                )}
-              >
-                <div
-                  className={cn(
-                    'flex size-10 items-center justify-center rounded-full',
-                    iconBg,
-                    iconColor,
-                  )}
-                >
-                  <Icon className="size-5" />
+      {creationMethod === 'single' && (
+        <FormField
+          control={form.control}
+          name="testType"
+          render={({ field }) => (
+            <FormItem className="flex flex-col gap-4 space-y-0">
+              <div className="flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px] text-vess-grey-950">
+                <span>Select Test Type</span>
+                <span className="text-vess-red-500">*</span>
+              </div>
+              <FormControl>
+                <div className="flex flex-col gap-5 sm:flex-row">
+                  {testTypes.map(({ type, title, description, icon: Icon, iconBg, iconColor }) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => field.onChange(type)}
+                      className={cn(
+                        'flex w-full flex-1 flex-col items-center gap-6 rounded-2xl border-2 bg-vess-grey-50 px-4 py-5 text-left transition-colors',
+                        field.value === type ? 'border-vess-primary-500' : 'border-vess-grey-100',
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          'flex size-10 items-center justify-center rounded-full',
+                          iconBg,
+                          iconColor,
+                        )}
+                      >
+                        <Icon className="size-5" />
+                      </div>
+                      <div className="flex w-full flex-col items-center gap-3">
+                        <p className="text-[18px] font-medium leading-[21.6px] text-vess-grey-950">{title}</p>
+                        <p className="text-center text-[15px] font-light leading-[18px] text-vess-grey-950">
+                          {description}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-                <div className="flex w-full flex-col items-center gap-3">
-                  <p className="text-[18px] font-medium leading-[21.6px] text-vess-grey-950">{title}</p>
-                  <p className="text-center text-[15px] font-light leading-[18px] text-vess-grey-950">
-                    {description}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+              </FormControl>
+              <FormMessage className={formMessageClassName} />
+            </FormItem>
+          )}
+        />
       )}
     </div>
   )
