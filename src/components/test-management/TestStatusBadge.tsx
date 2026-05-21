@@ -7,9 +7,11 @@ type TestStatusBadgeProps = {
 }
 
 const statusClasses: Record<TestStatus, string> = {
+  Draft: 'bg-vess-grey-100 text-vess-grey-800',
+  Ready: 'bg-vess-green-50 text-vess-green-800',
   Running: 'bg-vess-primary-50 text-vess-primary-500',
-  Scheduled: 'bg-vess-secondary-50 text-vess-secondary-500',
-  Completed: 'bg-vess-green-50 text-vess-green-800',
+  'Cancel requested': 'bg-vess-secondary-50 text-vess-secondary-500',
+  Canceled: 'bg-vess-red-50 text-vess-red-800',
 }
 
 export function TestStatusBadge({ status, className }: TestStatusBadgeProps) {

@@ -1,5 +1,4 @@
-import { useDeferredValue, useEffect, useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DeviceCardGrid } from '@/components/device-management/DeviceCardGrid'
 import { DeviceFilterBar } from '@/components/device-management/DeviceFilterBar'
@@ -12,8 +11,12 @@ import {
   deviceRecords,
   type DeviceRecord,
 } from '@/data/device-management'
+import { useDevicesKpiQuery } from '@/hooks/devices/use-devices-kpi-query'
+import { useDevicesListQuery } from '@/hooks/devices/use-devices-list-query'
+import { useDevicesSearchQuery } from '@/hooks/devices/use-devices-search-query'
+import { SEARCH_DEBOUNCE_MS, useDebouncedValue } from '@/hooks/use-debounced-value'
 import { mapApiDeviceToDeviceRecord } from '@/lib/api-device-mapper'
-import { deviceService, type ListDevicesParams } from '@/services/device.service'
+import type { ListDevicesParams } from '@/services/device.service'
 import { useAuthStore } from '@/stores/auth-store'
 import { useUiStore } from '@/stores/ui-store'
 
@@ -29,11 +32,11 @@ export default function DeviceManagementPage() {
   const [statusFilter, setStatusFilter] = useState('All Status')
   const [currentPage, setCurrentPage] = useState(1)
 
-  const deferredSearch = useDeferredValue(search.trim())
+  const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS)
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [statusFilter, deferredSearch])
+  }, [statusFilter, debouncedSearch])
 
   const listParams = useMemo((): ListDevicesParams => {
     const params: ListDevicesParams = {
@@ -45,40 +48,11 @@ export default function DeviceManagementPage() {
     return params
   }, [currentPage, statusFilter])
 
-  const kpiQuery = useQuery({
-    queryKey: ['devices', 'kpi-counts', accessToken],
-    enabled: !!accessToken,
-    queryFn: async () => {
-      const [allRes, onlineRes, offlineRes] = await Promise.all([
-        deviceService.listDevices({ page: 1, page_size: 1 }),
-        deviceService.listDevices({ page: 1, page_size: 1, status: 'ONLINE' }),
-        deviceService.listDevices({ page: 1, page_size: 1, status: 'OFFLINE' }),
-      ])
-      return {
-        total: allRes.data.count,
-        online: onlineRes.data.count,
-        offline: offlineRes.data.count,
-      }
-    },
-  })
+  const kpiQuery = useDevicesKpiQuery(accessToken)
 
-  const listQuery = useQuery({
-    queryKey: ['devices', 'list', accessToken, listParams],
-    enabled: !!accessToken && deferredSearch.length === 0,
-    queryFn: async () => {
-      const { data } = await deviceService.listDevices(listParams)
-      return data
-    },
-  })
+  const listQuery = useDevicesListQuery(accessToken, listParams, debouncedSearch.length === 0)
 
-  const searchQuery = useQuery({
-    queryKey: ['devices', 'search', accessToken, deferredSearch],
-    enabled: !!accessToken && deferredSearch.length > 0,
-    queryFn: async () => {
-      const { data } = await deviceService.searchDevices(deferredSearch)
-      return data
-    },
-  })
+  const searchQuery = useDevicesSearchQuery(accessToken, debouncedSearch, debouncedSearch.length > 0)
 
   const mappedFromList = useMemo(() => {
     const rows = listQuery.data?.results ?? []
@@ -105,13 +79,13 @@ export default function DeviceManagementPage() {
 
   const filteredDevices = useMemo<DeviceRecord[]>(() => {
     if (!accessToken) return mockFilteredDevices
-    const base = deferredSearch.length > 0 ? mappedFromSearch : mappedFromList
+    const base = debouncedSearch.length > 0 ? mappedFromSearch : mappedFromList
     if (statusFilter === 'All Status') return base
     if (statusFilter === 'Online' || statusFilter === 'Offline') return base
     return base.filter((d) => d.status === statusFilter)
   }, [
     accessToken,
-    deferredSearch.length,
+    debouncedSearch.length,
     mappedFromList,
     mappedFromSearch,
     mockFilteredDevices,
@@ -119,18 +93,18 @@ export default function DeviceManagementPage() {
   ])
 
   const totalPages =
-    deferredSearch.length > 0
-      ? 1
+    debouncedSearch.length > 0 ?
+      1
       : Math.max(1, Math.ceil((listQuery.data?.count ?? 0) / PAGE_SIZE))
 
   const listPending =
-    deferredSearch.length === 0 && accessToken ? listQuery.isPending : false
+    debouncedSearch.length === 0 && accessToken ? listQuery.isPending : false
   const searchPending =
-    deferredSearch.length > 0 && accessToken ? searchQuery.isPending : false
+    debouncedSearch.length > 0 && accessToken ? searchQuery.isPending : false
   const listError =
-    deferredSearch.length === 0 && accessToken ? listQuery.isError : false
+    debouncedSearch.length === 0 && accessToken ? listQuery.isError : false
   const searchError =
-    deferredSearch.length > 0 && accessToken ? searchQuery.isError : false
+    debouncedSearch.length > 0 && accessToken ? searchQuery.isError : false
 
   function handleViewDevice(device: DeviceRecord) {
     navigate(`/device-management/${device.id}`)
@@ -206,7 +180,7 @@ export default function DeviceManagementPage() {
             )}
           </div>
 
-          {accessToken && deferredSearch.length === 0 && totalPages > 1 ? (
+          {accessToken && debouncedSearch.length === 0 && totalPages > 1 ? (
             <Pagination currentPage={currentPage} totalPages={totalPages} onChange={setCurrentPage} />
           ) : null}
         </section>

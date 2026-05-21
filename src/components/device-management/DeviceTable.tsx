@@ -48,7 +48,7 @@ export function DeviceTable({ devices, onView }: DeviceTableProps) {
           so the Action column does not balloon with empty space on the right.
         */}
         <colgroup>
-          <col style={{ width: '1%', minWidth: 260 }} />
+          <col style={{ width: '1%', minWidth: 290 }} />
           <col style={{ width: 150 }} />
           <col style={{ width: 100 }} />
           <col style={{ width: 100 }} />

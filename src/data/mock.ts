@@ -1,7 +1,13 @@
 import type { CreateTestScheduleDraft } from '@/types/create-test'
 
 export type TestType = 'Call' | 'SMS' | 'Data'
-export type TestStatus = 'Running' | 'Scheduled' | 'Completed'
+/** Aligns with probe `deliveryStatus` from API (display labels). */
+export type TestStatus =
+  | 'Draft'
+  | 'Ready'
+  | 'Running'
+  | 'Cancel requested'
+  | 'Canceled'
 
 export type RunningTest = {
   id: string
@@ -182,81 +188,6 @@ export type TestRecord = {
   status: TestStatus
 }
 
-export const tests: TestRecord[] = [
-  {
-    id: 't-1',
-    name: 'Lagos-Abuja Call Test',
-    type: 'Call',
-    source: 'Lagos-1',
-    destination: 'Abuja-1',
-    lastRun: '2m ago',
-    status: 'Running',
-  },
-  {
-    id: 't-2',
-    name: 'Port SMS Delivery',
-    type: 'SMS',
-    source: '+234812345678',
-    destination: 'Port Harcourt-1',
-    lastRun: '14m ago',
-    status: 'Scheduled',
-  },
-  {
-    id: 't-3',
-    name: 'Kano Data Speed Test',
-    type: 'Data',
-    source: 'Abuja-1',
-    destination: 'Kano-1',
-    lastRun: '5m ago',
-    status: 'Running',
-  },
-  {
-    id: 't-4',
-    name: 'Ibadan-Osun Data Test',
-    type: 'Data',
-    source: 'Ibadan-1',
-    destination: 'Osun-1',
-    lastRun: '1h ago',
-    status: 'Completed',
-  },
-  {
-    id: 't-5',
-    name: 'Enugu-Cross River Call Test',
-    type: 'Call',
-    source: 'Enugu-1',
-    destination: 'Cross River-1',
-    lastRun: '22m ago',
-    status: 'Scheduled',
-  },
-  {
-    id: 't-6',
-    name: 'Emergency SMS Alert',
-    type: 'SMS',
-    source: '+234812345678',
-    destination: 'Sokoto-1',
-    lastRun: '20m ago',
-    status: 'Completed',
-  },
-  {
-    id: 't-7',
-    name: 'Kano Data Speed Test',
-    type: 'Data',
-    source: 'Abuja-1',
-    destination: 'Kano-1',
-    lastRun: '23m ago',
-    status: 'Running',
-  },
-  {
-    id: 't-8',
-    name: 'Emergency SMS Alert',
-    type: 'SMS',
-    source: '+234812345678',
-    destination: 'Sokoto-1',
-    lastRun: '2m ago',
-    status: 'Completed',
-  },
-]
-
 export type TestDetailExecutionRow = {
   id: string
   success: boolean
@@ -278,103 +209,6 @@ export type TestDetailRecord = {
   configRowsExtra?: { label: string; value: string; hideValue?: boolean }
   executions: TestDetailExecutionRow[]
   executionsEmptyMessage?: string
-}
-
-export const testDetailById: Record<string, TestDetailRecord> = {
-  't-1': {
-    id: 't-1',
-    name: 'Lagos-Abuja Call Test',
-    status: 'Running',
-    progressPercent: 93,
-    lastExecutionLabel: '13/03/2026, 16:45:23',
-    successRate: '98.5%',
-    avgDuration: '45.3s',
-    totalRuns: '5',
-    configRows: [
-      { label: 'Type', value: 'Call' },
-      { label: 'Description', value: 'N/A' },
-      { label: 'Source Device', value: 'Lagos-1' },
-      { label: 'Destination', value: 'Lagos-1' },
-      { label: 'Schedule', value: 'Recurring (hourly)' },
-      { label: 'Call Duration', value: '60s' },
-      { label: 'Retry Attempts', value: '2' },
-      { label: 'Execution Window', value: 'Business hours only' },
-    ],
-    executions: [
-      {
-        id: 'ex-1',
-        success: true,
-        timestamp: '13/03/2026, 18:15:23',
-        detail: 'Success (42s) | Signal: -65dBm',
-      },
-      {
-        id: 'ex-2',
-        success: true,
-        timestamp: '13/03/2026, 17:45:23',
-        detail: 'Success (48s) | Signal: -72dBm',
-      },
-      {
-        id: 'ex-3',
-        success: false,
-        timestamp: '13/03/2026, 17:15:23',
-        detail: 'Failed (Timeout) | Signal: -89dBm',
-      },
-      {
-        id: 'ex-4',
-        success: true,
-        timestamp: '13/03/2026, 16:45:23',
-        detail: 'Success (41s) | Signal: -68dBm',
-      },
-    ],
-  },
-  't-2': {
-    id: 't-2',
-    name: 'Lagos-Abuja Call Test',
-    status: 'Scheduled',
-    lastExecutionLabel: 'N/A',
-    successRate: '0%',
-    avgDuration: '0s',
-    totalRuns: '0',
-    configRows: [
-      { label: 'Type', value: 'Call' },
-      { label: 'Description', value: 'N/A' },
-      { label: 'Source Device', value: 'Lagos-1' },
-      { label: 'Destination', value: 'Lagos-1' },
-      { label: 'Schedule', value: 'One-Time' },
-      { label: 'Call Duration', value: '60s' },
-      { label: 'Retry Attempts', value: '2' },
-    ],
-    configRowsExtra: { label: 'Call Duration', value: '60s', hideValue: true },
-    executions: [],
-    executionsEmptyMessage: 'No executions yet',
-  },
-  't-4': {
-    id: 't-4',
-    name: 'Lagos-Abuja Call Test',
-    status: 'Completed',
-    lastExecutionLabel: '13/03/2026, 16:45:23',
-    successRate: '100.0%',
-    avgDuration: '45.3s',
-    totalRuns: '10',
-    configRows: [
-      { label: 'Type', value: 'Call' },
-      { label: 'Description', value: 'N/A' },
-      { label: 'Source Device', value: 'Lagos-1' },
-      { label: 'Destination', value: 'Lagos-1' },
-      { label: 'Schedule', value: 'Recurring (Daily)' },
-      { label: 'Call Duration', value: '60s' },
-      { label: 'Retry Attempts', value: '2' },
-      { label: 'Execution Window', value: 'Business hours only' },
-    ],
-    executions: [
-      {
-        id: 'ex-c1',
-        success: true,
-        timestamp: '13/03/2026, 18:15:23',
-        detail: 'Success (42s) | Signal: -65dBm',
-      },
-    ],
-  },
 }
 
 export function buildTestDetailFromWizard(draft: CreateTestScheduleDraft): TestDetailRecord {
@@ -423,40 +257,12 @@ export function buildTestDetailFromWizard(draft: CreateTestScheduleDraft): TestD
   return {
     id: 'wizard',
     name: draft.testName || 'New Test',
-    status: 'Scheduled',
+    status: 'Draft',
     lastExecutionLabel: 'N/A',
     successRate: '0%',
     avgDuration: '0s',
     totalRuns: '0',
     configRows,
-    executions: [],
-    executionsEmptyMessage: 'No executions yet',
-  }
-}
-
-export function resolveTestDetailRecord(testId: string): TestDetailRecord | undefined {
-  return testDetailById[testId]
-}
-
-export function buildFallbackTestDetail(record: TestRecord): TestDetailRecord {
-  return {
-    id: record.id,
-    name: record.name,
-    status: record.status,
-    progressPercent: record.status === 'Running' ? 50 : undefined,
-    lastExecutionLabel: record.status === 'Scheduled' ? 'N/A' : record.lastRun,
-    successRate: record.status === 'Completed' ? '—' : '0%',
-    avgDuration: '—',
-    totalRuns: '—',
-    configRows: [
-      { label: 'Type', value: record.type },
-      { label: 'Description', value: 'N/A' },
-      { label: 'Source Device', value: record.source },
-      { label: 'Destination', value: record.destination },
-      { label: 'Schedule', value: '—' },
-      { label: 'Call Duration', value: '—' },
-      { label: 'Retry Attempts', value: '—' },
-    ],
     executions: [],
     executionsEmptyMessage: 'No executions yet',
   }
