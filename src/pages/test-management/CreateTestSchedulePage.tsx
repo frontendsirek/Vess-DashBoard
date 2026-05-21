@@ -10,12 +10,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  formatTestMutationError,
+  useCreateTestMutation,
+} from '@/hooks/use-create-test'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/stores/auth-store'
 import type {
   CreateTestScheduleDraft,
   ScheduleKind,
   TestManagementScheduleState,
 } from '@/types/create-test'
+import type { ApiTestAction } from '@/types/test'
 
 const retryOptions = ['2 attempts', '3 attempts', 'No retry']
 const frequencyOptions = ['Hourly', 'Daily', 'Weekly']
@@ -91,8 +97,11 @@ function ScheduleRadio({
 export default function CreateTestSchedulePage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const accessToken = useAuthStore((state) => state.accessToken)
   const configure = (location.state as TestManagementScheduleState | null)?.configure
+  const { mutateAsync, isPending, isError, error, reset } = useCreateTestMutation()
 
+  const [authError, setAuthError] = useState<string | null>(null)
   const [scheduleKind, setScheduleKind] = useState<ScheduleKind>('one-time')
   const [immediate, setImmediate] = useState(true)
   const [scheduledDateTime, setScheduledDateTime] = useState('')
@@ -168,9 +177,22 @@ export default function CreateTestSchedulePage() {
     navigate(-1)
   }
 
-  function finishWizard() {
+  const submitError =
+    authError ?? (isError && error ? formatTestMutationError(error) : null)
+
+  async function submitTest(action: ApiTestAction) {
     if (!fullDraft) return
-    navigate('/test-management/wizard-new', { state: { wizardResult: fullDraft }, replace: true })
+    if (!accessToken) {
+      setAuthError('You must be signed in to create a test.')
+      return
+    }
+    setAuthError(null)
+    reset()
+    try {
+      await mutateAsync({ draft: fullDraft, action })
+    } catch {
+      // `error` and `isError` are set by React Query
+    }
   }
 
   return (
@@ -320,27 +342,37 @@ export default function CreateTestSchedulePage() {
             )}
           </div>
 
+          {submitError && (
+            <p className="text-[15px] font-normal leading-[18px] text-vess-red-500" role="alert">
+              {submitError}
+            </p>
+          )}
+
           <div className="flex min-h-12 flex-wrap items-center justify-between gap-3">
             <button
               type="button"
               onClick={goBackToConfigure}
-              className="inline-flex h-12 w-[116px] items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 text-[15px] font-medium leading-[18px] text-vess-grey-950"
+              disabled={isPending}
+              className="inline-flex h-12 w-[116px] items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 text-[15px] font-medium leading-[18px] text-vess-grey-950 disabled:opacity-50"
             >
               Back
             </button>
             <div className="flex flex-wrap items-center gap-5">
               <button
                 type="button"
-                className="inline-flex h-12 items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-950"
+                disabled={isPending}
+                onClick={() => void submitTest('draft')}
+                className="inline-flex h-12 items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-950 disabled:opacity-50"
               >
                 Save as Draft
               </button>
               <button
                 type="button"
-                onClick={finishWizard}
-                className="inline-flex h-12 items-center justify-center rounded-lg bg-vess-primary-500 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-50"
+                disabled={isPending}
+                onClick={() => void submitTest('activate')}
+                className="inline-flex h-12 items-center justify-center rounded-lg bg-vess-primary-500 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-50 disabled:opacity-50"
               >
-                Create & Activate
+                {isPending ? 'Creating…' : 'Create & Activate'}
               </button>
             </div>
           </div>

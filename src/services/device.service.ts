@@ -54,10 +54,6 @@ export type HeartbeatPayload = {
   app_version: string
 }
 
-function authHeader(token: string) {
-  return { Authorization: `Bearer ${token}` }
-}
-
 const DEVICES_PREFIX = '/device/api/v1/devices'
 const REGISTRATION_PREFIX = '/device/api/v1/registration'
 
@@ -70,56 +66,43 @@ export const deviceService = {
 
   /* ── Devices ── */
 
-  listDevices(accessToken: string, params?: ListDevicesParams) {
+  listDevices(params?: ListDevicesParams) {
     return apiClient.get<PaginatedResponse<ApiDevice>>(DEVICES_PREFIX + '/', {
-      headers: authHeader(accessToken),
       params,
     })
   },
 
-  getDevice(deviceId: string, accessToken: string) {
-    return apiClient.get<ApiDevice>(`${DEVICES_PREFIX}/${deviceId}/`, {
-      headers: authHeader(accessToken),
-    })
+  getDevice(deviceId: string) {
+    return apiClient.get<ApiDevice>(`${DEVICES_PREFIX}/${deviceId}/`)
   },
 
-  registerDevice(payload: RegisterDevicePayload, accessToken: string) {
+  registerDevice(payload: RegisterDevicePayload) {
     return apiClient.post<{ device_id: string; api_key: string }>(
       DEVICES_PREFIX + '/',
       payload,
-      { headers: authHeader(accessToken) },
     )
   },
 
-  updateDevice(
-    deviceId: string,
-    payload: Partial<RegisterDevicePayload>,
-    accessToken: string,
-  ) {
-    return apiClient.put(`${DEVICES_PREFIX}/${deviceId}/`, payload, {
-      headers: authHeader(accessToken),
-    })
+  updateDevice(deviceId: string, payload: Partial<RegisterDevicePayload>) {
+    return apiClient.put(`${DEVICES_PREFIX}/${deviceId}/`, payload)
   },
 
-  deregisterDevice(deviceId: string, reason: string, accessToken: string) {
+  deregisterDevice(deviceId: string, reason: string) {
     return apiClient.delete(`${DEVICES_PREFIX}/${deviceId}/`, {
-      headers: authHeader(accessToken),
       data: { reason },
     })
   },
 
-  searchDevices(query: string, accessToken: string) {
+  searchDevices(query: string) {
     return apiClient.get<ApiDevice[]>(`${DEVICES_PREFIX}/search/`, {
-      headers: authHeader(accessToken),
       params: { q: query },
     })
   },
 
-  findNearby(lat: number, lng: number, radiusKm: number, accessToken: string) {
+  findNearby(lat: number, lng: number, radiusKm: number) {
     return apiClient.get<(ApiDevice & { distance_km: number })[]>(
       `${DEVICES_PREFIX}/nearby/`,
       {
-        headers: authHeader(accessToken),
         params: { lat, lng, radius_km: radiusKm },
       },
     )
@@ -145,48 +128,37 @@ export const deviceService = {
 
   /* ── Registration Requests ── */
 
-  createRegistrationRequest(
-    payload: CreateRegistrationRequestPayload,
-    accessToken: string,
-  ) {
+  createRegistrationRequest(payload: CreateRegistrationRequestPayload) {
     return apiClient.post<RegistrationRequest>(
       `${REGISTRATION_PREFIX}/requests/`,
       payload,
-      { headers: authHeader(accessToken) },
     )
   },
 
-  createBulkRegistrationRequests(
-    payload: BulkRegistrationRequestPayload,
-    accessToken: string,
-  ) {
+  createBulkRegistrationRequests(payload: BulkRegistrationRequestPayload) {
     return apiClient.post<BulkRegistrationResponse>(
       `${REGISTRATION_PREFIX}/requests/bulk/`,
       payload,
-      { headers: authHeader(accessToken) },
     )
   },
 
-  getRegistrationRequest(requestId: string, accessToken: string) {
+  getRegistrationRequest(requestId: string) {
     return apiClient.get<RegistrationRequest>(
       `${REGISTRATION_PREFIX}/requests/${requestId}/`,
-      { headers: authHeader(accessToken) },
     )
   },
 
-  revokeRegistrationRequest(requestId: string, accessToken: string) {
+  revokeRegistrationRequest(requestId: string) {
     return apiClient.post(
       `${REGISTRATION_PREFIX}/requests/${requestId}/revoke/`,
       null,
-      { headers: authHeader(accessToken) },
     )
   },
 
-  regenerateSyncLink(requestId: string, accessToken: string) {
+  regenerateSyncLink(requestId: string) {
     return apiClient.post<RegistrationRequest>(
       `${REGISTRATION_PREFIX}/requests/${requestId}/regenerate/`,
       null,
-      { headers: authHeader(accessToken) },
     )
   },
 
