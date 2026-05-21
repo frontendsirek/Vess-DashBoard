@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from 'react'
 import type { ComponentType } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import { DeviceStatusBadge } from '@/components/device-management/DeviceStatusBadge'
 import {
@@ -14,8 +13,7 @@ import {
 } from '@/components/icons'
 import { Topbar } from '@/components/layout/Topbar'
 import { buildDeviceDetailView, resolveDeviceRecord } from '@/data/device-management'
-import { mapApiDeviceToDeviceRecord } from '@/lib/api-device-mapper'
-import { deviceService } from '@/services/device.service'
+import { useDeviceDetailQuery } from '@/hooks/devices/use-device-detail-query'
 import { useAuthStore } from '@/stores/auth-store'
 
 export default function DeviceDetailPage() {
@@ -25,15 +23,11 @@ export default function DeviceDetailPage() {
 
   const mockDevice = useMemo(() => resolveDeviceRecord(deviceId), [deviceId])
 
-  const apiDeviceQuery = useQuery({
-    queryKey: ['device', deviceId, accessToken],
-    enabled: Boolean(deviceId && accessToken && !mockDevice),
-    queryFn: async () => {
-      const { data } = await deviceService.getDevice(deviceId)
-      return mapApiDeviceToDeviceRecord(data)
-    },
-    retry: false,
-  })
+  const apiDeviceQuery = useDeviceDetailQuery(
+    accessToken,
+    deviceId,
+    Boolean(deviceId && accessToken && !mockDevice),
+  )
 
   const device = mockDevice ?? apiDeviceQuery.data ?? null
   const detail = useMemo(() => (device ? buildDeviceDetailView(device) : null), [device])

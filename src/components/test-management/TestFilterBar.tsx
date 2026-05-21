@@ -52,7 +52,14 @@ export function TestFilterBar({
         />
         <FilterSelect
           value={statusFilter}
-          options={['All Status', 'Running', 'Scheduled', 'Completed']}
+          options={[
+            'All Status',
+            'Draft',
+            'Ready',
+            'Running',
+            'Cancel requested',
+            'Canceled',
+          ]}
           onChange={onStatusFilterChange}
         />
         <ViewToggle value={view} onChange={onViewChange} />

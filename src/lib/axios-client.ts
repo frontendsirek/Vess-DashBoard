@@ -1,14 +1,8 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
 import { TOKEN_KEYS } from '@/stores/auth-store'
 
-/**
- * In development the Vite proxy forwards /auth/api, /device/api, and /test/api to the ALB,
- * so baseURL can stay empty.  In production the env var is baked in at
- * build time and used directly.
- */
-const baseURL = import.meta.env.PROD
-  ? (import.meta.env.VITE_API_BASE_URL ?? '')
-  : ''
+/** API origin (same in dev and prod). Set `VITE_API_BASE_URL` in `.env` — no trailing slash. */
+const baseURL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
 
 export const apiClient = axios.create({
   baseURL,
