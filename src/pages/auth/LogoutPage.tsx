@@ -15,7 +15,7 @@ export default function LogoutPage() {
     async function performLogout() {
       if (accessToken && refreshToken) {
         try {
-          await authService.logout({ refresh_token: refreshToken }, accessToken)
+          await authService.logout({ refresh_token: refreshToken })
         } catch {
           // Proceed with local cleanup even if API call fails
         }

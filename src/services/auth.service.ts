@@ -18,10 +18,6 @@ import type {
 const AUTH_PREFIX = '/auth/api/v1/auth'
 const USERS_PREFIX = '/auth/api/v1/users'
 
-function authHeader(token: string) {
-  return { Authorization: `Bearer ${token}` }
-}
-
 export const authService = {
   /* ── Authentication ── */
 
@@ -60,10 +56,8 @@ export const authService = {
     )
   },
 
-  logout(payload: LogoutPayload, accessToken: string) {
-    return apiClient.post(`${AUTH_PREFIX}/logout/`, payload, {
-      headers: authHeader(accessToken),
-    })
+  logout(payload: LogoutPayload) {
+    return apiClient.post(`${AUTH_PREFIX}/logout/`, payload)
   },
 
   requestPasswordReset(payload: PasswordResetRequestPayload) {
@@ -88,42 +82,32 @@ export const authService = {
 
   /* ── Users ── */
 
-  getProfile(accessToken: string) {
-    return apiClient.get<ApiEnvelope<ApiUser>>(`${USERS_PREFIX}/me/`, {
-      headers: authHeader(accessToken),
-    })
+  getProfile() {
+    return apiClient.get<ApiEnvelope<ApiUser>>(`${USERS_PREFIX}/me/`)
   },
 
-  updateProfile(payload: UpdateProfilePayload, accessToken: string) {
-    return apiClient.put<ApiEnvelope<ApiUser>>(`${USERS_PREFIX}/me/`, payload, {
-      headers: authHeader(accessToken),
-    })
+  updateProfile(payload: UpdateProfilePayload) {
+    return apiClient.put<ApiEnvelope<ApiUser>>(`${USERS_PREFIX}/me/`, payload)
   },
 
-  changePassword(payload: ChangePasswordPayload, accessToken: string) {
-    return apiClient.post(`${USERS_PREFIX}/change-password/`, payload, {
-      headers: authHeader(accessToken),
-    })
+  changePassword(payload: ChangePasswordPayload) {
+    return apiClient.post(`${USERS_PREFIX}/change-password/`, payload)
   },
 
-  listUsers(accessToken: string, search?: string) {
+  listUsers(search?: string) {
     return apiClient.get<PaginatedResponse<ApiUser>>(USERS_PREFIX + '/', {
-      headers: authHeader(accessToken),
       params: search ? { search } : undefined,
     })
   },
 
-  getUserById(userId: number, accessToken: string) {
-    return apiClient.get<ApiEnvelope<ApiUser>>(`${USERS_PREFIX}/${userId}/`, {
-      headers: authHeader(accessToken),
-    })
+  getUserById(userId: number) {
+    return apiClient.get<ApiEnvelope<ApiUser>>(`${USERS_PREFIX}/${userId}/`)
   },
 
-  updateUserById(userId: number, payload: UpdateProfilePayload, accessToken: string) {
+  updateUserById(userId: number, payload: UpdateProfilePayload) {
     return apiClient.put<ApiEnvelope<ApiUser>>(
       `${USERS_PREFIX}/${userId}/`,
       payload,
-      { headers: authHeader(accessToken) },
     )
   },
 }
