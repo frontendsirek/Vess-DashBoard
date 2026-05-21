@@ -11,6 +11,9 @@ export type DeviceRecord = {
   lastSeen: string
   status: DeviceManagementStatus
   batteryPercent: number
+  /** Present when sourced from device-service API — drives map + coordinates on detail */
+  latitude?: number
+  longitude?: number
 }
 
 export type DeviceTestHistoryOutcome = 'Success' | 'Failed' | 'Running'
@@ -230,11 +233,32 @@ export function buildDeviceMapEmbedUrl(latitude: number, longitude: number): str
   return `https://www.openstreetmap.org/export/embed.html?bbox=${minLon}%2C${minLat}%2C${maxLon}%2C${maxLat}&layer=mapnik&marker=${latitude}%2C${longitude}`
 }
 
+function resolveDeviceMapCoordinates(device: DeviceRecord): { latitude: number; longitude: number } {
+  const lat = device.latitude
+  const lon = device.longitude
+  if (
+    typeof lat === 'number' &&
+    typeof lon === 'number' &&
+    Number.isFinite(lat) &&
+    Number.isFinite(lon)
+  ) {
+    return { latitude: lat, longitude: lon }
+  }
+  return vessDemoMapCenter
+}
+
+/** Human-readable coordinates for detail header (matches demo style). */
+export function formatDeviceCoordinatesDisplay(latitude: number, longitude: number): string {
+  const latHem = latitude >= 0 ? 'N' : 'S'
+  const lonHem = longitude >= 0 ? 'E' : 'W'
+  return `${Math.abs(latitude).toFixed(4)}° ${latHem}, ${Math.abs(longitude).toFixed(4)}° ${lonHem}`
+}
+
 export function buildDeviceDetailView(device: DeviceRecord): DeviceDetailView {
   const sm = storageMemoryDetail(device)
   const tests = tests24hDetail(device)
   const model = deviceDetailSubtitle(device)
-  const { latitude: lat, longitude: lon } = vessDemoMapCenter
+  const { latitude: lat, longitude: lon } = resolveDeviceMapCoordinates(device)
 
   return {
     subtitle: model,
@@ -258,7 +282,7 @@ export function buildDeviceDetailView(device: DeviceRecord): DeviceDetailView {
       msisdnDisplay: msisdnDisplayLabel(device),
     },
     location: {
-      coordinates: '6.5244° N, 3.3792° E',
+      coordinates: formatDeviceCoordinatesDisplay(lat, lon),
       address: `${device.location}, Nigeria`,
       mapEmbedUrl: buildDeviceMapEmbedUrl(lat, lon),
     },

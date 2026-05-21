@@ -2,7 +2,7 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
 import { TOKEN_KEYS } from '@/stores/auth-store'
 
 /**
- * In development the Vite proxy forwards /auth/api and /device/api to the ALB,
+ * In development the Vite proxy forwards /auth/api, /device/api, and /test/api to the ALB,
  * so baseURL can stay empty.  In production the env var is baked in at
  * build time and used directly.
  */
@@ -16,6 +16,43 @@ export const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
   timeout: 30_000,
+})
+
+const UNAUTHENTICATED_AUTH_PATHS = [
+  '/auth/api/v1/auth/register/',
+  '/auth/api/v1/auth/verify-otp/',
+  '/auth/api/v1/auth/login/',
+  '/auth/api/v1/auth/google/',
+  '/auth/api/v1/auth/refresh/',
+  '/auth/api/v1/auth/password-reset/',
+  '/auth/api/v1/auth/password-reset/confirm/',
+]
+
+function shouldAttachAccessToken(config: InternalAxiosRequestConfig): boolean {
+  const url = config.url ?? ''
+  if (UNAUTHENTICATED_AUTH_PATHS.some((path) => url.includes(path))) {
+    return false
+  }
+  if (config.headers.Authorization) {
+    return false
+  }
+  if (config.headers['X-API-Key']) {
+    return false
+  }
+  return true
+}
+
+apiClient.interceptors.request.use((config) => {
+  if (!shouldAttachAccessToken(config)) {
+    return config
+  }
+
+  const token = localStorage.getItem(TOKEN_KEYS.access)
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+
+  return config
 })
 
 /* ── Token-refresh interceptor ── */

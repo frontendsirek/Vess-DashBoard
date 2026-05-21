@@ -8,33 +8,62 @@ import {
 import { deviceKpiSummary } from '@/data/device-management'
 import { cn } from '@/lib/utils'
 
-export function DeviceKpiStrip() {
+export type DeviceKpiSummaryProps = {
+  total: number
+  online: number
+  offline: number
+  /** When unknown from API counts alone; renders em dash in UI */
+  lowBattery: number | null
+}
+
+type DeviceKpiStripProps = {
+  summary?: DeviceKpiSummaryProps
+  summaryPending?: boolean
+}
+
+export function DeviceKpiStrip({ summary, summaryPending }: DeviceKpiStripProps) {
+  const total = summary ? summary.total : deviceKpiSummary.total
+  const online = summary ? summary.online : deviceKpiSummary.online
+  const offline = summary ? summary.offline : deviceKpiSummary.offline
+  const lowBatteryDisplay =
+    summary && summary.lowBattery === null ? '—' : String(summary?.lowBattery ?? deviceKpiSummary.lowBattery)
+
+  const valueClass = (dimmed: boolean) =>
+    cn(
+      'text-[31px] font-medium leading-[37.2px] text-vess-grey-950',
+      dimmed && 'text-vess-grey-400',
+    )
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <KpiMiniTile
         label="Total Devices"
-        value={String(deviceKpiSummary.total)}
+        value={summaryPending ? '…' : String(total)}
+        valueClassName={valueClass(summaryPending)}
         icon={DeviceIconM}
         wellClassName="bg-vess-primary-50"
         iconClassName="size-[35px]"
       />
       <KpiMiniTile
         label="Online"
-        value={String(deviceKpiSummary.online)}
+        value={summaryPending ? '…' : String(online)}
+        valueClassName={valueClass(summaryPending)}
         icon={DeviceKpiWifiIcon}
         wellClassName="bg-vess-green-50"
         iconClassName="size-[30px] text-vess-green-500"
       />
       <KpiMiniTile
         label="Offline"
-        value={String(deviceKpiSummary.offline)}
+        value={summaryPending ? '…' : String(offline)}
+        valueClassName={valueClass(summaryPending)}
         icon={DeviceKpiOfflineIcon}
         wellClassName="bg-vess-red-50"
         iconClassName="size-[30px] text-vess-red-500"
       />
       <KpiMiniTile
         label="Low Battery"
-        value={String(deviceKpiSummary.lowBattery)}
+        value={summaryPending ? '…' : lowBatteryDisplay}
+        valueClassName={valueClass(summaryPending)}
         icon={DeviceKpiBatteryIcon}
         wellClassName="bg-vess-secondary-50"
         iconClassName="size-[30px] text-vess-secondary-500"
@@ -46,12 +75,14 @@ export function DeviceKpiStrip() {
 function KpiMiniTile({
   label,
   value,
+  valueClassName,
   icon: Icon,
   wellClassName,
   iconClassName,
 }: {
   label: string
   value: string
+  valueClassName?: string
   icon: ComponentType<{ className?: string }>
   wellClassName: string
   iconClassName: string
@@ -61,7 +92,9 @@ function KpiMiniTile({
       <div className="flex items-center justify-between gap-3">
         <div className="flex flex-col gap-5">
           <p className="text-[15px] font-normal leading-[18px] text-vess-grey-950">{label}</p>
-          <p className="text-[31px] font-medium leading-[37.2px] text-vess-grey-950">{value}</p>
+          <p className={valueClassName ?? 'text-[31px] font-medium leading-[37.2px] text-vess-grey-950'}>
+            {value}
+          </p>
         </div>
         <div
           className={cn(
