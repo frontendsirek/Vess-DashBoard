@@ -12,6 +12,7 @@ import {
 } from '@/components/icons'
 import { Topbar } from '@/components/layout/Topbar'
 import { buildTestDetailFromWizard, type TestDetailRecord, type TestStatus } from '@/data/mock'
+import { useDeleteTestMutation } from '@/hooks/tests/use-delete-test-mutation'
 import { mapApiProbeToTestDetailRecord } from '@/lib/api-test-mapper'
 import { testQueryKeys } from '@/lib/test-query-keys'
 import { cn } from '@/lib/utils'
@@ -135,15 +136,34 @@ export default function TestDetailPage() {
             : null}
           </div>
         : detail ?
-          <TestDetailContent detail={detail} />
+          <TestDetailContent
+            detail={detail}
+            canDelete={!!accessToken && detail.id !== 'wizard'}
+            canEdit={!!accessToken && detail.id !== 'wizard'}
+            testId={detail.id}
+            accessToken={accessToken}
+          />
         : null}
       </div>
     </>
   )
 }
 
-function TestDetailContent({ detail }: { detail: TestDetailRecord }) {
+function TestDetailContent({
+  detail,
+  canDelete,
+  canEdit,
+  testId,
+  accessToken,
+}: {
+  detail: TestDetailRecord
+  canDelete: boolean
+  canEdit: boolean
+  testId: string
+  accessToken: string | null
+}) {
   const navigate = useNavigate()
+  const deleteMutation = useDeleteTestMutation(accessToken, testId)
 
   return (
     <div className="flex flex-col gap-8 rounded-2xl bg-vess-grey-50 px-4 py-6">
@@ -161,17 +181,23 @@ function TestDetailContent({ detail }: { detail: TestDetailRecord }) {
         <div className="flex flex-wrap gap-5">
           <button
             type="button"
-            className="inline-flex items-center justify-center gap-3 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-950"
+            disabled={!canEdit}
+            onClick={() =>
+              navigate(`/test-management/${encodeURIComponent(testId)}/edit/configure`)
+            }
+            className="inline-flex items-center justify-center gap-3 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-950 transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
           >
             <EditOutlineIcon className="size-6 text-vess-grey-950" />
             Edit
           </button>
           <button
             type="button"
-            className="inline-flex items-center justify-center gap-3 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-950"
+            disabled={!canDelete || deleteMutation.isPending}
+            onClick={() => deleteMutation.mutate()}
+            className="inline-flex items-center justify-center gap-3 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-950 transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
           >
             <DeleteOutlineIcon className="size-6 text-vess-grey-950" />
-            Delete
+            {deleteMutation.isPending ? 'Deleting…' : 'Delete'}
           </button>
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import {
-  extractTestIdFromResponse,
   mapCreateTestScheduleDraftToPayload,
 } from '@/lib/api-test-mapper'
 import { formatApiMutationError } from '@/lib/format-api-mutation-error'
@@ -32,18 +31,14 @@ export function useCreateTestMutation() {
     mutationFn: async ({ draft, action }: CreateTestMutationVariables) => {
       const payload = mapCreateTestScheduleDraftToPayload(draft, action)
       const { data } = await testService.createTest(payload)
-      const testId = extractTestIdFromResponse(data) ?? `new-${Date.now()}`
-      return { testId, draft, action, apiResponse: data }
+      return { action, apiResponse: data }
     },
-    onSuccess: ({ testId, draft, action, apiResponse }) => {
+    onSuccess: ({ action, apiResponse }) => {
       const fallbackCopy =
         action === 'draft' ? 'Test saved as draft.' : 'Test scheduled successfully.'
       toast.success(resolveApiSuccessMessage(apiResponse, fallbackCopy))
       void queryClient.invalidateQueries({ queryKey: testQueryKeys.all })
-      navigate(`/test-management/${testId}`, {
-        state: { wizardResult: draft },
-        replace: true,
-      })
+      navigate('/test-management', { replace: true })
     },
   })
 }

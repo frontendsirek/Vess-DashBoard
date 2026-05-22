@@ -60,4 +60,23 @@ export type TestManagementConfigureState = {
 
 export type TestManagementScheduleState = { configure: CreateTestConfigureDraft }
 
+export type EditScheduleRestoreFields = Pick<
+  CreateTestScheduleDraft,
+  | 'scheduleKind'
+  | 'immediate'
+  | 'scheduledDateTime'
+  | 'retryOnFailure'
+  | 'frequency'
+  | 'startDateTime'
+  | 'endDateTime'
+  | 'businessHoursOnly'
+>
+
+export type TestManagementEditScheduleState = {
+  testId: string
+  configure: CreateTestConfigureDraft
+  enabled: boolean
+  scheduleRestore: EditScheduleRestoreFields
+}
+
 export type TestDetailFromWizardState = { wizardResult: CreateTestScheduleDraft }

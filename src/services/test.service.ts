@@ -8,6 +8,7 @@ import type {
   BulkCsvImportResponse,
   BulkTemplateEnvelope,
   CreateTestPayload,
+  DeleteProbeResponse,
   GetProbeResponse,
   ListProbesParams,
   ListProbesResponse,
@@ -15,6 +16,7 @@ import type {
   TestsDashboardParams,
   TestsDashboardResponse,
   UpdateTestPayload,
+  UpdateProbeResponse,
 } from '@/types/test'
 
 const DEFAULT_BULK_TEMPLATE_FILENAME = 'bulk-tests-template.csv'
@@ -57,37 +59,55 @@ const TEST_API_BASE = '/test/v1'
 const TESTS_PREFIX = `${TEST_API_BASE}/tests`
 const COMMANDS_PREFIX = `${TEST_API_BASE}/commands`
 
+/** Required by test-service API until tenant auth is wired from the session. */
+const TEST_TENANT_ID = import.meta.env.VITE_TEST_TENANT_ID ?? 'default-tenant'
+
+const testRequestConfig = {
+  headers: { 'X-Tenant-Id': TEST_TENANT_ID },
+} as const
+
 export const testService = {
   health() {
-    return apiClient.get(`${TEST_API_BASE}/health`)
+    return apiClient.get(`${TEST_API_BASE}/health`, testRequestConfig)
   },
 
   listProbes(params?: ListProbesParams) {
     return apiClient.get<ListProbesResponse>(TESTS_PREFIX, {
       params,
+      ...testRequestConfig,
     })
   },
 
   getTestsDashboard(params?: TestsDashboardParams) {
     return apiClient.get<TestsDashboardResponse>(`${TESTS_PREFIX}/dashboard`, {
       params,
+      ...testRequestConfig,
     })
   },
 
   getProbe(testId: string) {
     return apiClient.get<GetProbeResponse>(
       `${TESTS_PREFIX}/${encodeURIComponent(testId)}`,
+      testRequestConfig,
+    )
+  },
+
+  deleteTest(testId: string) {
+    return apiClient.delete<DeleteProbeResponse>(
+      `${TESTS_PREFIX}/${encodeURIComponent(testId)}`,
+      testRequestConfig,
     )
   },
 
   createTest(payload: CreateTestPayload) {
-    return apiClient.post<ApiTest | ApiEnvelope<ApiTest>>(TESTS_PREFIX, payload)
+    return apiClient.post<ApiTest | ApiEnvelope<ApiTest>>(TESTS_PREFIX, payload, testRequestConfig)
   },
 
   async downloadBulkTestsTemplate(): Promise<{ blob: Blob; filename: string }> {
     const response = await apiClient.get<Blob>(`${TESTS_PREFIX}/bulk/template`, {
       responseType: 'blob',
       validateStatus: () => true,
+      ...testRequestConfig,
     })
     const blob = response.data
     const status = response.status
@@ -133,21 +153,24 @@ export const testService = {
     formData.append('file', file)
     const headers = new AxiosHeaders()
     headers.delete('Content-Type')
+    headers.set('X-Tenant-Id', TEST_TENANT_ID)
     return apiClient.post<BulkCsvImportResponse>(`${TESTS_PREFIX}/bulk/csv`, formData, {
       headers,
     })
   },
 
   updateTest(testId: string, payload: UpdateTestPayload) {
-    return apiClient.patch<ApiTest | ApiEnvelope<ApiTest>>(
-      `${TESTS_PREFIX}/${testId}`,
+    return apiClient.patch<UpdateProbeResponse>(
+      `${TESTS_PREFIX}/${encodeURIComponent(testId)}`,
       payload,
+      testRequestConfig,
     )
   },
 
   pullCommands(params: PullCommandsParams) {
     return apiClient.get<ApiCommand[] | ApiEnvelope<ApiCommand[]>>(COMMANDS_PREFIX, {
       params,
+      ...testRequestConfig,
     })
   },
 }
