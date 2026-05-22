@@ -1,5 +1,25 @@
 export type DeviceManagementStatus = 'Online' | 'Offline' | 'Warning' | 'Low Battery'
 
+/** Detail-only fields sourced from GET device API (`mapApiDeviceToDeviceDetailRecord`). */
+export type DeviceApiDetailOverlay = {
+  hardwareSubtitle?: string
+  androidDisplay?: string
+  appVersion?: string
+  signalDbm?: number
+  storageAvailableMb?: number
+  /** When backend sends carrier / operator in metadata */
+  networkOperator?: string
+  msisdnDisplay?: string
+  totalTests?: number
+  successRatePercent?: number
+  successfulCount?: number
+  failedCount?: number
+  lastTestLine?: string
+  sidebarGroup?: string
+  /** Replaces heuristic tags when API provides tag labels */
+  sidebarTags?: readonly string[]
+}
+
 export type DeviceRecord = {
   id: string
   name: string
@@ -14,6 +34,8 @@ export type DeviceRecord = {
   /** Present when sourced from device-service API — drives map + coordinates on detail */
   latitude?: number
   longitude?: number
+  /** Present only for `/device-management/:id` loaded via API — renders strict API-only fields */
+  apiDetailOverlay?: DeviceApiDetailOverlay
 }
 
 export type DeviceTestHistoryOutcome = 'Success' | 'Failed' | 'Running'
@@ -67,7 +89,7 @@ export type DeviceEditDefaults = {
   offlineMinutes: number
 }
 
-/** Device detail screen (Figma 708:23140) — mock view model until API exists. */
+/** Device detail screen (Figma 708:23140) — API-backed where `DeviceRecord.apiDetailOverlay` is set. */
 export type DeviceDetailView = {
   subtitle: string
   hardware: {
@@ -122,6 +144,17 @@ function humanizeBadgeSlug(slug: string): string {
     .split('-')
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(' ')
+}
+
+/** API detail: caption from reported free storage only — no fabricated “used %”. */
+function storageCaptionAvailableMbOnly(availableMb: number): string {
+  if (!Number.isFinite(availableMb) || availableMb < 0) return '—'
+  if (availableMb >= 1024) return `${(availableMb / 1024).toFixed(1)} GB free`
+  return `${Math.round(availableMb)} MB free`
+}
+
+function batteryCaptionApiNumericOnly(device: DeviceRecord): string {
+  return `${device.batteryPercent}%`
 }
 
 function deviceDetailSubtitle(device: DeviceRecord): string {
@@ -254,7 +287,129 @@ export function formatDeviceCoordinatesDisplay(latitude: number, longitude: numb
   return `${Math.abs(latitude).toFixed(4)}° ${latHem}, ${Math.abs(longitude).toFixed(4)}° ${lonHem}`
 }
 
-export function buildDeviceDetailView(device: DeviceRecord): DeviceDetailView {
+function buildDeviceDetailViewFromApiOverlay(device: DeviceRecord, o: DeviceApiDetailOverlay): DeviceDetailView {
+  const MISSING = '—'
+
+  const model =
+    typeof o.hardwareSubtitle === 'string' && o.hardwareSubtitle.trim().length > 0 ?
+      o.hardwareSubtitle.trim()
+    : MISSING
+  const android =
+    typeof o.androidDisplay === 'string' && o.androidDisplay.trim().length > 0 ?
+      o.androidDisplay.trim()
+    : MISSING
+  const appVer =
+    typeof o.appVersion === 'string' && o.appVersion.trim().length > 0 ? o.appVersion.trim() : MISSING
+
+  const storageAvailableMb = o.storageAvailableMb
+  const storageCaption =
+    storageAvailableMb != null && typeof storageAvailableMb === 'number' && Number.isFinite(storageAvailableMb)
+      ? storageCaptionAvailableMbOnly(storageAvailableMb)
+      : MISSING
+
+  const signalCaption =
+    o.signalDbm != null && Number.isFinite(o.signalDbm) ?
+      `${o.signalDbm} dBm`
+    : MISSING
+
+  const operator =
+    typeof o.networkOperator === 'string' && o.networkOperator.trim().length > 0 ?
+      o.networkOperator.trim()
+    : MISSING
+
+  const nt = device.networkType?.trim().length ? device.networkType.trim() : MISSING
+
+  const msisdn =
+    typeof o.msisdnDisplay === 'string' && o.msisdnDisplay.trim().length > 0 ?
+      o.msisdnDisplay.trim()
+    : MISSING
+
+  let coordinates = MISSING
+  let mapEmbedUrl = 'about:blank'
+  const lat = device.latitude
+  const lng = device.longitude
+  if (
+    typeof lat === 'number' &&
+    typeof lng === 'number' &&
+    Number.isFinite(lat) &&
+    Number.isFinite(lng)
+  ) {
+    coordinates = formatDeviceCoordinatesDisplay(lat, lng)
+    mapEmbedUrl = buildDeviceMapEmbedUrl(lat, lng)
+  }
+
+  const addr = typeof device.location === 'string' && device.location.trim().length > 0 ? device.location.trim() : MISSING
+
+  /** Only when mapper received `statistics` from API (`total_tests` present) */
+  const statisticsKnown =
+    typeof o.totalTests === 'number' && Number.isFinite(o.totalTests) && o.totalTests >= 0
+
+  let totalTests = 0
+  let successRatePercent = 0
+  let successful = 0
+  let failed = 0
+
+  if (statisticsKnown) {
+    const totalRaw = o.totalTests
+    totalTests = Math.max(0, Math.floor(typeof totalRaw === 'number' ? totalRaw : 0))
+    const rateRaw =
+      typeof o.successRatePercent === 'number' && Number.isFinite(o.successRatePercent)
+        ? o.successRatePercent
+        : 0
+    successRatePercent = Math.round(Math.min(100, Math.max(0, rateRaw)))
+    if (typeof o.successfulCount === 'number' && Number.isFinite(o.successfulCount))
+      successful = Math.max(0, Math.round(o.successfulCount))
+    else successful = Math.round(totalTests * (successRatePercent / 100))
+    if (typeof o.failedCount === 'number' && Number.isFinite(o.failedCount))
+      failed = Math.max(0, Math.round(o.failedCount))
+    else failed = Math.max(0, totalTests - successful)
+  }
+
+  const lastLine =
+    statisticsKnown &&
+    typeof o.lastTestLine === 'string' &&
+    o.lastTestLine.trim().length > 0 ?
+      o.lastTestLine.trim()
+    : MISSING
+
+  const group =
+    typeof o.sidebarGroup === 'string' && o.sidebarGroup.trim().length > 0 ? o.sidebarGroup.trim() : MISSING
+  const tags = o.sidebarTags && o.sidebarTags.length > 0 ? [...o.sidebarTags] : []
+
+  return {
+    subtitle: model,
+    hardware: { model, android, appVersion: appVer },
+    health: {
+      batteryPercent: device.batteryPercent,
+      batteryCaption: batteryCaptionApiNumericOnly(device),
+      storagePercent: 0,
+      storageCaption,
+      memoryPercent: 0,
+      memoryCaption: MISSING,
+      signalCaption,
+    },
+    network: { operator, networkTypeLabel: nt, msisdnDisplay: msisdn },
+    location: {
+      coordinates,
+      address: addr,
+      mapEmbedUrl,
+    },
+    tests24h: {
+      total: totalTests,
+      successRatePercent,
+      successful,
+      failed,
+      lastTestLine: lastLine,
+    },
+    sidebar: {
+      group,
+      tags,
+    },
+  }
+}
+
+/** Legacy illustrative detail for demos (`deviceRecords`) and tooling — not used on `/device-management/:id` API path */
+function buildDeviceDetailViewDemo(device: DeviceRecord): DeviceDetailView {
   const sm = storageMemoryDetail(device)
   const tests = tests24hDetail(device)
   const model = deviceDetailSubtitle(device)
@@ -292,6 +447,13 @@ export function buildDeviceDetailView(device: DeviceRecord): DeviceDetailView {
       tags: [humanizeBadgeSlug(device.badgePrimary), device.badgeSecondary ?? 'tier-1', 'priority'],
     },
   }
+}
+
+export function buildDeviceDetailView(device: DeviceRecord): DeviceDetailView {
+  if (device.apiDetailOverlay !== undefined) {
+    return buildDeviceDetailViewFromApiOverlay(device, device.apiDetailOverlay)
+  }
+  return buildDeviceDetailViewDemo(device)
 }
 
 export const deviceRecords: DeviceRecord[] = [
