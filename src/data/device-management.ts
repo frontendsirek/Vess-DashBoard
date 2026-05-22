@@ -134,26 +134,6 @@ export function deviceShowsLowBatteryTag(device: DeviceRecord): boolean {
   return device.batteryPercent <= 20 || device.status === 'Low Battery'
 }
 
-/** Map Device Management ids to `remoteDevices` records for deep-linking remote control. */
-const managementDeviceToRemoteDeviceId: Record<string, string> = {
-  'dev-1': 'rd-1',
-  'dev-2': 'rd-2',
-  'dev-3': 'rd-3',
-  'dev-4': 'rd-1',
-  'dev-5': 'rd-4',
-  'dev-6': 'rd-2',
-}
-
-/**
- * Resolves a URL/state `deviceId` to a remote control list id (`rd-*`).
- * Accepts either a management id (`dev-*`) or an existing remote id.
- */
-export function resolveRemoteDeviceHighlightId(deviceId: string | null | undefined): string | undefined {
-  if (!deviceId) return undefined
-  if (deviceId.startsWith('rd-')) return deviceId
-  return managementDeviceToRemoteDeviceId[deviceId]
-}
-
 export function deviceTestHistorySummary(rows: DeviceTestHistoryRow[]): {
   total: number
   successful: number

@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { RemoteDevice } from '@/data/alerts-mock'
+import type { RemoteControlDevice } from '@/types/remote-device-control'
 import { cn } from '@/lib/utils'
 
 const QUALITY_OPTIONS = ['High Quality', 'Medium Quality', 'Low Quality'] as const
@@ -37,7 +37,7 @@ const HEADER_LATENCY_MS = '145ms'
 const SIDEBAR_LATENCY_MS = '134ms'
 
 type RemoteControlSessionViewProps = {
-  device: RemoteDevice
+  device: RemoteControlDevice
   /** Hardware line beside device name (Figma subtitle). */
   modelLabel: string
   /** Return to device picker / clear session. */
