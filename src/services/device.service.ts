@@ -1,6 +1,13 @@
 import { apiClient } from '@/lib/axios-client'
 import type { PaginatedResponse } from '@/types/api'
 import type {
+  ApiDevice,
+  ApiDeviceDetail,
+  HeartbeatPayload,
+  ListDevicesParams,
+  RegisterDevicePayload,
+} from '@/types/device'
+import type {
   BulkRegistrationRequestPayload,
   BulkRegistrationResponse,
   CreateRegistrationRequestPayload,
@@ -8,51 +15,6 @@ import type {
   SyncCompletePayload,
   SyncCompleteResponse,
 } from '@/types/register-device'
-
-export type DeviceStatus = 'ONLINE' | 'OFFLINE' | 'STALE' | 'TESTING' | 'DEGRADED'
-
-export type ApiDevice = {
-  device_id: string
-  device_name: string
-  location: string
-  latitude: number
-  longitude: number
-  status: DeviceStatus
-  is_active: boolean
-  metadata: Record<string, string>
-  created_at: string
-  updated_at: string
-  last_heartbeat: string | null
-}
-
-export type ListDevicesParams = {
-  status?: DeviceStatus
-  location?: string
-  created_after?: string
-  created_before?: string
-  ordering?: string
-  page?: number
-  page_size?: number
-}
-
-export type RegisterDevicePayload = {
-  device_id: string
-  device_name: string
-  location: string
-  latitude: number
-  longitude: number
-  metadata?: Record<string, string>
-}
-
-export type HeartbeatPayload = {
-  battery_level: number
-  storage_available_mb: number
-  network_type: string
-  signal_strength: number
-  latitude: number
-  longitude: number
-  app_version: string
-}
 
 const DEVICES_PREFIX = '/device/api/v1/devices'
 const REGISTRATION_PREFIX = '/device/api/v1/registration'
@@ -73,7 +35,7 @@ export const deviceService = {
   },
 
   getDevice(deviceId: string) {
-    return apiClient.get<ApiDevice>(`${DEVICES_PREFIX}/${deviceId}/`)
+    return apiClient.get<ApiDeviceDetail>(`${DEVICES_PREFIX}/${deviceId}/`)
   },
 
   registerDevice(payload: RegisterDevicePayload) {

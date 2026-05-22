@@ -1,14 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { isAxiosError } from 'axios'
 import { useNavigate } from 'react-router-dom'
 import {
   extractTestIdFromResponse,
   mapCreateTestScheduleDraftToPayload,
 } from '@/lib/api-test-mapper'
+import { formatApiMutationError } from '@/lib/format-api-mutation-error'
+import { resolveApiSuccessMessage } from '@/lib/format-api-success-message'
 import { testQueryKeys } from '@/lib/test-query-keys'
 import { testService } from '@/services/test.service'
 import type { CreateTestScheduleDraft } from '@/types/create-test'
 import type { ApiTestAction } from '@/types/test'
+import { toast } from 'sonner'
 
 export type CreateTestMutationVariables = {
   draft: CreateTestScheduleDraft
@@ -16,11 +18,9 @@ export type CreateTestMutationVariables = {
 }
 
 export function formatTestMutationError(error: unknown): string {
-  if (isAxiosError(error)) {
-    const body = error.response?.data as { message?: string } | undefined
-    return body?.message ?? error.message
-  }
-  return 'Failed to create test. Please try again.'
+  return formatApiMutationError(error, {
+    fallback: 'Failed to create test. Please try again.',
+  })
 }
 
 export function useCreateTestMutation() {
@@ -33,9 +33,12 @@ export function useCreateTestMutation() {
       const payload = mapCreateTestScheduleDraftToPayload(draft, action)
       const { data } = await testService.createTest(payload)
       const testId = extractTestIdFromResponse(data) ?? `new-${Date.now()}`
-      return { testId, draft }
+      return { testId, draft, action, apiResponse: data }
     },
-    onSuccess: ({ testId, draft }) => {
+    onSuccess: ({ testId, draft, action, apiResponse }) => {
+      const fallbackCopy =
+        action === 'draft' ? 'Test saved as draft.' : 'Test scheduled successfully.'
+      toast.success(resolveApiSuccessMessage(apiResponse, fallbackCopy))
       void queryClient.invalidateQueries({ queryKey: testQueryKeys.all })
       navigate(`/test-management/${testId}`, {
         state: { wizardResult: draft },

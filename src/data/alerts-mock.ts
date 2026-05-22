@@ -93,28 +93,6 @@ export const standardReports: ReportCard[] = [
   },
 ]
 
-export type RemoteDevice = {
-  id: string
-  name: string
-  /** Hardware model (Figma 464:14114 remote header). */
-  model: string
-  location: string
-  state: 'online' | 'warning' | 'offline'
-  battery: number
-  network: '3G' | '4G' | '5G' | 'N/A'
-  signal: string
-  lastTest: string
-}
-
-export const remoteDevices: RemoteDevice[] = [
-  { id: 'rd-1', name: 'PortHarcourt-Central-01', model: 'Samsung Galaxy A52', location: 'port-harcourt', state: 'online',  battery: 87, network: '4G',  signal: '-72 dBm', lastTest: '5 min ago' },
-  { id: 'rd-2', name: 'Abuja-Central-02',        model: 'Samsung Galaxy A52', location: 'abuja',         state: 'online',  battery: 92, network: '4G',  signal: '-65 dBm', lastTest: '3 min ago' },
-  { id: 'rd-3', name: 'Kano-east-01',            model: 'Samsung Galaxy A34', location: 'ikeja',         state: 'warning', battery: 12, network: '5G',  signal: '-78 dBm', lastTest: '3 min ago' },
-  { id: 'rd-4', name: 'Lagos-West-03',           model: 'Samsung Galaxy A52', location: 'ikeja',         state: 'offline', battery: 0,  network: 'N/A', signal: 'N/A',     lastTest: '3 min ago' },
-  { id: 'rd-5', name: 'Abuja-Central-02',        model: 'Samsung Galaxy A52', location: 'abuja',         state: 'online',  battery: 92, network: '4G',  signal: '-65 dBm', lastTest: '3 min ago' },
-  { id: 'rd-6', name: 'Lagos-West-03',           model: 'Samsung Galaxy A52', location: 'ikeja',         state: 'offline', battery: 0,  network: 'N/A', signal: 'N/A',     lastTest: '3 min ago' },
-]
-
 export type AlertRuleMock = {
   id: string
   name: string

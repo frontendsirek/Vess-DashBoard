@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { deviceQueryKeys } from '@/lib/device-query-keys'
-import { deviceService, type ApiDevice, type ListDevicesParams } from '@/services/device.service'
+import { deviceService } from '@/services/device.service'
+import type { ApiDevice, ListDevicesParams } from '@/types/device'
 import type { PaginatedResponse } from '@/types/api'
 
 export function useDevicesListQuery(accessToken: string | null, params: ListDevicesParams, enabled: boolean) {
