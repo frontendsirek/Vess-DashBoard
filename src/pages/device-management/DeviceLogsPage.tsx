@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { deviceLogsFor, resolveDeviceRecord, type DeviceLogEntry } from '@/data/device-management'
+import type { DeviceLogEntry } from '@/data/device-management'
 import { useDeviceDetailQuery } from '@/hooks/devices/use-device-detail-query'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -43,21 +43,20 @@ function downloadLogsCsv(deviceName: string, entries: DeviceLogEntry[]) {
   URL.revokeObjectURL(objectUrl)
 }
 
+/** Logs list is not wired to a VeSS logs API yet; device detail establishes context + display name only. */
+const EMPTY_DEVICE_LOGS: DeviceLogEntry[] = []
+
 export default function DeviceLogsPage() {
   const { deviceId = '' } = useParams()
   const navigate = useNavigate()
   const accessToken = useAuthStore((s) => s.accessToken)
 
-  const mockDevice = useMemo(() => resolveDeviceRecord(deviceId), [deviceId])
-  const queryApi = !mockDevice && Boolean(deviceId && accessToken)
-  const apiDeviceQuery = useDeviceDetailQuery(accessToken, deviceId, queryApi)
+  const apiQueryEnabled = Boolean(accessToken?.length && deviceId.trim())
+  const apiDeviceQuery = useDeviceDetailQuery(accessToken, deviceId, apiQueryEnabled)
 
-  const allLogs = useMemo(() => {
-    if (mockDevice) return deviceLogsFor(deviceId)
-    return []
-  }, [mockDevice, deviceId])
+  const allLogs = EMPTY_DEVICE_LOGS
 
-  const deviceDisplayName = mockDevice?.name ?? apiDeviceQuery.data?.device_name ?? ''
+  const deviceDisplayName = apiDeviceQuery.data?.device_name ?? ''
 
   const [search, setSearch] = useState('')
   const [levelFilter, setLevelFilter] = useState<string>(LEVEL_OPTIONS[0])
@@ -88,7 +87,7 @@ export default function DeviceLogsPage() {
     setSearch('')
     setLevelFilter(LEVEL_OPTIONS[0])
     setCategoryFilter(CATEGORY_OPTIONS[0])
-    if (!mockDevice && accessToken && deviceId) {
+    if (accessToken && deviceId) {
       void apiDeviceQuery.refetch()
     }
   }
@@ -97,59 +96,57 @@ export default function DeviceLogsPage() {
     return null
   }
 
-  if (!mockDevice) {
-    if (!accessToken) {
-      return (
-        <>
-          <Topbar title="Device Management" subtitle="Device fleet management" />
-          <div className="flex flex-col gap-4 px-5 py-6">
-            <p className="text-center text-[15px] text-vess-grey-800">
-              Sign in to load this device&apos;s logs.
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate('/device-management')}
-              className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
-            >
-              Back to devices
-            </button>
-          </div>
-        </>
-      )
-    }
+  if (!accessToken?.length) {
+    return (
+      <>
+        <Topbar title="Device Management" subtitle="Device fleet management" />
+        <div className="flex flex-col gap-4 px-5 py-6">
+          <p className="text-center text-[15px] text-vess-grey-800">
+            Sign in to load this device&apos;s logs.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/device-management')}
+            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
+          >
+            Back to devices
+          </button>
+        </div>
+      </>
+    )
+  }
 
-    if (apiDeviceQuery.isPending) {
-      return (
-        <>
-          <Topbar title="Device Management" subtitle="Device fleet management" />
-          <div className="px-5 py-6">
-            <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
-          </div>
-        </>
-      )
-    }
+  if (apiDeviceQuery.isPending) {
+    return (
+      <>
+        <Topbar title="Device Management" subtitle="Device fleet management" />
+        <div className="px-5 py-6">
+          <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
+        </div>
+      </>
+    )
+  }
 
-    if (apiDeviceQuery.isError) {
-      const errMsg =
-        apiDeviceQuery.error instanceof Error ? apiDeviceQuery.error.message : 'Request failed.'
-      return (
-        <>
-          <Topbar title="Device Management" subtitle="Device fleet management" />
-          <div className="flex flex-col gap-4 px-5 py-6">
-            <p className="text-center text-[15px] text-vess-red-800">
-              Could not load device. {errMsg}
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate('/device-management')}
-              className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
-            >
-              Back to devices
-            </button>
-          </div>
-        </>
-      )
-    }
+  if (apiDeviceQuery.isError) {
+    const errMsg =
+      apiDeviceQuery.error instanceof Error ? apiDeviceQuery.error.message : 'Request failed.'
+    return (
+      <>
+        <Topbar title="Device Management" subtitle="Device fleet management" />
+        <div className="flex flex-col gap-4 px-5 py-6">
+          <p className="text-center text-[15px] text-vess-red-800">
+            Could not load device. {errMsg}
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/device-management')}
+            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
+          >
+            Back to devices
+          </button>
+        </div>
+      </>
+    )
   }
 
   return (

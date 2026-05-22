@@ -21,10 +21,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
-  deviceTestHistoryFor,
   deviceTestHistoryKindLabel,
   deviceTestHistorySummary,
-  resolveDeviceRecord,
 } from '@/data/device-management'
 import { useDeviceDetailQuery } from '@/hooks/devices/use-device-detail-query'
 import { mapRecentTestsToDeviceTestHistoryRows } from '@/lib/map-device-recent-tests-to-history-rows'
@@ -41,20 +39,18 @@ export default function DeviceTestHistoryPage() {
   const navigate = useNavigate()
   const accessToken = useAuthStore((s) => s.accessToken)
 
-  const mockDevice = useMemo(() => resolveDeviceRecord(deviceId), [deviceId])
-  const queryApi = !mockDevice && Boolean(deviceId && accessToken)
-  const apiDeviceQuery = useDeviceDetailQuery(accessToken, deviceId, queryApi)
+  const apiQueryEnabled = Boolean(accessToken?.length && deviceId.trim())
+  const apiDeviceQuery = useDeviceDetailQuery(accessToken, deviceId, apiQueryEnabled)
+  const apiData = apiDeviceQuery.data
 
   const allRows = useMemo(() => {
-    if (mockDevice) return deviceTestHistoryFor(deviceId)
-    if (apiDeviceQuery.data)
-      return mapRecentTestsToDeviceTestHistoryRows(deviceId, apiDeviceQuery.data.recent_tests)
-    return []
-  }, [mockDevice, deviceId, apiDeviceQuery.data])
+    if (!apiData) return []
+    return mapRecentTestsToDeviceTestHistoryRows(deviceId, apiData.recent_tests)
+  }, [deviceId, apiData])
 
   const summary = useMemo(() => deviceTestHistorySummary(allRows), [allRows])
 
-  const deviceDisplayName = mockDevice?.name ?? apiDeviceQuery.data?.device_name ?? ''
+  const deviceDisplayName = apiData?.device_name ?? ''
 
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState<string>(TYPE_OPTIONS[0])
@@ -83,73 +79,68 @@ export default function DeviceTestHistoryPage() {
   }, [allRows, search, typeFilter, statusFilter])
 
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE))
-
-  useEffect(() => {
-    setCurrentPage((p) => Math.min(p, totalPages))
-  }, [totalPages])
+  const paginationPage = Math.min(currentPage, totalPages)
 
   const paginatedRows = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE
+    const start = (paginationPage - 1) * PAGE_SIZE
     return filteredRows.slice(start, start + PAGE_SIZE)
-  }, [filteredRows, currentPage])
+  }, [filteredRows, paginationPage])
 
   if (!deviceId.trim()) {
     return null
   }
 
-  if (!mockDevice) {
-    if (!accessToken) {
-      return (
-        <>
-          <Topbar title="Device Management" subtitle="Device fleet management" />
-          <div className="flex flex-col gap-4 px-5 py-6">
-            <p className="text-center text-[15px] text-vess-grey-800">
-              Sign in to load this device&apos;s test history.
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate('/device-management')}
-              className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
-            >
-              Back to devices
-            </button>
-          </div>
-        </>
-      )
-    }
+  if (!accessToken?.length) {
+    return (
+      <>
+        <Topbar title="Device Management" subtitle="Device fleet management" />
+        <div className="flex flex-col gap-4 px-5 py-6">
+          <p className="text-center text-[15px] text-vess-grey-800">
+            Sign in to load this device&apos;s test history.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/device-management')}
+            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
+          >
+            Back to devices
+          </button>
+        </div>
+      </>
+    )
+  }
 
-    if (apiDeviceQuery.isPending) {
-      return (
-        <>
-          <Topbar title="Device Management" subtitle="Device fleet management" />
-          <div className="px-5 py-6">
-            <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
-          </div>
-        </>
-      )
-    }
+  if (apiDeviceQuery.isPending) {
+    return (
+      <>
+        <Topbar title="Device Management" subtitle="Device fleet management" />
+        <div className="px-5 py-6">
+          <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
+        </div>
+      </>
+    )
+  }
 
-    if (apiDeviceQuery.isError) {
-      const errMsg =
-        apiDeviceQuery.error instanceof Error ? apiDeviceQuery.error.message : 'Request failed.'
-      return (
-        <>
-          <Topbar title="Device Management" subtitle="Device fleet management" />
-          <div className="flex flex-col gap-4 px-5 py-6">
-            <p className="text-center text-[15px] text-vess-red-800">
-              Could not load device. {errMsg}
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate('/device-management')}
-              className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
-            >
-              Back to devices
-            </button>
-          </div>
-        </>
-      )
-    }
+  if (apiDeviceQuery.isError) {
+    const errMsg =
+      apiDeviceQuery.error instanceof Error ? apiDeviceQuery.error.message : 'Request failed.'
+    return (
+      <>
+        <Topbar title="Device Management" subtitle="Device fleet management" />
+        <div className="flex flex-col gap-4 px-5 py-6">
+          <p className="text-center text-[15px] text-vess-red-800">
+            Could not load device. {errMsg}
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/device-management')}
+            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
+          >
+            Back to devices
+          </button>
+        </div>
+      </>
+    )
   }
 
   return (
@@ -248,7 +239,7 @@ export default function DeviceTestHistoryPage() {
 
               <DeviceTestHistoryTable rows={paginatedRows} />
 
-              <Pagination currentPage={currentPage} totalPages={totalPages} onChange={setCurrentPage} />
+              <Pagination currentPage={paginationPage} totalPages={totalPages} onChange={setCurrentPage} />
             </div>
           </section>
         </div>

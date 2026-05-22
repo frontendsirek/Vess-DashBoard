@@ -3,11 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { RemoteControlSessionView } from '@/components/remote-device-control/RemoteControlSessionView'
 import { Topbar } from '@/components/layout/Topbar'
 import { remoteDevices, type RemoteDevice } from '@/data/alerts-mock'
-import {
-  buildDeviceDetailView,
-  resolveDeviceRecord,
-  resolveRemoteDeviceHighlightId,
-} from '@/data/device-management'
+import { resolveRemoteDeviceHighlightId } from '@/data/device-management'
 import { cn } from '@/lib/utils'
 
 const stateChip: Record<RemoteDevice['state'], string> = {
@@ -45,13 +41,7 @@ export default function RemoteDeviceControlPage() {
     [remoteId],
   )
 
-  const modelLabel = useMemo(() => {
-    if (paramDeviceId?.startsWith('dev-')) {
-      const rec = resolveDeviceRecord(paramDeviceId)
-      if (rec) return buildDeviceDetailView(rec).subtitle
-    }
-    return remote?.model ?? ''
-  }, [paramDeviceId, remote])
+  const modelLabel = useMemo(() => remote?.model ?? '', [remote?.model])
 
   const inSession = Boolean(remote && remote.state !== 'offline')
 
