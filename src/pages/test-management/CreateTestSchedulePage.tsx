@@ -19,10 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  formatTestMutationError,
-  useCreateTestMutation,
-} from '@/hooks/tests/use-create-test-mutation'
+import { useCreateTestMutation } from '@/hooks/tests/use-create-test-mutation'
 import { cn } from '@/lib/utils'
 import {
   FREQUENCY_OPTIONS,
@@ -35,6 +32,7 @@ import {
 import { useAuthStore } from '@/stores/auth-store'
 import type { TestManagementScheduleState } from '@/types/create-test'
 import type { ApiTestAction } from '@/types/test'
+import { toast } from 'sonner'
 
 const formMessageClassName = 'text-[13px] font-normal leading-[16px] text-vess-red-500'
 
@@ -79,7 +77,7 @@ export default function CreateTestSchedulePage() {
   const location = useLocation()
   const accessToken = useAuthStore((state) => state.accessToken)
   const configure = (location.state as TestManagementScheduleState | null)?.configure
-  const { mutateAsync, isPending, isError, error, reset } = useCreateTestMutation()
+  const { mutateAsync, isPending, reset } = useCreateTestMutation()
   const pendingActionRef = useRef<ApiTestAction>('activate')
 
   const [authError, setAuthError] = useState<string | null>(null)
@@ -134,12 +132,13 @@ export default function CreateTestSchedulePage() {
     navigate(-1)
   }
 
-  const submitError =
-    authError ?? (isError && error ? formatTestMutationError(error) : null)
+  const submitError = authError
 
   async function onSubmit(values: ScheduleFormValues) {
     if (!accessToken) {
-      setAuthError('You must be signed in to create a test.')
+      const msg = 'You must be signed in to create a test.'
+      setAuthError(msg)
+      toast.error(msg)
       return
     }
     setAuthError(null)

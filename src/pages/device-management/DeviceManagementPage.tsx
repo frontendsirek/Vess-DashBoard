@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DeviceCardGrid } from '@/components/device-management/DeviceCardGrid'
 import { DeviceFilterBar } from '@/components/device-management/DeviceFilterBar'
@@ -7,16 +7,13 @@ import { DeviceManagementHeader } from '@/components/device-management/DeviceMan
 import { DeviceTable } from '@/components/device-management/DeviceTable'
 import { Topbar } from '@/components/layout/Topbar'
 import { Pagination } from '@/components/test-management/Pagination'
-import {
-  deviceRecords,
-  type DeviceRecord,
-} from '@/data/device-management'
+import type { DeviceRecord } from '@/data/device-management'
 import { useDevicesKpiQuery } from '@/hooks/devices/use-devices-kpi-query'
 import { useDevicesListQuery } from '@/hooks/devices/use-devices-list-query'
 import { useDevicesSearchQuery } from '@/hooks/devices/use-devices-search-query'
 import { SEARCH_DEBOUNCE_MS, useDebouncedValue } from '@/hooks/use-debounced-value'
 import { mapApiDeviceToDeviceRecord } from '@/lib/api-device-mapper'
-import type { ListDevicesParams } from '@/services/device.service'
+import type { ListDevicesParams } from '@/types/device'
 import { useAuthStore } from '@/stores/auth-store'
 import { useUiStore } from '@/stores/ui-store'
 
@@ -34,9 +31,15 @@ export default function DeviceManagementPage() {
 
   const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS)
 
-  useEffect(() => {
+  function handleSearchChange(value: string) {
+    setSearch(value)
     setCurrentPage(1)
-  }, [statusFilter, debouncedSearch])
+  }
+
+  function handleStatusFilterChange(value: string) {
+    setStatusFilter(value)
+    setCurrentPage(1)
+  }
 
   const listParams = useMemo((): ListDevicesParams => {
     const params: ListDevicesParams = {
@@ -64,33 +67,13 @@ export default function DeviceManagementPage() {
     return rows.map(mapApiDeviceToDeviceRecord)
   }, [searchQuery.data])
 
-  const mockFilteredDevices = useMemo<DeviceRecord[]>(() => {
-    return deviceRecords.filter((device) => {
-      if (search.trim()) {
-        const q = search.trim().toLowerCase()
-        const hay =
-          `${device.name} ${device.badgePrimary} ${device.badgeSecondary ?? ''} ${device.location}`.toLowerCase()
-        if (!hay.includes(q)) return false
-      }
-      if (statusFilter !== 'All Status' && device.status !== statusFilter) return false
-      return true
-    })
-  }, [search, statusFilter])
-
   const filteredDevices = useMemo<DeviceRecord[]>(() => {
-    if (!accessToken) return mockFilteredDevices
+    if (!accessToken) return []
     const base = debouncedSearch.length > 0 ? mappedFromSearch : mappedFromList
     if (statusFilter === 'All Status') return base
     if (statusFilter === 'Online' || statusFilter === 'Offline') return base
     return base.filter((d) => d.status === statusFilter)
-  }, [
-    accessToken,
-    debouncedSearch.length,
-    mappedFromList,
-    mappedFromSearch,
-    mockFilteredDevices,
-    statusFilter,
-  ])
+  }, [accessToken, debouncedSearch.length, mappedFromList, mappedFromSearch, statusFilter])
 
   const totalPages =
     debouncedSearch.length > 0 ?
@@ -141,16 +124,16 @@ export default function DeviceManagementPage() {
           <div className="flex flex-col gap-4">
             <DeviceFilterBar
               search={search}
-              onSearchChange={setSearch}
+              onSearchChange={handleSearchChange}
               statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
+              onStatusFilterChange={handleStatusFilterChange}
               view={view}
               onViewChange={setView}
             />
 
             {!accessToken && (
               <p className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[15px] text-vess-grey-800">
-                Sign in to load devices from the API. The list below shows demo data until then.
+                Sign in to load devices from the API.
               </p>
             )}
 
@@ -171,10 +154,13 @@ export default function DeviceManagementPage() {
                 ) : (
                   <DeviceCardGrid devices={filteredDevices} onView={handleViewDevice} />
                 )}
-                {accessToken && !listPending && !searchPending && filteredDevices.length === 0 ? (
+                {accessToken && !listPending && !searchPending && filteredDevices.length === 0 ?
                   <p className="py-2 text-center text-[14px] text-vess-grey-500">
                     No devices match your filters.
                   </p>
+                : null}
+                {!accessToken ? (
+                  <p className="py-2 text-center text-[14px] text-vess-grey-500">Sign in to see your fleet.</p>
                 ) : null}
               </>
             )}

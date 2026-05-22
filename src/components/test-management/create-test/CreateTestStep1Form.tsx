@@ -8,9 +8,11 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { triggerBlobDownload } from '@/lib/download-blob'
+import { formatApiMutationError } from '@/lib/format-api-mutation-error'
 import { cn } from '@/lib/utils'
 import { testService } from '@/services/test.service'
 import type { Step1FormValues } from '@/schemas/create-test/step1.schema'
+import { toast } from 'sonner'
 
 const formMessageClassName = 'text-[13px] font-normal leading-[16px] text-vess-red-500'
 
@@ -81,12 +83,13 @@ export function CreateTestStep1Form() {
     try {
       const { blob, filename } = await testService.downloadBulkTestsTemplate()
       triggerBlobDownload(blob, filename)
+      toast.success('Template downloaded.')
     } catch (err) {
-      const msg =
-        err instanceof Error && err.message.trim().length > 0 ?
-          err.message
-        : 'Could not download template. Sign in and try again.'
+      const msg = formatApiMutationError(err, {
+        fallback: 'Could not download template. Sign in and try again.',
+      })
       setTemplateDownloadError(msg)
+      toast.error(msg)
     } finally {
       setTemplateDownloading(false)
     }

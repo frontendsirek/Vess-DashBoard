@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { deviceQueryKeys } from '@/lib/device-query-keys'
-import { deviceService, type ApiDevice } from '@/services/device.service'
+import { deviceService } from '@/services/device.service'
+import type { ApiDevice } from '@/types/device'
 
 export function useDevicesSearchQuery(accessToken: string | null, searchQuery: string, enabled: boolean) {
   const hasQuery = searchQuery.trim().length > 0

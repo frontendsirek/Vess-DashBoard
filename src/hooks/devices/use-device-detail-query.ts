@@ -1,17 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
-import type { DeviceRecord } from '@/data/device-management'
-import { mapApiDeviceToDeviceRecord } from '@/lib/api-device-mapper'
 import { deviceQueryKeys } from '@/lib/device-query-keys'
 import { deviceService } from '@/services/device.service'
+import type { ApiDeviceDetail } from '@/types/device'
 
-/** Fetches one device when `queryEnabled` (e.g. not using a mocked device record). */
+/** Raw GET `/devices/:deviceId/` body for the detail page (no legacy `DeviceRecord` mapping). */
 export function useDeviceDetailQuery(accessToken: string | null, deviceId: string, queryEnabled: boolean) {
   return useQuery({
     queryKey: deviceQueryKeys.detail(accessToken, deviceId),
     enabled: !!(accessToken && deviceId && queryEnabled),
-    queryFn: async (): Promise<DeviceRecord> => {
+    queryFn: async (): Promise<ApiDeviceDetail> => {
       const { data } = await deviceService.getDevice(deviceId)
-      return mapApiDeviceToDeviceRecord(data)
+      return data
     },
     retry: false,
   })

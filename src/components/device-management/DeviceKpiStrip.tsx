@@ -5,8 +5,10 @@ import {
   DeviceKpiOfflineIcon,
   DeviceKpiWifiIcon,
 } from '@/components/icons'
-import { deviceKpiSummary } from '@/data/device-management'
 import { cn } from '@/lib/utils'
+
+/** Fallback before Devices API KPI is available (e.g. signed-out). */
+const KPI_PLACEHOLDER_TOTAL = 0
 
 export type DeviceKpiSummaryProps = {
   total: number
@@ -22,11 +24,11 @@ type DeviceKpiStripProps = {
 }
 
 export function DeviceKpiStrip({ summary, summaryPending }: DeviceKpiStripProps) {
-  const total = summary ? summary.total : deviceKpiSummary.total
-  const online = summary ? summary.online : deviceKpiSummary.online
-  const offline = summary ? summary.offline : deviceKpiSummary.offline
+  const total = summary ? summary.total : KPI_PLACEHOLDER_TOTAL
+  const online = summary ? summary.online : KPI_PLACEHOLDER_TOTAL
+  const offline = summary ? summary.offline : KPI_PLACEHOLDER_TOTAL
   const lowBatteryDisplay =
-    summary && summary.lowBattery === null ? '—' : String(summary?.lowBattery ?? deviceKpiSummary.lowBattery)
+    summary && summary.lowBattery === null ? '—' : String(summary?.lowBattery ?? KPI_PLACEHOLDER_TOTAL)
 
   const valueClass = (dimmed: boolean) =>
     cn(

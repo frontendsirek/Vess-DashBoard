@@ -21,11 +21,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
-  deviceTestHistoryFor,
   deviceTestHistoryKindLabel,
   deviceTestHistorySummary,
-  resolveDeviceRecord,
 } from '@/data/device-management'
+import { useDeviceDetailQuery } from '@/hooks/devices/use-device-detail-query'
+import { mapRecentTestsToDeviceTestHistoryRows } from '@/lib/map-device-recent-tests-to-history-rows'
+import { useAuthStore } from '@/stores/auth-store'
 
 const PAGE_SIZE = 4
 
@@ -36,9 +37,20 @@ const STATUS_OPTIONS = ['All Status', 'Success', 'Failed', 'Running'] as const
 export default function DeviceTestHistoryPage() {
   const { deviceId = '' } = useParams()
   const navigate = useNavigate()
-  const device = useMemo(() => resolveDeviceRecord(deviceId), [deviceId])
-  const allRows = useMemo(() => deviceTestHistoryFor(deviceId), [deviceId])
+  const accessToken = useAuthStore((s) => s.accessToken)
+
+  const apiQueryEnabled = Boolean(accessToken?.length && deviceId.trim())
+  const apiDeviceQuery = useDeviceDetailQuery(accessToken, deviceId, apiQueryEnabled)
+  const apiData = apiDeviceQuery.data
+
+  const allRows = useMemo(() => {
+    if (!apiData) return []
+    return mapRecentTestsToDeviceTestHistoryRows(deviceId, apiData.recent_tests)
+  }, [deviceId, apiData])
+
   const summary = useMemo(() => deviceTestHistorySummary(allRows), [allRows])
+
+  const deviceDisplayName = apiData?.device_name ?? ''
 
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState<string>(TYPE_OPTIONS[0])
@@ -46,8 +58,10 @@ export default function DeviceTestHistoryPage() {
   const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
-    if (!device) navigate('/device-management', { replace: true })
-  }, [device, navigate])
+    if (!deviceId.trim()) {
+      navigate('/device-management', { replace: true })
+    }
+  }, [deviceId, navigate])
 
   const filteredRows = useMemo(() => {
     return allRows.filter((row) => {
@@ -65,17 +79,69 @@ export default function DeviceTestHistoryPage() {
   }, [allRows, search, typeFilter, statusFilter])
 
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE))
-
-  useEffect(() => {
-    setCurrentPage((p) => Math.min(p, totalPages))
-  }, [totalPages])
+  const paginationPage = Math.min(currentPage, totalPages)
 
   const paginatedRows = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE
+    const start = (paginationPage - 1) * PAGE_SIZE
     return filteredRows.slice(start, start + PAGE_SIZE)
-  }, [filteredRows, currentPage])
+  }, [filteredRows, paginationPage])
 
-  if (!device) return null
+  if (!deviceId.trim()) {
+    return null
+  }
+
+  if (!accessToken?.length) {
+    return (
+      <>
+        <Topbar title="Device Management" subtitle="Device fleet management" />
+        <div className="flex flex-col gap-4 px-5 py-6">
+          <p className="text-center text-[15px] text-vess-grey-800">
+            Sign in to load this device&apos;s test history.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/device-management')}
+            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
+          >
+            Back to devices
+          </button>
+        </div>
+      </>
+    )
+  }
+
+  if (apiDeviceQuery.isPending) {
+    return (
+      <>
+        <Topbar title="Device Management" subtitle="Device fleet management" />
+        <div className="px-5 py-6">
+          <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
+        </div>
+      </>
+    )
+  }
+
+  if (apiDeviceQuery.isError) {
+    const errMsg =
+      apiDeviceQuery.error instanceof Error ? apiDeviceQuery.error.message : 'Request failed.'
+    return (
+      <>
+        <Topbar title="Device Management" subtitle="Device fleet management" />
+        <div className="flex flex-col gap-4 px-5 py-6">
+          <p className="text-center text-[15px] text-vess-red-800">
+            Could not load device. {errMsg}
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/device-management')}
+            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
+          >
+            Back to devices
+          </button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <>
@@ -84,7 +150,7 @@ export default function DeviceTestHistoryPage() {
         <div className="flex flex-col gap-8 rounded-2xl bg-vess-grey-100 px-4 py-6 md:px-5">
           <button
             type="button"
-            onClick={() => navigate(`/device-management/${deviceId}`)}
+            onClick={() => navigate(`/device-management/${encodeURIComponent(deviceId)}`)}
             className="flex w-fit items-center gap-4 text-vess-grey-950 transition-opacity hover:opacity-80"
           >
             <ArrowBackIcon className="size-6" />
@@ -94,7 +160,7 @@ export default function DeviceTestHistoryPage() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex min-w-0 flex-col gap-3">
               <h1 className="text-[25px] font-semibold leading-[30px] text-vess-grey-950">Test History</h1>
-              <p className="text-[15px] font-light leading-[18px] text-vess-grey-950">{device.name}</p>
+              <p className="text-[15px] font-light leading-[18px] text-vess-grey-950">{deviceDisplayName}</p>
             </div>
             <button
               type="button"
@@ -173,7 +239,7 @@ export default function DeviceTestHistoryPage() {
 
               <DeviceTestHistoryTable rows={paginatedRows} />
 
-              <Pagination currentPage={currentPage} totalPages={totalPages} onChange={setCurrentPage} />
+              <Pagination currentPage={paginationPage} totalPages={totalPages} onChange={setCurrentPage} />
             </div>
           </section>
         </div>
