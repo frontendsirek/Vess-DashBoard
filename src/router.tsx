@@ -4,6 +4,8 @@ import DashboardPage from '@/pages/dashboard/DashboardPage'
 import TestManagementPage from '@/pages/test-management/TestManagementPage'
 import CreateTestConfigurePage from '@/pages/test-management/CreateTestConfigurePage'
 import CreateTestSchedulePage from '@/pages/test-management/CreateTestSchedulePage'
+import EditTestConfigurePage from '@/pages/test-management/EditTestConfigurePage'
+import EditTestSchedulePage from '@/pages/test-management/EditTestSchedulePage'
 import TestDetailPage from '@/pages/test-management/TestDetailPage'
 import AlertsPage from '@/pages/alerts/AlertsPage'
 import ReportsPage from '@/pages/reports/ReportsPage'
@@ -31,6 +33,8 @@ export const router = createBrowserRouter([
       { path: '/dashboard', element: <DashboardPage /> },
       { path: '/test-management/new/configure', element: <CreateTestConfigurePage /> },
       { path: '/test-management/new/schedule', element: <CreateTestSchedulePage /> },
+      { path: '/test-management/:testId/edit/configure', element: <EditTestConfigurePage /> },
+      { path: '/test-management/:testId/edit/schedule', element: <EditTestSchedulePage /> },
       { path: '/test-management/:testId', element: <TestDetailPage /> },
       { path: '/test-management', element: <TestManagementPage /> },
       { path: '/device-management/register', element: <RegisterDevicePage /> },

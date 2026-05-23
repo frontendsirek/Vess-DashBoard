@@ -229,6 +229,22 @@ export type GetProbeResponse = {
   error?: ListProbesApiErrorBody
 }
 
+/** Delete probe envelope (`DELETE /test/v1/tests/:id`). */
+export type DeleteProbeResponse = {
+  isSuccess: boolean
+  message?: string
+  data?: unknown
+  error?: ListProbesApiErrorBody
+}
+
+/** Update probe envelope (`PATCH /test/v1/tests/:id`). */
+export type UpdateProbeResponse = {
+  isSuccess: boolean
+  message?: string
+  data: ApiProbe
+  error?: ListProbesApiErrorBody
+}
+
 /** Minimal test resource shape returned by test-service (extend when OpenAPI is available). */
 export type ApiTest = {
   id: string
