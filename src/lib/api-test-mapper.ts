@@ -2,7 +2,13 @@ import type { TestDetailRecord, TestRecord, TestStatus, TestType } from '@/data/
 import { formatRelativeLastSeen } from '@/lib/api-device-mapper'
 import { parseScheduleDateTime } from '@/lib/datetime'
 import type { ApiEnvelope } from '@/types/api'
-import type { CreateTestScheduleDraft } from '@/types/create-test'
+import type {
+  ConfigureStepRestoreFields,
+  CreateTestScheduleDraft,
+  CreateTestStep1Draft,
+  DataTestMethod,
+  EditScheduleRestoreFields,
+} from '@/types/create-test'
 import type {
   ApiProbe,
   ApiProbeSchedule,
@@ -14,7 +20,11 @@ import type {
   ApiTestType,
   CreateTestPayload,
   ProbeDeliveryStatusApi,
+  UpdateTestPayload,
 } from '@/types/test'
+import { isValid } from 'date-fns'
+import { formatScheduleDateTime } from '@/lib/datetime'
+import { FREQUENCY_OPTIONS, RETRY_OPTIONS } from '@/schemas/create-test/schedule.schema'
 
 const DEFAULT_TIMEZONE = 'Africa/Lagos'
 
@@ -195,6 +205,17 @@ export function mapCreateTestScheduleDraftToPayload(
   return payload
 }
 
+export function mapCreateTestScheduleDraftToUpdatePayload(
+  draft: CreateTestScheduleDraft,
+  options: { enabled: boolean },
+): UpdateTestPayload {
+  const { action: _action, ...rest } = mapCreateTestScheduleDraftToPayload(draft, 'activate')
+  return {
+    ...rest,
+    enabled: options.enabled,
+  }
+}
+
 export function extractTestIdFromResponse(
   data: ApiTest | ApiEnvelope<ApiTest>,
 ): string | undefined {
@@ -274,6 +295,87 @@ function pickParam(
     if (v !== undefined && v !== '') return v
   }
   return undefined
+}
+
+export type ProbeEditFormSeed = {
+  step1: CreateTestStep1Draft
+  configureRestore: ConfigureStepRestoreFields
+  scheduleRestore: EditScheduleRestoreFields
+  enabled: boolean
+}
+
+function isoToScheduleUi(iso?: string): string {
+  if (!iso?.trim()) return ''
+  const parsed = new Date(iso)
+  return isValid(parsed) ? formatScheduleDateTime(parsed) : ''
+}
+
+function mapApiFrequencyToUi(frequency?: string): string {
+  const normalized = frequency?.trim().toLowerCase()
+  if (normalized === 'daily') return 'Daily'
+  if (normalized === 'weekly') return 'Weekly'
+  return FREQUENCY_OPTIONS[0]
+}
+
+function mapAttemptsToRetryLabel(attempts: number | undefined): string {
+  if (attempts === undefined || attempts === null) return RETRY_OPTIONS[0]
+  if (attempts <= 0) return 'No retry'
+  const match = RETRY_OPTIONS.find((option) => option.startsWith(String(attempts)))
+  return match ?? `${attempts} attempts`
+}
+
+/** Seeds edit wizard forms from GET `/tests/:id` probe payload. */
+export function mapApiProbeToEditFormSeed(probe: ApiProbe): ProbeEditFormSeed {
+  const apiKind = normalizeProbeApiType(probe.type)
+  const testType = mapApiTestTypeToUi(apiKind)
+  const params = probe.parameters ?? {}
+  const schedule = probe.schedule ?? {}
+  const scheduleType = schedule.type?.trim().toLowerCase().replace(/-/g, '_')
+  const scheduleMode = schedule.mode?.trim().toLowerCase().replace(/-/g, '_')
+  const scheduleKind = scheduleType === 'recurring' ? 'recurring' : 'one-time'
+  const immediate = scheduleKind === 'one-time' && scheduleMode === 'immediate'
+
+  const durationRaw = pickParam(params, 'durationSeconds', 'duration_seconds')
+  const parsedDuration = durationRaw ? Number.parseInt(durationRaw, 10) : Number.NaN
+  const callDurationSeconds = Number.isFinite(parsedDuration) ? parsedDuration : 60
+
+  const messageText = pickParam(params, 'message') ?? ''
+  const targetRaw = pickParam(params, 'targetServer', 'target_server') ?? ''
+  const downloadMbRaw = pickParam(params, 'downloadSizeMB', 'download_size_mb')
+  const parsedDownloadMb = downloadMbRaw ? Number.parseFloat(downloadMbRaw) : Number.NaN
+  const downloadMb = Number.isFinite(parsedDownloadMb) ? parsedDownloadMb : 1
+  const dataTestMethod: DataTestMethod =
+    targetRaw.startsWith('http://') || targetRaw.startsWith('https://') ? 'target-url' : 'ping'
+
+  const configureRestore: ConfigureStepRestoreFields = {
+    testName: probe.name,
+    description: probe.description ?? '',
+    sourceDevice: probe.sourceDeviceId ?? '',
+    destinationDevice: probe.destinationDeviceId ?? '',
+    callDurationSeconds,
+    messageText,
+    dataTestMethod,
+    dataTargetValue: targetRaw,
+    payloadSizeKb: Math.max(1, Math.round(downloadMb * 1024)),
+  }
+
+  const scheduleRestore: EditScheduleRestoreFields = {
+    scheduleKind,
+    immediate,
+    scheduledDateTime: isoToScheduleUi(schedule.runAt ?? schedule.startAt),
+    retryOnFailure: mapAttemptsToRetryLabel(probe.retryPolicy?.attempts),
+    frequency: mapApiFrequencyToUi(schedule.frequency),
+    startDateTime: isoToScheduleUi(schedule.startAt),
+    endDateTime: isoToScheduleUi(schedule.endAt),
+    businessHoursOnly: schedule.businessHoursOnly ?? false,
+  }
+
+  return {
+    step1: { creationMethod: 'single', testType },
+    configureRestore,
+    scheduleRestore,
+    enabled: probe.enabled ?? true,
+  }
 }
 
 function formatProbeScheduleSummary(schedule: ApiProbeSchedule | undefined): string {
