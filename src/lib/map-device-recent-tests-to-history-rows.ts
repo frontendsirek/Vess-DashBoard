@@ -70,7 +70,8 @@ export function mapRecentTestsToDeviceTestHistoryRows(
     const isoTime =
       (typeof o.completed_at === 'string' && o.completed_at) ||
       (typeof o.updated_at === 'string' && o.updated_at) ||
-      (typeof o.created_at === 'string' && o.created_at)
+      (typeof o.created_at === 'string' && o.created_at) ||
+      undefined
 
     const { dateDisplay, timeDisplay } = formatApiTestDisplayTime(isoTime)
 

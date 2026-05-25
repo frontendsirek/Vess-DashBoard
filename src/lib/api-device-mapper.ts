@@ -1,15 +1,20 @@
 import { formatDistanceToNow } from 'date-fns'
 import type { DeviceApiDetailOverlay, DeviceManagementStatus, DeviceRecord } from '@/data/device-management'
-import type {
-  ApiDevice,
-  ApiDeviceDetail,
-  ApiDeviceDetailMetadata,
-  ApiDeviceMetadata,
-  DeviceStatus,
-} from '@/types/device'
-
-/** Metadata from list/search or device detail payloads */
-type ApiDeviceMapperMetadata = ApiDeviceMetadata | ApiDeviceDetailMetadata
+import {
+  batteryLevelFromDevice,
+  deviceGroupLabelFromDevice,
+  deviceTagsFromDevice,
+  hardwareFromDevice,
+  isApiDeviceDetail,
+  lowBatteryThresholdFromDevice,
+  mapDeviceStatusWithBatteryThreshold,
+  msisdnRawFromDevice,
+  networkOperatorFromDevice,
+  networkTypeFromDevice,
+  signalStrengthFromDevice,
+  testSummaryFromDevice,
+} from '@/lib/api-device-detail-accessors'
+import type { ApiDevice, ApiDeviceDetail, ApiDeviceMetadata, DeviceStatus } from '@/types/device'
 
 function slugFromLocation(location: string): string {
   const s = location
@@ -28,22 +33,12 @@ export function formatRelativeLastSeen(iso: string | null): string {
   }
 }
 
-export function metaStr(meta: ApiDeviceMapperMetadata | undefined, key: string): string | undefined {
+export function metaStr(meta: ApiDeviceMetadata | undefined, key: string): string | undefined {
   const raw = meta?.[key]
   if (raw === undefined || raw === null || raw === false) return undefined
   if (typeof raw === 'boolean') return raw ? 'true' : undefined
   const s = String(raw).trim()
   return s.length > 0 ? s : undefined
-}
-
-function metaNum(meta: ApiDeviceMapperMetadata | undefined, key: string): number | undefined {
-  const raw = meta?.[key]
-  if (typeof raw === 'number') return Number.isFinite(raw) ? raw : undefined
-  if (typeof raw === 'string') {
-    const n = Number.parseFloat(raw.trim())
-    return Number.isFinite(n) ? n : undefined
-  }
-  return undefined
 }
 
 function titleCaseWord(s: string): string {
@@ -74,29 +69,7 @@ export function formatPhoneMsisdnDisplay(raw: string): string {
   return trimmed
 }
 
-function summarizeFirstRecentTest(entry: unknown): string | undefined {
-  if (!entry || typeof entry !== 'object') return undefined
-  const o = entry as Record<string, unknown>
-  const outcome =
-    typeof o.outcome === 'string' ? o.outcome
-    : typeof o.result === 'string' ? o.result
-    : undefined
-  const kind =
-    typeof o.kind === 'string' ? o.kind
-    : typeof o.test_type === 'string' ? o.test_type
-    : 'Test'
-  const time =
-    typeof o.completed_at === 'string' ? o.completed_at
-    : typeof o.created_at === 'string' ? o.created_at
-    : typeof o.updated_at === 'string' ? o.updated_at
-    : undefined
-
-  const parts = [time, `${kind}`, outcome ? `(${outcome})` : undefined].filter(Boolean)
-  const line = parts.join(' ')
-  return line.length > 0 ? line : undefined
-}
-
-function parseBatteryPercent(metadata: ApiDeviceMapperMetadata | undefined): number {
+function parseListBatteryPercent(metadata: ApiDeviceMetadata | undefined): number {
   const raw = metadata?.battery_level ?? metadata?.battery_percent
   if (raw === undefined || raw === null || raw === '') return 100
   const n =
@@ -104,36 +77,41 @@ function parseBatteryPercent(metadata: ApiDeviceMapperMetadata | undefined): num
   return Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 100
 }
 
-function networkTypeLabel(metadata: ApiDeviceMapperMetadata | undefined): string {
-  const n = metaStr(metadata, 'network_type') ?? metaStr(metadata, 'network')
-  return n && n.length > 0 ? n : '—'
-}
-
 function mapDeviceStatusToManagement(
   status: DeviceStatus,
   batteryPercent: number,
+  lowBatteryThreshold = 20,
 ): DeviceManagementStatus {
-  if (status === 'OFFLINE') return 'Offline'
-  if (batteryPercent > 0 && batteryPercent <= 20) return 'Low Battery'
-  if (status === 'STALE' || status === 'DEGRADED') return 'Warning'
-  return 'Online'
+  return mapDeviceStatusWithBatteryThreshold(status, batteryPercent, lowBatteryThreshold)
 }
 
 /** Shared list + summary fields — no heavy detail overlay */
 function mapCoreApiDevice(device: ApiDevice | ApiDeviceDetail): Omit<DeviceRecord, 'apiDetailOverlay'> {
-  const m = device.metadata ?? {}
-  const batteryPercent = parseBatteryPercent(device.metadata)
-  const badgePrimary =
-    metaStr(device.metadata, 'site_slug') ??
-    slugFromLocation(device.location)
-  const tier = metaStr(m, 'tier')
-  const grp = metaStr(m, 'group')
+  const metadata = isApiDeviceDetail(device) ? undefined : (device.metadata ?? {})
+  const batteryFromApi = batteryLevelFromDevice(device)
+  const batteryPercent = batteryFromApi ?? parseListBatteryPercent(metadata)
+  const lowBatteryThreshold = lowBatteryThresholdFromDevice(device)
 
+  let badgePrimary = slugFromLocation(device.location)
   let badgeSecondary: string | undefined
-  if (tier && tier.length > 0) badgeSecondary = tier
-  else if (grp && grp.length > 0) badgeSecondary = grp
+  let deviceTypeLabel = 'Device'
 
-  const deviceTypeLabel = metaStr(m, 'device_type')
+  if (isApiDeviceDetail(device)) {
+    const group = deviceGroupLabelFromDevice(device)
+    if (group) badgeSecondary = humanizeMetaLabel(group)
+    const hardware = hardwareFromDevice(device)
+    if (hardware.model?.trim()) deviceTypeLabel = hardware.model.trim()
+  } else {
+    badgePrimary = metaStr(metadata, 'site_slug') ?? badgePrimary
+    const tier = metaStr(metadata, 'tier')
+    const grp = metaStr(metadata, 'group')
+    if (tier && tier.length > 0) badgeSecondary = tier
+    else if (grp && grp.length > 0) badgeSecondary = grp
+    const deviceType = metaStr(metadata, 'device_type')
+    if (deviceType) deviceTypeLabel = deviceType
+  }
+
+  const networkType = networkTypeFromDevice(device) ?? '—'
 
   return {
     id: device.device_id,
@@ -141,10 +119,10 @@ function mapCoreApiDevice(device: ApiDevice | ApiDeviceDetail): Omit<DeviceRecor
     badgePrimary,
     badgeSecondary: badgeSecondary ?? undefined,
     location: device.location,
-    deviceType: deviceTypeLabel ?? 'Device',
-    networkType: networkTypeLabel(device.metadata),
+    deviceType: deviceTypeLabel,
+    networkType,
     lastSeen: formatRelativeLastSeen(device.last_heartbeat),
-    status: mapDeviceStatusToManagement(device.status, batteryPercent),
+    status: mapDeviceStatusToManagement(device.status, batteryPercent, lowBatteryThreshold),
     batteryPercent,
     latitude: device.latitude,
     longitude: device.longitude,
@@ -153,86 +131,68 @@ function mapCoreApiDevice(device: ApiDevice | ApiDeviceDetail): Omit<DeviceRecor
 
 /** Builds detail overlay used by `/device-management/:id` — list views omit this. */
 export function buildDeviceApiDetailOverlay(device: ApiDeviceDetail): DeviceApiDetailOverlay {
-  const m = device.metadata ?? {}
+  const hardware = hardwareFromDevice(device)
+  const manufacturer = hardware.manufacturer?.trim()
+  const model = hardware.model?.trim()
 
-  const manufacturer = metaStr(m, 'manufacturer')
-  const model = metaStr(m, 'model')
   let hardwareSubtitle: string | undefined
   if (manufacturer && model) hardwareSubtitle = `${titleCaseWord(manufacturer)} ${model}`
   else if (model) hardwareSubtitle = model
   else if (manufacturer) hardwareSubtitle = titleCaseWord(manufacturer)
 
-  const av = metaStr(m, 'android_version')
-  const androidDisplay = av ? `Android ${av}` : undefined
-
-  const appMeta = metaStr(m, 'app_version')
-  const appHealth =
-    device.health?.app_version !== undefined ?
-      String(device.health.app_version).trim()
+  const os = hardware.os?.trim()
+  const osVersion = hardware.os_version?.trim()
+  const androidDisplay =
+    os && osVersion ? `${os} ${osVersion}`
+    : osVersion ? `Android ${osVersion}`
+    : os ? os
     : undefined
-  const appVersion = appMeta ?? (appHealth && appHealth.length > 0 ? appHealth : undefined)
 
-  const signalDbm = metaNum(m, 'signal_strength')
-
-  const storageMbFromMeta = metaNum(m, 'storage_available_mb')
-  const storageFromHealth =
-    device.health?.storage_available_mb !== undefined &&
-    Number.isFinite(device.health.storage_available_mb) ?
-      device.health.storage_available_mb
-    : undefined
-  const storageAvailableMb = storageMbFromMeta ?? storageFromHealth ?? undefined
-
-  const rawPhone = metaStr(m, 'phone_number')
+  const appVersion = hardware.app_version?.trim() || undefined
+  const signalDbm = signalStrengthFromDevice(device) ?? undefined
+  const storageAvailableMb = device.health_metrics?.storage?.available_mb
+  const rawPhone = msisdnRawFromDevice(device)
   const msisdnDisplay =
     rawPhone && rawPhone.length > 0 ? formatPhoneMsisdnDisplay(rawPhone) : undefined
+  const networkOperator = networkOperatorFromDevice(device)
 
-  const networkOperator =
-    metaStr(m, 'network_operator') ??
-    metaStr(m, 'carrier') ??
-    metaStr(m, 'sim_operator')
-
-  const stats = device.statistics
+  const summary = testSummaryFromDevice(device)
   let totalTests: number | undefined
   let successRatePercent: number | undefined
   let successfulCount: number | undefined
   let failedCount: number | undefined
   let lastTestLine: string | undefined
 
-  if (stats && typeof stats.total_tests === 'number' && Number.isFinite(stats.total_tests)) {
-    totalTests = Math.max(0, Math.floor(stats.total_tests))
+  if (summary && typeof summary.total_tests === 'number') {
+    totalTests = Math.max(0, Math.floor(summary.total_tests))
+    successfulCount = Math.max(0, Math.floor(summary.successful_tests ?? 0))
+    failedCount = Math.max(0, Math.floor(summary.failed_tests ?? 0))
     const rateRaw =
-      typeof stats.success_rate === 'number' && Number.isFinite(stats.success_rate) ?
-        stats.success_rate
+      typeof summary.success_rate === 'number' && Number.isFinite(summary.success_rate) ?
+        summary.success_rate
+      : totalTests > 0 ?
+        (successfulCount / totalTests) * 100
       : 0
     successRatePercent = Math.round(Math.min(100, Math.max(0, rateRaw)))
-    successfulCount = Math.round(totalTests * (successRatePercent / 100))
-    failedCount = Math.max(0, totalTests - successfulCount)
 
-    const recent = Array.isArray(device.recent_tests) ? device.recent_tests : []
-    const summary = summarizeFirstRecentTest(recent[0])
-
-    lastTestLine = summary
+    if (summary.avg_network_speed_mbps != null && Number.isFinite(summary.avg_network_speed_mbps)) {
+      lastTestLine = `Avg speed: ${summary.avg_network_speed_mbps.toFixed(1)} Mbps`
+    }
   }
 
-  const approvalRaw = metaStr(m, 'approval_status')
-  const sidebarGroup = approvalRaw ? humanizeMetaLabel(approvalRaw) : undefined
-
-  const sidebarTags: string[] = []
-  const tierTag = metaStr(m, 'tier')
-  const groupTag = metaStr(m, 'group')
-  if (tierTag) sidebarTags.push(humanizeMetaLabel(tierTag))
-  if (groupTag) sidebarTags.push(humanizeMetaLabel(groupTag))
-  if (approvalRaw) {
-    const approvalLabel = humanizeMetaLabel(approvalRaw)
-    if (!sidebarTags.includes(approvalLabel)) sidebarTags.push(approvalLabel)
-  }
+  const groupRaw = deviceGroupLabelFromDevice(device)
+  const sidebarGroup = groupRaw ? humanizeMetaLabel(groupRaw) : undefined
+  const sidebarTags = deviceTagsFromDevice(device).map((tag) => humanizeMetaLabel(tag))
 
   return {
     hardwareSubtitle,
     androidDisplay,
     appVersion,
-    signalDbm: signalDbm !== undefined ? signalDbm : undefined,
-    storageAvailableMb,
+    signalDbm,
+    storageAvailableMb:
+      typeof storageAvailableMb === 'number' && Number.isFinite(storageAvailableMb) ?
+        storageAvailableMb
+      : undefined,
     networkOperator,
     msisdnDisplay,
     totalTests,

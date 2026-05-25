@@ -1,70 +1,144 @@
 /** Device lifecycle / connectivity status returned by `/device/api/v1/devices/` APIs. */
 export type DeviceStatus = 'ONLINE' | 'OFFLINE' | 'STALE' | 'TESTING' | 'DEGRADED'
 
-/** Device API returns mixed scalar metadata (strings, numbers, booleans). */
+/** Device API returns mixed scalar metadata (strings, numbers, booleans) on list/search payloads. */
 export type ApiDeviceMetadata = Record<string, string | number | boolean | null | undefined>
 
-/**
- * Known metadata keys on GET `/devices/:deviceId/` (fleet device detail contract).
- * Index signature allows additional server fields without losing typing on documented keys.
- */
-export type ApiDeviceDetailMetadata = {
-  model?: string
-  app_version?: string
-  approved_at?: string
+export type ApiDeviceHardware = {
   manufacturer?: string
-  network_type?: string
-  phone_number?: string
-  battery_level?: number
-  battery_percent?: number | string
-  android_version?: string
-  approval_status?: string
-  organization_id?: string | null
-  signal_strength?: number
-  storage_available_mb?: number
-  memory_available_mb?: number
-  memory_percent?: number
-  available_memory_percent?: number
-  registered_by_user_id?: string
-  registration_request_id?: string
-  site_slug?: string
-  tier?: string
-  group?: string
-  device_type?: string
-  network_operator?: string
-  carrier?: string
-  sim_operator?: string
-} & {
-  [key: string]: string | number | boolean | null | undefined
+  model?: string
+  os?: string
+  os_version?: string
+  app_version?: string
 }
 
+export type ApiDeviceHealthMetrics = {
+  battery?: {
+    level?: number
+    is_charging?: boolean
+  }
+  storage?: {
+    available_mb?: number
+    used_mb?: number
+  }
+  memory?: {
+    available_mb?: number
+    used_mb?: number
+  }
+}
+
+export type ApiDeviceNetwork = {
+  operator?: string
+  type?: string
+  signal_strength?: number
+  msisdn?: string
+  status?: DeviceStatus
+}
+
+export type ApiDeviceAlertThresholds = {
+  battery_threshold?: number
+  offline_duration_minutes?: number
+}
+
+export type ApiDeviceTestSummary = {
+  total_tests: number
+  successful_tests: number
+  failed_tests: number
+  avg_network_speed_mbps: number | null
+  success_rate: number
+}
+
+/** Legacy list/detail health block — list responses may still include this shape. */
 export type ApiDeviceHealthSummary = {
   battery_level?: number
   storage_available_mb?: number
   app_version?: string
 }
 
+/** Legacy statistics block on list responses. */
 export type ApiDeviceStatistics = {
   total_tests: number
   success_rate: number
 }
 
-/** Response body for GET `/devices/:deviceId/` matching the VeSS fleet device detail payload */
+/** GET `/device/api/v1/devices/stats/` fleet KPI payload. */
+export type ApiDeviceStatsByStatus = {
+  online: number
+  offline: number
+  stale: number
+  degraded: number
+  testing: number
+}
+
+export type ApiDeviceStats = {
+  total: number
+  active: number
+  inactive: number
+  by_status: ApiDeviceStatsByStatus
+  warning_count: number
+}
+
+export type ApiDeviceLog = {
+  id: string
+  level: string
+  message: string
+  context?: Record<string, unknown> | null
+  timestamp: string
+  created_at?: string
+}
+
+export type ApiDeviceLogsParams = {
+  page?: number
+  page_size?: number
+  /** DEBUG, INFO, WARNING, ERROR, CRITICAL */
+  level?: string
+}
+
+/** Paginated device logs (`GET .../devices/:deviceId/logs/`). */
+export type ApiDeviceLogsPage = {
+  count: number
+  page: number
+  page_size: number
+  results: ApiDeviceLog[]
+}
+
+export type ApiDeviceTestsParams = {
+  page?: number
+  page_size?: number
+}
+
+/** Paginated device test history (`GET .../devices/:deviceId/tests/`). */
+export type ApiDeviceTestsPage = {
+  count: number
+  page: number
+  page_size: number
+  results: unknown[]
+}
+
+/** Response body for GET `/devices/:deviceId/` (structured device detail contract). */
 export type ApiDeviceDetail = {
   id: string
+  owner_id?: string
   device_id: string
   device_name: string
   location: string
+  physical_address?: string
   latitude: number
   longitude: number
   status: DeviceStatus
   last_heartbeat: string | null
   last_heartbeat_ago_seconds: number | null
+  msisdn?: string
+  device_group?: string
+  tags?: string[]
+  hardware?: ApiDeviceHardware | null
+  health_metrics?: ApiDeviceHealthMetrics | null
+  network?: ApiDeviceNetwork | null
+  alert_thresholds?: ApiDeviceAlertThresholds | null
+  test_summary?: ApiDeviceTestSummary | null
+  is_active?: boolean
   created_at: string
-  metadata: ApiDeviceDetailMetadata
-  health: ApiDeviceHealthSummary | null
-  recent_tests: unknown[] | null
-  statistics: ApiDeviceStatistics | null
+  updated_at?: string | null
 }
 
 export type ApiDevice = {
@@ -77,7 +151,7 @@ export type ApiDevice = {
   longitude: number
   status: DeviceStatus
   is_active?: boolean
-  metadata: ApiDeviceMetadata
+  metadata?: ApiDeviceMetadata
   created_at?: string
   updated_at?: string | null
   last_heartbeat: string | null

@@ -13,11 +13,14 @@ import {
 import { Topbar } from '@/components/layout/Topbar'
 import { buildTestDetailFromWizard, type TestDetailRecord, type TestStatus } from '@/data/mock'
 import { useDeleteTestMutation } from '@/hooks/tests/use-delete-test-mutation'
+import { useDevicesListQuery } from '@/hooks/devices/use-devices-list-query'
+import { assertApiEnvelopeSuccess } from '@/lib/assert-api-envelope'
 import { mapApiProbeToTestDetailRecord } from '@/lib/api-test-mapper'
 import { testQueryKeys } from '@/lib/test-query-keys'
 import { cn } from '@/lib/utils'
 import { testService } from '@/services/test.service'
 import { useAuthStore } from '@/stores/auth-store'
+import type { TestDetailConfigCell } from '@/lib/build-test-detail-config-rows'
 import type { TestDetailFromWizardState } from '@/types/create-test'
 
 function statusBadgeClass(status: TestStatus) {
@@ -55,18 +58,28 @@ export default function TestDetailPage() {
     enabled: !!accessToken && !!trimId && !wizardDetail,
     queryFn: async () => {
       const { data } = await testService.getProbe(trimId)
-      if (!data.isSuccess) {
-        const msg = data.error?.description ?? data.message ?? 'Could not load test.'
-        throw new Error(msg)
-      }
-      return data
+      return assertApiEnvelopeSuccess(data, 'Could not load test.')
     },
   })
 
+  const devicesQuery = useDevicesListQuery(
+    accessToken,
+    { page: 1, page_size: 100 },
+    !!accessToken && !wizardDetail,
+  )
+
+  const deviceNameById = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const device of devicesQuery.data?.results ?? []) {
+      map.set(device.device_id, device.device_name)
+    }
+    return map
+  }, [devicesQuery.data?.results])
+
   const apiDetail = useMemo(() => {
-    if (!accessToken || !detailQuery.data) return null
-    return mapApiProbeToTestDetailRecord(detailQuery.data.data)
-  }, [accessToken, detailQuery.data])
+    if (!accessToken || !detailQuery.isSuccess || !detailQuery.data) return null
+    return mapApiProbeToTestDetailRecord(detailQuery.data, deviceNameById)
+  }, [accessToken, detailQuery.data, detailQuery.isSuccess, deviceNameById])
 
   const detail = wizardDetail ?? (accessToken ? apiDetail : null)
 
@@ -243,35 +256,12 @@ function TestDetailContent({
           <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">Configuration</h2>
         </div>
         <div className="flex flex-col gap-6">
-          {chunkPairs(detail.configRows, 2).map((pair, rowIdx) => (
+          {detail.configRowPairs.map((row, rowIdx) => (
             <div key={`row-${String(rowIdx)}`} className="flex flex-col gap-6 lg:flex-row lg:gap-6">
-              {pair.map((cell) => (
-                <div key={cell.label} className="flex min-w-0 flex-1 flex-wrap items-center gap-x-24 gap-y-2">
-                  <span className="w-[135px] shrink-0 text-[18px] font-light leading-[21.6px] text-vess-grey-950">
-                    {cell.label}
-                  </span>
-                  <span className="text-[18px] font-medium leading-[21.6px] text-vess-grey-950">{cell.value}</span>
-                </div>
-              ))}
+              <ConfigCell cell={row.left} />
+              {row.right ? <ConfigCell cell={row.right} labelWidthClass="w-[154px]" /> : null}
             </div>
           ))}
-          {detail.configRowsExtra ?
-            <div className="flex flex-col gap-6 lg:flex-row">
-              <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-24 gap-y-2">
-                <span className="w-[135px] shrink-0 text-[18px] font-light leading-[21.6px] text-vess-grey-950">
-                  {detail.configRowsExtra.label}
-                </span>
-                <span
-                  className={cn(
-                    'text-[18px] font-medium leading-[21.6px]',
-                    detail.configRowsExtra.hideValue ? 'text-transparent' : 'text-vess-grey-950',
-                  )}
-                >
-                  {detail.configRowsExtra.value}
-                </span>
-              </div>
-            </div>
-          : null}
         </div>
       </section>
 
@@ -312,6 +302,35 @@ function ExecutionsList({ executions }: { executions: TestDetailRecord['executio
   )
 }
 
+function ConfigCell({
+  cell,
+  labelWidthClass = 'w-[135px]',
+}: {
+  cell: TestDetailConfigCell
+  labelWidthClass?: string
+}) {
+  return (
+    <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-24 gap-y-2">
+      <span
+        className={cn(
+          'shrink-0 text-[18px] font-light leading-[21.6px] text-vess-grey-950',
+          labelWidthClass,
+        )}
+      >
+        {cell.label}
+      </span>
+      <span
+        className={cn(
+          'text-[18px] font-medium leading-[21.6px]',
+          cell.hideValue ? 'text-transparent' : 'text-vess-grey-950',
+        )}
+      >
+        {cell.value}
+      </span>
+    </div>
+  )
+}
+
 function Kpi({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-4 rounded-lg border border-vess-grey-200 bg-vess-grey-50 px-4 py-5">
@@ -319,12 +338,4 @@ function Kpi({ label, value }: { label: string; value: string }) {
       <p className="text-[25px] font-semibold leading-[30px] text-vess-grey-950">{value}</p>
     </div>
   )
-}
-
-function chunkPairs<T>(items: T[], size: number): T[][] {
-  const rows: T[][] = []
-  for (let i = 0; i < items.length; i += size) {
-    rows.push(items.slice(i, i + size))
-  }
-  return rows
 }

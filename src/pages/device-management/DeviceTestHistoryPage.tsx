@@ -23,12 +23,16 @@ import {
 import {
   deviceTestHistoryKindLabel,
   deviceTestHistorySummary,
+  deviceTestHistorySummaryFromApiSummary,
 } from '@/data/device-management'
 import { useDeviceDetailQuery } from '@/hooks/devices/use-device-detail-query'
+import { useDeviceTestHistoryQuery } from '@/hooks/devices/use-device-test-history-query'
+import { useDeviceTestSummaryQuery } from '@/hooks/devices/use-device-test-summary-query'
 import { mapRecentTestsToDeviceTestHistoryRows } from '@/lib/map-device-recent-tests-to-history-rows'
 import { useAuthStore } from '@/stores/auth-store'
 
 const PAGE_SIZE = 4
+const TEST_HISTORY_FETCH_SIZE = 100
 
 const TYPE_OPTIONS = ['All Types', 'Call Test', 'SMS Test', 'USSD Test'] as const
 
@@ -41,16 +45,24 @@ export default function DeviceTestHistoryPage() {
 
   const apiQueryEnabled = Boolean(accessToken?.length && deviceId.trim())
   const apiDeviceQuery = useDeviceDetailQuery(accessToken, deviceId, apiQueryEnabled)
-  const apiData = apiDeviceQuery.data
+  const testHistoryQuery = useDeviceTestHistoryQuery(
+    accessToken,
+    deviceId,
+    { page: 1, page_size: TEST_HISTORY_FETCH_SIZE },
+    apiQueryEnabled,
+  )
+  const testSummaryQuery = useDeviceTestSummaryQuery(accessToken, deviceId, apiQueryEnabled)
 
   const allRows = useMemo(() => {
-    if (!apiData) return []
-    return mapRecentTestsToDeviceTestHistoryRows(deviceId, apiData.recent_tests)
-  }, [deviceId, apiData])
+    return mapRecentTestsToDeviceTestHistoryRows(deviceId, testHistoryQuery.data?.results)
+  }, [deviceId, testHistoryQuery.data?.results])
 
-  const summary = useMemo(() => deviceTestHistorySummary(allRows), [allRows])
-
-  const deviceDisplayName = apiData?.device_name ?? ''
+  const summary = useMemo(() => {
+    if (testSummaryQuery.data) {
+      return deviceTestHistorySummaryFromApiSummary(testSummaryQuery.data)
+    }
+    return deviceTestHistorySummary(allRows)
+  }, [allRows, testSummaryQuery.data])
 
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState<string>(TYPE_OPTIONS[0])
@@ -86,6 +98,18 @@ export default function DeviceTestHistoryPage() {
     return filteredRows.slice(start, start + PAGE_SIZE)
   }, [filteredRows, paginationPage])
 
+  const deviceDisplayName = apiDeviceQuery.data?.device_name ?? ''
+  const isPageLoading =
+    apiDeviceQuery.isPending || testHistoryQuery.isPending || testSummaryQuery.isPending
+  const pageLoadError =
+    apiDeviceQuery.isError
+      ? apiDeviceQuery.error
+      : testHistoryQuery.isError
+        ? testHistoryQuery.error
+        : testSummaryQuery.isError
+          ? testSummaryQuery.error
+          : null
+
   if (!deviceId.trim()) {
     return null
   }
@@ -110,7 +134,7 @@ export default function DeviceTestHistoryPage() {
     )
   }
 
-  if (apiDeviceQuery.isPending) {
+  if (isPageLoading) {
     return (
       <>
         <Topbar title="Device Management" subtitle="Device fleet management" />
@@ -121,9 +145,8 @@ export default function DeviceTestHistoryPage() {
     )
   }
 
-  if (apiDeviceQuery.isError) {
-    const errMsg =
-      apiDeviceQuery.error instanceof Error ? apiDeviceQuery.error.message : 'Request failed.'
+  if (pageLoadError) {
+    const errMsg = pageLoadError instanceof Error ? pageLoadError.message : 'Request failed.'
     return (
       <>
         <Topbar title="Device Management" subtitle="Device fleet management" />

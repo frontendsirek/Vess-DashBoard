@@ -12,14 +12,10 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { mapApiProbeToEditFormSeed } from '@/lib/api-test-mapper'
+import { TestConfigureDeviceFormField } from '@/components/test-management/create-test/TestConfigureDeviceFormField'
+import { useDevicesListQuery } from '@/hooks/devices/use-devices-list-query'
+import { assertApiEnvelopeSuccess } from '@/lib/assert-api-envelope'
+import { mapApiProbeToEditFormSeed, type ProbeEditFormSeed } from '@/lib/api-test-mapper'
 import { testQueryKeys } from '@/lib/test-query-keys'
 import {
   buildConfigureDefaultValues,
@@ -30,6 +26,15 @@ import {
 import { testService } from '@/services/test.service'
 import { useAuthStore } from '@/stores/auth-store'
 import type { DataTestMethod } from '@/types/create-test'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+const DEVICE_LIST_PAGE_SIZE = 100
 
 function FieldLabel({ children, required }: { children: string; required?: boolean }) {
   return (
@@ -45,14 +50,6 @@ function SubFieldLabel({ children }: { children: string }) {
     <span className="text-[15px] font-light leading-[18px] text-vess-grey-950">{children}</span>
   )
 }
-
-const MOCK_DEVICES = [
-  { value: 'device-alpha', label: 'Device Alpha' },
-  { value: 'device-beta', label: 'Device Beta' },
-  { value: 'device-lab-1', label: 'Lab Gateway 1' },
-]
-
-const NONE = '__none__'
 
 const DATA_METHOD_OPTIONS: { value: DataTestMethod; label: string }[] = [
   { value: 'target-url', label: 'Target URL' },
@@ -104,42 +101,20 @@ export default function EditTestConfigurePage() {
     enabled: Boolean(accessToken && trimId),
     queryFn: async () => {
       const { data } = await testService.getProbe(trimId)
-      if (!data.isSuccess) {
-        const msg = data.error?.description ?? data.message ?? 'Could not load test.'
-        throw new Error(msg)
-      }
-      return data.data
+      return assertApiEnvelopeSuccess(data, 'Could not load test.')
     },
   })
 
   const editSeed = useMemo(
-    () => (probeQuery.data ? mapApiProbeToEditFormSeed(probeQuery.data) : null),
-    [probeQuery.data],
+    () => (probeQuery.isSuccess && probeQuery.data ? mapApiProbeToEditFormSeed(probeQuery.data) : null),
+    [probeQuery.data, probeQuery.isSuccess],
   )
-
-  const step1 = editSeed?.step1
-  const testType = step1?.testType ?? 'Call'
-  const configureSchema = useMemo(() => createConfigureSchema(testType), [testType])
-
-  const form = useForm<ConfigureFormValues>({
-    resolver: zodResolver(configureSchema),
-    defaultValues: buildConfigureDefaultValues(),
-    mode: 'onSubmit',
-  })
 
   useEffect(() => {
     if (!trimId) {
       navigate('/test-management', { replace: true })
     }
   }, [trimId, navigate])
-
-  useEffect(() => {
-    if (editSeed) {
-      form.reset(buildConfigureDefaultValues(editSeed.configureRestore))
-    }
-  }, [editSeed, form])
-
-  const dataTestMethod = useWatch({ control: form.control, name: 'dataTestMethod' })
 
   if (!accessToken) {
     return (
@@ -163,7 +138,7 @@ export default function EditTestConfigurePage() {
     )
   }
 
-  if (probeQuery.isError || !editSeed || !step1?.testType) {
+  if (probeQuery.isError || !editSeed || !editSeed.step1.testType) {
     const errMsg =
       probeQuery.error instanceof Error ? probeQuery.error.message : 'Could not load test.'
     return (
@@ -183,9 +158,37 @@ export default function EditTestConfigurePage() {
     )
   }
 
+  return <EditTestConfigureForm key={trimId} testId={trimId} editSeed={editSeed} />
+}
+
+type EditTestConfigureFormProps = {
+  testId: string
+  editSeed: ProbeEditFormSeed
+}
+
+function EditTestConfigureForm({ testId, editSeed }: EditTestConfigureFormProps) {
+  const navigate = useNavigate()
+  const accessToken = useAuthStore((s) => s.accessToken)
   const step1Draft = editSeed.step1
-  const enabledFlag = editSeed.enabled
   const scheduleRestore = editSeed.scheduleRestore
+  const testType = step1Draft.testType ?? 'Call'
+  const configureSchema = useMemo(() => createConfigureSchema(testType), [testType])
+
+  const devicesQuery = useDevicesListQuery(
+    accessToken,
+    { page: 1, page_size: DEVICE_LIST_PAGE_SIZE },
+    true,
+  )
+
+  const devices = useMemo(() => devicesQuery.data?.results ?? [], [devicesQuery.data])
+
+  const form = useForm<ConfigureFormValues>({
+    resolver: zodResolver(configureSchema),
+    defaultValues: buildConfigureDefaultValues(editSeed.configureRestore),
+    mode: 'onSubmit',
+  })
+
+  const dataTestMethod = useWatch({ control: form.control, name: 'dataTestMethod' })
 
   const showCallDuration = testType === 'Call'
   const showMessageText = testType === 'SMS'
@@ -193,15 +196,14 @@ export default function EditTestConfigurePage() {
   const showDataTesting = testType === 'Data'
 
   function goBack() {
-    navigate(`/test-management/${encodeURIComponent(trimId)}`)
+    navigate(`/test-management/${encodeURIComponent(testId)}`)
   }
 
   function onSubmit(values: ConfigureFormValues) {
-    navigate(`/test-management/${encodeURIComponent(trimId)}/edit/schedule`, {
+    navigate(`/test-management/${encodeURIComponent(testId)}/edit/schedule`, {
       state: {
-        testId: trimId,
+        testId,
         configure: toConfigureDraft(step1Draft, values, testType),
-        enabled: enabledFlag,
         scheduleRestore,
       },
     })
@@ -278,89 +280,25 @@ export default function EditTestConfigurePage() {
                 )}
               />
 
-              <FormField
+              <TestConfigureDeviceFormField
                 control={form.control}
                 name="sourceDevice"
-                render={({ field }) => (
-                  <FormItem className="flex w-full flex-col gap-3 space-y-0">
-                    <FieldLabel required>Source Device</FieldLabel>
-                    <FormControl>
-                      <div className="flex flex-col gap-1.5">
-                        <Select
-                          value={field.value ? field.value : NONE}
-                          onValueChange={(v) => field.onChange(v === NONE ? '' : v)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select device" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value={NONE}>Select device</SelectItem>
-                            {MOCK_DEVICES.map((d) => (
-                              <SelectItem key={d.value} value={d.value}>
-                                {d.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <div className="flex h-[88px] flex-col items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4">
-                          <div className="flex flex-wrap items-center justify-center gap-1.5 text-[15px] font-light leading-[18px] text-vess-grey-500">
-                            <span>No Device Found?</span>
-                            <button
-                              type="button"
-                              className="text-[15px] font-light text-vess-primary-500 underline decoration-solid"
-                            >
-                              Create New device
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </FormControl>
-                    <FormMessage className={formMessageClassName} />
-                  </FormItem>
-                )}
+                label="Source Device"
+                devices={devices}
+                isLoading={devicesQuery.isPending}
+                isError={devicesQuery.isError}
+                onCreateDevice={() => navigate('/device-management/register')}
               />
 
               {showDestinationDevice && (
-                <FormField
+                <TestConfigureDeviceFormField
                   control={form.control}
                   name="destinationDevice"
-                  render={({ field }) => (
-                    <FormItem className="flex w-full flex-col gap-3 space-y-0">
-                      <FieldLabel required>Destination Device</FieldLabel>
-                      <FormControl>
-                        <div className="flex flex-col gap-1.5">
-                          <Select
-                            value={field.value ? field.value : NONE}
-                            onValueChange={(v) => field.onChange(v === NONE ? '' : v)}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select device" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value={NONE}>Select device</SelectItem>
-                              {MOCK_DEVICES.map((d) => (
-                                <SelectItem key={d.value} value={d.value}>
-                                  {d.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <div className="flex h-[88px] flex-col items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4">
-                            <div className="flex flex-wrap items-center justify-center gap-1.5 text-[15px] font-light leading-[18px] text-vess-grey-500">
-                              <span>No Device Found?</span>
-                              <button
-                                type="button"
-                                className="text-[15px] font-light text-vess-primary-500 underline decoration-solid"
-                              >
-                                Create New device
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </FormControl>
-                      <FormMessage className={formMessageClassName} />
-                    </FormItem>
-                  )}
+                  label="Destination Device"
+                  devices={devices}
+                  isLoading={devicesQuery.isPending}
+                  isError={devicesQuery.isError}
+                  onCreateDevice={() => navigate('/device-management/register')}
                 />
               )}
 

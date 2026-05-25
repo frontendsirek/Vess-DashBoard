@@ -1,4 +1,5 @@
 import type { CreateTestScheduleDraft } from '@/types/create-test'
+import { buildTestDetailConfigRows, type TestDetailConfigRow } from '@/lib/build-test-detail-config-rows'
 
 export type TestType = 'Call' | 'SMS' | 'Data'
 /** Aligns with probe `deliveryStatus` from API (display labels). */
@@ -195,6 +196,8 @@ export type TestDetailExecutionRow = {
   detail: string
 }
 
+export type { TestDetailConfigCell, TestDetailConfigRow } from '@/lib/build-test-detail-config-rows'
+
 export type TestDetailRecord = {
   id: string
   name: string
@@ -204,55 +207,49 @@ export type TestDetailRecord = {
   successRate: string
   avgDuration: string
   totalRuns: string
-  configRows: { label: string; value: string }[]
-  /** Scheduled view: duplicate label row per Figma (second column placeholder). */
-  configRowsExtra?: { label: string; value: string; hideValue?: boolean }
+  configRowPairs: TestDetailConfigRow[]
   executions: TestDetailExecutionRow[]
   executionsEmptyMessage?: string
 }
 
 export function buildTestDetailFromWizard(draft: CreateTestScheduleDraft): TestDetailRecord {
-  const scheduleSummary =
-    draft.scheduleKind === 'recurring'
-      ? `Recurring (${draft.frequency.toLowerCase()})`
-      : draft.immediate
-        ? 'One-Time (immediate)'
-        : `One-Time (${draft.scheduledDateTime || 'scheduled'})`
-
   const typeLabel = draft.testType ?? 'Call'
+  const apiKind = typeLabel === 'SMS' ? 'sms' : typeLabel === 'Data' ? 'data' : 'call'
 
-  const configRows: { label: string; value: string }[] = [
-    { label: 'Type', value: typeLabel },
-    { label: 'Description', value: draft.description.trim() || 'N/A' },
-    { label: 'Source Device', value: draft.sourceDevice || '—' },
-  ]
+  const retryAttempts = Number.parseInt(draft.retryOnFailure.replace(/\D/g, ''), 10)
+  const schedule =
+    draft.scheduleKind === 'recurring'
+      ? {
+        type: 'recurring' as const,
+        frequency: draft.frequency.toLowerCase(),
+        businessHoursOnly: draft.businessHoursOnly,
+      }
+      : {
+        type: 'one_time' as const,
+        mode: draft.immediate ? ('immediate' as const) : ('scheduled' as const),
+        businessHoursOnly: draft.businessHoursOnly,
+      }
 
-  if (typeLabel !== 'Data') {
-    configRows.push({ label: 'Destination', value: draft.destinationDevice || '—' })
-  }
+  const parameters =
+    typeLabel === 'Call'
+      ? { durationSeconds: String(draft.callDurationSeconds) }
+      : typeLabel === 'SMS'
+        ? { message: draft.messageText }
+        : {
+          targetServer: draft.dataTargetValue,
+          downloadSizeMB: String(Math.max(1, Math.round(draft.payloadSizeKb / 1024))),
+        }
 
-  if (typeLabel === 'Call') {
-    configRows.push({ label: 'Call Duration', value: `${draft.callDurationSeconds}s` })
-  }
-
-  if (typeLabel === 'SMS') {
-    configRows.push({ label: 'Message Text', value: draft.messageText.trim() || '—' })
-  }
-
-  if (typeLabel === 'Data') {
-    const methodLabel = draft.dataTestMethod === 'ping' ? 'Ping' : 'Target URL'
-    const targetLabel = draft.dataTestMethod === 'ping' ? 'Host / IP' : 'Endpoint URL'
-    configRows.push(
-      { label: 'Test Method', value: methodLabel },
-      { label: targetLabel, value: draft.dataTargetValue.trim() || '—' },
-      { label: 'Payload (KB)', value: String(draft.payloadSizeKb) },
-    )
-  }
-
-  configRows.push(
-    { label: 'Schedule', value: scheduleSummary },
-    { label: 'Retry Attempts', value: draft.retryOnFailure.replace(/\D/g, '') || '0' },
-  )
+  const configRowPairs = buildTestDetailConfigRows({
+    testType: typeLabel,
+    apiKind,
+    description: draft.description,
+    sourceDeviceId: draft.sourceDevice,
+    destinationDeviceId: draft.destinationDevice,
+    parameters,
+    schedule,
+    retryAttempts: Number.isFinite(retryAttempts) ? retryAttempts : 0,
+  })
 
   return {
     id: 'wizard',
@@ -262,7 +259,7 @@ export function buildTestDetailFromWizard(draft: CreateTestScheduleDraft): TestD
     successRate: '0%',
     avgDuration: '0s',
     totalRuns: '0',
-    configRows,
+    configRowPairs,
     executions: [],
     executionsEmptyMessage: 'No executions yet',
   }

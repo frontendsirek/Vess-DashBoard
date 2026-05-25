@@ -1,7 +1,8 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { ComponentType } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { DeviceStatusBadge } from '@/components/device-management/DeviceStatusBadge'
+import { DeregisterDeviceModal } from '@/components/device-management/DeregisterDeviceModal'
 import {
   ArrowBackIcon,
   EditOutlineIcon,
@@ -36,6 +37,7 @@ export default function DeviceDetailPage() {
   )
 
   const deregisterMutation = useDeregisterDeviceMutation(accessToken, deviceId)
+  const [deregisterModalOpen, setDeregisterModalOpen] = useState(false)
 
   const apiDevice = apiDeviceQuery.data ?? null
   const model = useMemo(
@@ -352,10 +354,10 @@ export default function DeviceDetailPage() {
                   <button
                     type="button"
                     disabled={deregisterMutation.isPending}
-                    onClick={() => deregisterMutation.mutate()}
+                    onClick={() => setDeregisterModalOpen(true)}
                     className="flex h-[50px] w-full items-center justify-center rounded-lg bg-vess-red-500 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-50"
                   >
-                    {deregisterMutation.isPending ? 'Unregistering…' : 'Unregister device'}
+                    Unregister device
                   </button>
                 </div>
               </SidebarCard>
@@ -363,6 +365,14 @@ export default function DeviceDetailPage() {
           </div>
         </div>
       </div>
+
+      <DeregisterDeviceModal
+        open={deregisterModalOpen}
+        onClose={() => setDeregisterModalOpen(false)}
+        deviceName={model?.displayName ?? deviceId}
+        isPending={deregisterMutation.isPending}
+        onConfirm={(reason) => deregisterMutation.mutate(reason)}
+      />
     </>
   )
 }

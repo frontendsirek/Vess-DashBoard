@@ -1,5 +1,6 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
-import { TOKEN_KEYS } from '@/stores/auth-store'
+import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
+import { isAuthEnvelopeError, parseTokenPairFromRefreshResponse } from '@/lib/api-auth-errors'
+import { TOKEN_KEYS, useAuthStore } from '@/stores/auth-store'
 
 /** API origin (same in dev and prod). Set `VITE_API_BASE_URL` in `.env` — no trailing slash. */
 const baseURL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
@@ -22,6 +23,14 @@ const UNAUTHENTICATED_AUTH_PATHS = [
   '/auth/api/v1/auth/password-reset/confirm/',
 ]
 
+type RetryableRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean }
+
+let isRefreshing = false
+let pendingQueue: {
+  resolve: (token: string) => void
+  reject: (err: unknown) => void
+}[] = []
+
 function shouldAttachAccessToken(config: InternalAxiosRequestConfig): boolean {
   const url = config.url ?? ''
   if (UNAUTHENTICATED_AUTH_PATHS.some((path) => url.includes(path))) {
@@ -34,6 +43,88 @@ function shouldAttachAccessToken(config: InternalAxiosRequestConfig): boolean {
     return false
   }
   return true
+}
+
+function isAuthEndpoint(config: InternalAxiosRequestConfig): boolean {
+  return (config.url ?? '').includes('/auth/api/v1/auth/')
+}
+
+function processPendingQueue(token: string | null, error: unknown) {
+  pendingQueue.forEach(({ resolve, reject }) => {
+    if (token) resolve(token)
+    else reject(error)
+  })
+  pendingQueue = []
+}
+
+function clearSessionAndRedirect() {
+  useAuthStore.getState().clearTokens()
+  if (window.location.pathname !== '/auth/sign-in') {
+    window.location.href = '/auth/sign-in'
+  }
+}
+
+function waitForRefreshToken(): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    pendingQueue.push({ resolve, reject })
+  })
+}
+
+async function fetchRefreshTokens(refreshToken: string): Promise<{ access: string; refresh: string }> {
+  const { data } = await axios.post(
+    `${baseURL}/auth/api/v1/auth/refresh/`,
+    { refresh: refreshToken },
+    { headers: { 'Content-Type': 'application/json' } },
+  )
+
+  const tokens = parseTokenPairFromRefreshResponse(data)
+  if (!tokens) {
+    throw new Error('Could not refresh session.')
+  }
+
+  return tokens
+}
+
+async function refreshAccessToken(): Promise<string> {
+  const refreshToken = localStorage.getItem(TOKEN_KEYS.refresh)
+  if (!refreshToken) {
+    clearSessionAndRedirect()
+    throw new Error('Session expired. Please sign in again.')
+  }
+
+  if (isRefreshing) {
+    return waitForRefreshToken()
+  }
+
+  isRefreshing = true
+
+  try {
+    const tokens = await fetchRefreshTokens(refreshToken)
+    useAuthStore.getState().setTokens(tokens.access, tokens.refresh)
+    processPendingQueue(tokens.access, null)
+    return tokens.access
+  } catch (refreshError) {
+    processPendingQueue(null, refreshError)
+    clearSessionAndRedirect()
+    throw refreshError
+  } finally {
+    isRefreshing = false
+  }
+}
+
+async function retryRequestAfterRefresh(config: RetryableRequestConfig): Promise<AxiosResponse> {
+  if (config._retry || isAuthEndpoint(config)) {
+    return Promise.reject(new Error('Session expired. Please sign in again.'))
+  }
+
+  config._retry = true
+  const accessToken = await refreshAccessToken()
+  config.headers.Authorization = `Bearer ${accessToken}`
+  return apiClient(config)
+}
+
+function shouldAttemptTokenRefresh(config: RetryableRequestConfig): boolean {
+  return !config._retry && !isAuthEndpoint(config)
 }
 
 apiClient.interceptors.request.use((config) => {
@@ -49,76 +140,32 @@ apiClient.interceptors.request.use((config) => {
   return config
 })
 
-/* ── Token-refresh interceptor ── */
-
-let isRefreshing = false
-let pendingQueue: {
-  resolve: (token: string) => void
-  reject: (err: unknown) => void
-}[] = []
-
-function processPendingQueue(token: string | null, error: unknown) {
-  pendingQueue.forEach(({ resolve, reject }) => {
-    if (token) resolve(token)
-    else reject(error)
-  })
-  pendingQueue = []
-}
-
 apiClient.interceptors.response.use(
-  (response) => response,
-  async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+  async (response) => {
+    if (!shouldAttemptTokenRefresh(response.config as RetryableRequestConfig)) {
+      return response
+    }
 
-    // Only intercept 401s that aren't already retries and aren't auth endpoints
-    if (
-      error.response?.status !== 401 ||
-      originalRequest._retry ||
-      originalRequest.url?.includes('/auth/api/v1/auth/')
-    ) {
+    if (isAuthEnvelopeError(response.data)) {
+      return retryRequestAfterRefresh(response.config as RetryableRequestConfig)
+    }
+
+    return response
+  },
+  async (error: AxiosError) => {
+    const originalRequest = error.config as RetryableRequestConfig | undefined
+    if (!originalRequest || !shouldAttemptTokenRefresh(originalRequest)) {
       return Promise.reject(error)
     }
 
-    const refreshToken = localStorage.getItem(TOKEN_KEYS.refresh)
-    if (!refreshToken) return Promise.reject(error)
-
-    if (isRefreshing) {
-      return new Promise<string>((resolve, reject) => {
-        pendingQueue.push({ resolve, reject })
-      }).then((token) => {
-        originalRequest.headers.Authorization = `Bearer ${token}`
-        return apiClient(originalRequest)
-      })
+    if (error.response?.status !== 401) {
+      return Promise.reject(error)
     }
 
-    originalRequest._retry = true
-    isRefreshing = true
-
     try {
-      const { data } = await axios.post(
-        `${baseURL}/auth/api/v1/auth/refresh/`,
-        { refresh: refreshToken },
-        { headers: { 'Content-Type': 'application/json' } },
-      )
-
-      const newAccess: string = data.data.access
-      const newRefresh: string = data.data.refresh
-
-      localStorage.setItem(TOKEN_KEYS.access, newAccess)
-      localStorage.setItem(TOKEN_KEYS.refresh, newRefresh)
-
-      originalRequest.headers.Authorization = `Bearer ${newAccess}`
-      processPendingQueue(newAccess, null)
-
-      return apiClient(originalRequest)
+      return await retryRequestAfterRefresh(originalRequest)
     } catch (refreshError) {
-      processPendingQueue(null, refreshError)
-      localStorage.removeItem(TOKEN_KEYS.access)
-      localStorage.removeItem(TOKEN_KEYS.refresh)
-      window.location.href = '/auth/sign-in'
       return Promise.reject(refreshError)
-    } finally {
-      isRefreshing = false
     }
   },
 )

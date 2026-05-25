@@ -1,6 +1,13 @@
-import type { TestDetailRecord, TestRecord, TestStatus, TestType } from '@/data/mock'
+import type {
+  TestDetailExecutionRow,
+  TestDetailRecord,
+  TestRecord,
+  TestStatus,
+  TestType,
+} from '@/data/mock'
+import { buildTestDetailConfigRows } from '@/lib/build-test-detail-config-rows'
 import { formatRelativeLastSeen } from '@/lib/api-device-mapper'
-import { parseScheduleDateTime } from '@/lib/datetime'
+import { formatTestDetailExecutionDateTime, parseScheduleDateTime } from '@/lib/datetime'
 import type { ApiEnvelope } from '@/types/api'
 import type {
   ConfigureStepRestoreFields,
@@ -11,7 +18,6 @@ import type {
 } from '@/types/create-test'
 import type {
   ApiProbe,
-  ApiProbeSchedule,
   ApiScheduleFrequency,
   ApiTest,
   ApiTestAction,
@@ -52,15 +58,24 @@ function mapApiTestTypeToUi(type: ApiTestType): TestType {
   }
 }
 
-function normalizeProbeApiType(raw: string): ApiTestType {
-  const n = raw.trim().toLowerCase()
+function normalizeProbeApiType(raw?: string | null): ApiTestType {
+  const n = (raw ?? '').trim().toLowerCase()
   if (n === 'sms') return 'sms'
   if (n === 'data') return 'data'
   return 'call'
 }
 
-function mapProbeDeliveryStatusToTestStatus(raw: string): TestStatus {
-  const normalized = raw.trim().toLowerCase().replace(/-/g, '_')
+function resolveProbeTypeRaw(probe?: ApiProbe | null): string | undefined {
+  if (!probe) return undefined
+  if (probe.type?.trim()) return probe.type
+  const loose = probe as ApiProbe & { test_type?: string; testType?: string }
+  if (typeof loose.test_type === 'string' && loose.test_type.trim()) return loose.test_type
+  if (typeof loose.testType === 'string' && loose.testType.trim()) return loose.testType
+  return undefined
+}
+
+function mapProbeDeliveryStatusToTestStatus(raw?: string | null): TestStatus {
+  const normalized = (raw ?? '').trim().toLowerCase().replace(/-/g, '_')
 
   switch (normalized) {
     case 'draft':
@@ -207,13 +222,10 @@ export function mapCreateTestScheduleDraftToPayload(
 
 export function mapCreateTestScheduleDraftToUpdatePayload(
   draft: CreateTestScheduleDraft,
-  options: { enabled: boolean },
 ): UpdateTestPayload {
-  const { action: _action, ...rest } = mapCreateTestScheduleDraftToPayload(draft, 'activate')
-  return {
-    ...rest,
-    enabled: options.enabled,
-  }
+  const { action, ...rest } = mapCreateTestScheduleDraftToPayload(draft, 'activate')
+  void action
+  return rest
 }
 
 export function extractTestIdFromResponse(
@@ -272,12 +284,24 @@ export function mapUiTestTypeFilterToApi(typeFilter: string): ApiTestType | unde
   }
 }
 
-export function mapApiProbeToTestRecord(probe: ApiProbe): TestRecord {
+export function mapApiProbeToTestRecord(probe: ApiProbe | null | undefined): TestRecord {
+  if (!probe) {
+    return {
+      id: '—',
+      name: '—',
+      type: 'Call',
+      source: '—',
+      destination: '—',
+      lastRun: '—',
+      status: 'Draft',
+    }
+  }
+
   const iso = probe.updatedAt ?? probe.createdAt ?? null
   return {
     id: String(probe.id),
-    name: probe.name,
-    type: mapApiTestTypeToUi(normalizeProbeApiType(probe.type)),
+    name: probe.name ?? '',
+    type: mapApiTestTypeToUi(normalizeProbeApiType(resolveProbeTypeRaw(probe))),
     source: probe.sourceDeviceId ?? '—',
     destination: probe.destinationDeviceId ?? '—',
     lastRun: formatRelativeLastSeen(iso),
@@ -301,7 +325,6 @@ export type ProbeEditFormSeed = {
   step1: CreateTestStep1Draft
   configureRestore: ConfigureStepRestoreFields
   scheduleRestore: EditScheduleRestoreFields
-  enabled: boolean
 }
 
 function isoToScheduleUi(iso?: string): string {
@@ -325,8 +348,12 @@ function mapAttemptsToRetryLabel(attempts: number | undefined): string {
 }
 
 /** Seeds edit wizard forms from GET `/tests/:id` probe payload. */
-export function mapApiProbeToEditFormSeed(probe: ApiProbe): ProbeEditFormSeed {
-  const apiKind = normalizeProbeApiType(probe.type)
+export function mapApiProbeToEditFormSeed(probe: ApiProbe | null | undefined): ProbeEditFormSeed {
+  if (!probe) {
+    throw new Error('Probe payload is missing.')
+  }
+
+  const apiKind = normalizeProbeApiType(resolveProbeTypeRaw(probe))
   const testType = mapApiTestTypeToUi(apiKind)
   const params = probe.parameters ?? {}
   const schedule = probe.schedule ?? {}
@@ -348,7 +375,7 @@ export function mapApiProbeToEditFormSeed(probe: ApiProbe): ProbeEditFormSeed {
     targetRaw.startsWith('http://') || targetRaw.startsWith('https://') ? 'target-url' : 'ping'
 
   const configureRestore: ConfigureStepRestoreFields = {
-    testName: probe.name,
+    testName: probe.name ?? '',
     description: probe.description ?? '',
     sourceDevice: probe.sourceDeviceId ?? '',
     destinationDevice: probe.destinationDeviceId ?? '',
@@ -374,124 +401,176 @@ export function mapApiProbeToEditFormSeed(probe: ApiProbe): ProbeEditFormSeed {
     step1: { creationMethod: 'single', testType },
     configureRestore,
     scheduleRestore,
-    enabled: probe.enabled ?? true,
   }
 }
 
-function formatProbeScheduleSummary(schedule: ApiProbeSchedule | undefined): string {
-  if (!schedule) return '—'
+type LooseProbeMetrics = ApiProbe & {
+  completionPercent?: number
+  completion_percent?: number
+}
 
-  const typeNormalized = schedule.type?.toLowerCase()?.replace(/-/g, '_')
-  const modeNormalized = schedule.mode?.toLowerCase()?.replace(/-/g, '_')
+function parseProbeProgressPercent(probe: LooseProbeMetrics): number | undefined {
+  const raw =
+    probe.progressPercent ??
+    probe.progress_percent ??
+    probe.completionPercent ??
+    probe.completion_percent
+  if (raw === undefined || raw === null || Number.isNaN(Number(raw))) return undefined
+  const n = Number(raw)
+  if (n > 0 && n <= 1) return Math.round(n * 100)
+  return Math.round(Math.min(100, Math.max(0, n)))
+}
+
+function parseProbeLastExecutionIso(probe: LooseProbeMetrics): string | undefined {
+  return (
+    probe.lastExecutionAt ??
+    probe.last_execution_at ??
+    probe.lastRunAt ??
+    probe.last_run_at ??
+    probe.updatedAt ??
+    probe.createdAt
+  )
+}
+
+function formatProbeSuccessRate(probe: LooseProbeMetrics): string {
+  const raw = probe.statistics?.successRate ?? probe.statistics?.success_rate
+  if (raw === undefined || raw === null || Number.isNaN(Number(raw))) return '—'
+  const n = Number(raw)
+  const percent = n > 0 && n <= 1 ? n * 100 : n
+  return `${percent.toFixed(1)}%`
+}
+
+function formatProbeAvgDuration(probe: LooseProbeMetrics): string {
+  const raw = probe.statistics?.avgDurationSeconds ?? probe.statistics?.avg_duration_seconds
+  if (raw === undefined || raw === null || Number.isNaN(Number(raw))) return '—'
+  const seconds = Math.round(Number(raw))
+  return `${seconds}s`
+}
+
+function formatProbeTotalRuns(probe: LooseProbeMetrics): string {
+  const raw = probe.statistics?.totalRuns ?? probe.statistics?.total_runs
+  if (raw === undefined || raw === null || Number.isNaN(Number(raw))) return '0'
+  return String(Math.max(0, Math.round(Number(raw))))
+}
+
+function formatExecutionDetail(entry: Record<string, unknown>): string {
+  const successRaw = entry.success ?? entry.status ?? entry.result
+  const success =
+    successRaw === true ||
+    successRaw === 'success' ||
+    String(successRaw).toLowerCase() === 'passed'
+
+  const durationRaw =
+    entry.durationSeconds ?? entry.duration_seconds ?? entry.duration ?? entry.elapsedSeconds
+  const durationSeconds =
+    durationRaw !== undefined && !Number.isNaN(Number(durationRaw)) ?
+      Math.round(Number(durationRaw))
+    : undefined
+
+  const signalRaw = entry.signal ?? entry.signalDbm ?? entry.signal_dbm ?? entry.signalStrength
+  const signal =
+    signalRaw !== undefined && signalRaw !== null && String(signalRaw).trim() !== '' ?
+      String(signalRaw).includes('dBm') ?
+        String(signalRaw)
+      : `${signalRaw}dBm`
+    : undefined
+
   const parts: string[] = []
-
-  if (typeNormalized === 'recurring') {
-    const fq = schedule.frequency?.trim() ?? 'scheduled'
-    parts.push(`Recurring (${fq.toLowerCase()})`)
-    if (schedule.startAt || schedule.endAt) {
-      const window = [schedule.startAt, schedule.endAt].filter(Boolean).join(' → ')
-      if (window) parts.push(window)
-    }
-  } else if (typeNormalized === 'one_time' || schedule.runAt !== undefined || modeNormalized) {
-    if (modeNormalized === 'immediate') {
-      parts.push('One-Time (immediate)')
-    } else if (schedule.runAt) {
-      parts.push(`One-Time (${schedule.runAt})`)
-    } else {
-      parts.push('One-Time')
-    }
+  if (durationSeconds !== undefined) {
+    parts.push(`${success ? 'Success' : 'Failed'} (${durationSeconds}s)`)
+  } else {
+    parts.push(success ? 'Success' : 'Failed')
   }
 
-  if (schedule.businessHoursOnly) {
-    const bh =
-      schedule.businessHoursStart && schedule.businessHoursEnd
-        ? `Business hours (${schedule.businessHoursStart}–${schedule.businessHoursEnd})`
-        : 'Business hours only'
-    parts.push(bh)
+  if (signal) {
+    parts.push(`Signal: ${signal}`)
   }
 
-  if (schedule.timezone) {
-    parts.push(`TZ ${schedule.timezone}`)
-  }
-
-  if (parts.length > 0) return parts.join(' · ')
-  if (schedule.runAt) return schedule.runAt
-  return '—'
+  return parts.join(' | ')
 }
 
-function appendProbeParameterRows(
-  probe: ApiProbe,
-  apiKind: ApiTestType,
-  rows: { label: string; value: string }[],
-) {
-  const p = probe.parameters
+function mapProbeExecutions(probe: LooseProbeMetrics): TestDetailExecutionRow[] {
+  const rawList = probe.recentExecutions ?? probe.recent_executions ?? probe.executions
+  if (!Array.isArray(rawList)) return []
 
-  if (apiKind === 'call') {
-    const seconds = pickParam(p, 'durationSeconds', 'duration_seconds')
-    if (seconds !== undefined) {
-      rows.push({ label: 'Call Duration', value: `${seconds}s` })
-    }
-    return
-  }
+  return rawList
+    .map((entry, index) => {
+      if (!entry || typeof entry !== 'object') return null
+      const row = entry as Record<string, unknown>
+      const iso =
+        (typeof row.executedAt === 'string' && row.executedAt) ||
+        (typeof row.executed_at === 'string' && row.executed_at) ||
+        (typeof row.timestamp === 'string' && row.timestamp) ||
+        (typeof row.createdAt === 'string' && row.createdAt) ||
+        (typeof row.created_at === 'string' && row.created_at)
 
-  if (apiKind === 'sms') {
-    const msg = pickParam(p, 'message')
-    rows.push({
-      label: 'Message Text',
-      value: msg?.trim() ? msg : '—',
+      const timestamp = iso ? formatTestDetailExecutionDateTime(iso) : undefined
+      if (!timestamp) return null
+
+      const successRaw = row.success ?? row.status ?? row.result
+      const success =
+        successRaw === true ||
+        successRaw === 'success' ||
+        String(successRaw).toLowerCase() === 'passed'
+
+      return {
+        id: String(row.id ?? `${probe.id}-${index}`),
+        success,
+        timestamp,
+        detail: formatExecutionDetail(row),
+      }
     })
-    return
-  }
-
-  const target = pickParam(p, 'targetServer', 'target_server')
-  const down = pickParam(p, 'downloadSizeMB', 'download_size_mb')
-  const up = pickParam(p, 'uploadSizeMB', 'upload_size_mb')
-  if (target !== undefined) rows.push({ label: 'Target server', value: target })
-  if (down !== undefined) rows.push({ label: 'Download (MB)', value: down })
-  if (up !== undefined) rows.push({ label: 'Upload (MB)', value: up })
+    .filter((row): row is TestDetailExecutionRow => row !== null)
 }
 
 /** Map GET probe payload to UI detail shown on [TestDetailPage](src/pages/test-management/TestDetailPage.tsx). */
-export function mapApiProbeToTestDetailRecord(probe: ApiProbe): TestDetailRecord {
-  const apiKind = normalizeProbeApiType(probe.type)
-  const iso = probe.updatedAt ?? probe.createdAt ?? null
-  const relative = iso ? formatRelativeLastSeen(iso) : undefined
-  const lastExecutionLabel = relative !== '—' && relative !== undefined ? relative : 'N/A'
-
-  const configRows: { label: string; value: string }[] = [
-    { label: 'Type', value: mapApiTestTypeToUi(apiKind) },
-    { label: 'Description', value: probe.description?.trim() ? probe.description.trim() : 'N/A' },
-    { label: 'Source Device', value: probe.sourceDeviceId ?? '—' },
-  ]
-
-  if (apiKind !== 'data') {
-    configRows.push({ label: 'Destination', value: probe.destinationDeviceId ?? '—' })
+export function mapApiProbeToTestDetailRecord(
+  probe: ApiProbe | null | undefined,
+  deviceNameById?: ReadonlyMap<string, string>,
+): TestDetailRecord {
+  if (!probe) {
+    throw new Error('Probe payload is missing.')
   }
 
-  appendProbeParameterRows(probe, apiKind, configRows)
+  const looseProbe = probe as LooseProbeMetrics
+  const apiKind = normalizeProbeApiType(resolveProbeTypeRaw(probe))
+  const testType = mapApiTestTypeToUi(apiKind)
+  const status = mapProbeDeliveryStatusToTestStatus(probe.deliveryStatus)
+  const lastExecutionIso = parseProbeLastExecutionIso(looseProbe)
+  const lastExecutionFormatted = formatTestDetailExecutionDateTime(lastExecutionIso)
+  const lastExecutionLabel =
+    lastExecutionFormatted ??
+    (lastExecutionIso ? formatRelativeLastSeen(lastExecutionIso) : undefined) ??
+    'N/A'
 
-  configRows.push(
-    { label: 'Schedule', value: formatProbeScheduleSummary(probe.schedule) },
-    {
-      label: 'Retry Attempts',
-      value: probe.retryPolicy?.attempts !== undefined ? String(probe.retryPolicy.attempts) : '—',
-    },
-  )
+  const progressPercent =
+    status === 'Running' ? parseProbeProgressPercent(looseProbe) : undefined
 
-  if (probe.enabled !== undefined) {
-    configRows.push({ label: 'Enabled', value: probe.enabled ? 'Yes' : 'No' })
-  }
+  const configRowPairs = buildTestDetailConfigRows({
+    testType,
+    apiKind,
+    description: probe.description,
+    sourceDeviceId: probe.sourceDeviceId,
+    destinationDeviceId: probe.destinationDeviceId,
+    parameters: probe.parameters,
+    schedule: probe.schedule,
+    retryAttempts: probe.retryPolicy?.attempts,
+    deviceNameById,
+  })
+
+  const executions = mapProbeExecutions(looseProbe)
 
   return {
     id: String(probe.id),
-    name: probe.name,
-    status: mapProbeDeliveryStatusToTestStatus(probe.deliveryStatus),
+    name: probe.name ?? '',
+    status,
+    progressPercent,
     lastExecutionLabel,
-    successRate: '—',
-    avgDuration: '—',
-    totalRuns: '0',
-    configRows,
-    executions: [],
+    successRate: formatProbeSuccessRate(looseProbe),
+    avgDuration: formatProbeAvgDuration(looseProbe),
+    totalRuns: formatProbeTotalRuns(looseProbe),
+    configRowPairs,
+    executions,
     executionsEmptyMessage: 'No executions yet',
   }
 }
