@@ -7,15 +7,15 @@ export type DevicesKpiSummary = {
   total: number
   online: number
   offline: number
-  lowBattery: number
+  warning: number
 }
 
 function mapApiDeviceStatsToKpiSummary(stats: ApiDeviceStats): DevicesKpiSummary {
   return {
     total: stats.total,
-    online: stats.active,
-    offline: stats.inactive,
-    lowBattery: stats.warning_count,
+    online: stats.by_status.online,
+    offline: stats.by_status.offline,
+    warning: stats.warning_count,
   }
 }
 
