@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { throwIfApiEnvelopeFailed } from '@/lib/assert-api-envelope'
 import { formatApiMutationError } from '@/lib/format-api-mutation-error'
 import { resolveApiSuccessMessage } from '@/lib/format-api-success-message'
 import { testQueryKeys } from '@/lib/test-query-keys'
@@ -17,10 +18,7 @@ export function useUpdateTestMutation(accessToken: string | null, testId: string
         throw new Error('Not signed in or missing test.')
       }
       const { data } = await testService.updateTest(testId, payload)
-      if (!data.isSuccess) {
-        const msg = data.error?.description ?? data.message ?? 'Could not update test.'
-        throw new Error(msg)
-      }
+      throwIfApiEnvelopeFailed(data, 'Could not update test.')
       return data
     },
     onSuccess: (data) => {

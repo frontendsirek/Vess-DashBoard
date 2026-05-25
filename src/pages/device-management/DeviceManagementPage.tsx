@@ -108,7 +108,7 @@ export default function DeviceManagementPage() {
               total: kpiQuery.data?.total ?? 0,
               online: kpiQuery.data?.online ?? 0,
               offline: kpiQuery.data?.offline ?? 0,
-              lowBattery: null,
+              lowBattery: kpiQuery.data?.lowBattery ?? 0,
             }}
             summaryPending={kpiQuery.isPending}
           />

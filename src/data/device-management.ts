@@ -146,6 +146,37 @@ export function deviceTestHistorySummary(rows: DeviceTestHistoryRow[]): {
   return { total, successful, failed, avgMbps: 50 }
 }
 
+/** KPI strip on device test history when detail API exposes `test_summary` only. */
+export function deviceTestHistorySummaryFromApiSummary(
+  summary:
+    | {
+        total_tests?: number
+        successful_tests?: number
+        failed_tests?: number
+        avg_network_speed_mbps?: number | null
+      }
+    | null
+    | undefined,
+): {
+  total: number
+  successful: number
+  failed: number
+  avgMbps: number
+} {
+  if (!summary || typeof summary.total_tests !== 'number') {
+    return { total: 0, successful: 0, failed: 0, avgMbps: 0 }
+  }
+
+  const total = Math.max(0, Math.floor(summary.total_tests))
+  const successful = Math.max(0, Math.floor(summary.successful_tests ?? 0))
+  const failed = Math.max(0, Math.floor(summary.failed_tests ?? 0))
+  const avgRaw = summary.avg_network_speed_mbps
+  const avgMbps =
+    avgRaw != null && Number.isFinite(avgRaw) ? Math.round(avgRaw * 10) / 10 : 0
+
+  return { total, successful, failed, avgMbps }
+}
+
 export function deviceEditThresholdDefaults(deviceId: string): Pick<
   DeviceEditDefaults,
   'lowBatteryPercent' | 'offlineMinutes'

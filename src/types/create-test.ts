@@ -75,7 +75,6 @@ export type EditScheduleRestoreFields = Pick<
 export type TestManagementEditScheduleState = {
   testId: string
   configure: CreateTestConfigureDraft
-  enabled: boolean
   scheduleRestore: EditScheduleRestoreFields
 }
 
