@@ -1,31 +1,29 @@
 import { BellIcon } from '@/components/icons'
+import { useProfileQuery } from '@/hooks/auth/use-profile-query'
+import { useRouteTopbarMeta } from '@/hooks/use-route-topbar-meta'
+import { userInitialsFromProfile, userRoleLabelFromProfile } from '@/lib/user-display'
 
-type TopbarProps = {
-  title: string
-  subtitle?: string
-  userInitials?: string
-  userEmail?: string
-  userRole?: string
-}
+export function Topbar() {
+  const meta = useRouteTopbarMeta()
+  const { data: profile } = useProfileQuery()
 
-export function Topbar({
-  title,
-  subtitle,
-  userInitials = 'CE',
-  userEmail = 'Circone@gmail.com',
-  userRole = 'Administrator',
-}: TopbarProps) {
+  if (!meta?.title) return null
+
+  const userEmail = profile?.email ?? '—'
+  const userInitials = userInitialsFromProfile(profile)
+  const userRole = userRoleLabelFromProfile(profile)
+
   return (
     <header className="flex w-full items-center justify-between bg-vess-grey-50 px-5 py-5">
       <div className="flex flex-col justify-center gap-1.5">
         <h1 className="text-[20px] font-medium leading-[24px] text-vess-grey-950">
-          {title}
+          {meta.title}
         </h1>
-        {subtitle && (
+        {meta.subtitle ? (
           <p className="text-[13px] font-light leading-[15.6px] text-vess-grey-500">
-            {subtitle}
+            {meta.subtitle}
           </p>
-        )}
+        ) : null}
       </div>
 
       <div className="flex items-center gap-3">

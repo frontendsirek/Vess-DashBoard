@@ -5,7 +5,6 @@ import { DeviceFilterBar } from '@/components/device-management/DeviceFilterBar'
 import { DeviceKpiStrip } from '@/components/device-management/DeviceKpiStrip'
 import { DeviceManagementHeader } from '@/components/device-management/DeviceManagementHeader'
 import { DeviceTable } from '@/components/device-management/DeviceTable'
-import { Topbar } from '@/components/layout/Topbar'
 import { Pagination } from '@/components/test-management/Pagination'
 import type { DeviceRecord } from '@/data/device-management'
 import { useDevicesKpiQuery } from '@/hooks/devices/use-devices-kpi-query'
@@ -95,8 +94,6 @@ export default function DeviceManagementPage() {
 
   return (
     <>
-      <Topbar title="Device Management" subtitle="Fleet health, registration & remote access" />
-
       <div className="flex flex-col gap-4 px-5 py-6">
         <DeviceManagementHeader onRegisterDevice={() => navigate('/device-management/register')} />
 

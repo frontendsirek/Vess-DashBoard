@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
+import { ROUTE_HANDLES } from '@/lib/route-handles'
 import DashboardPage from '@/pages/dashboard/DashboardPage'
 import TestManagementPage from '@/pages/test-management/TestManagementPage'
 import CreateTestConfigurePage from '@/pages/test-management/CreateTestConfigurePage'
@@ -30,25 +31,101 @@ export const router = createBrowserRouter([
   {
     element: <DashboardLayout />,
     children: [
-      { path: '/dashboard', element: <DashboardPage /> },
-      { path: '/test-management/new/configure', element: <CreateTestConfigurePage /> },
-      { path: '/test-management/new/schedule', element: <CreateTestSchedulePage /> },
-      { path: '/test-management/:testId/edit/configure', element: <EditTestConfigurePage /> },
-      { path: '/test-management/:testId/edit/schedule', element: <EditTestSchedulePage /> },
-      { path: '/test-management/:testId', element: <TestDetailPage /> },
-      { path: '/test-management', element: <TestManagementPage /> },
-      { path: '/device-management/register', element: <RegisterDevicePage /> },
-      { path: '/device-management/:deviceId/test-history', element: <DeviceTestHistoryPage /> },
-      { path: '/device-management/:deviceId/logs', element: <DeviceLogsPage /> },
-      { path: '/device-management/:deviceId/edit', element: <DeviceEditPage /> },
-      { path: '/device-management/:deviceId', element: <DeviceDetailPage /> },
-      { path: '/device-management', element: <DeviceManagementPage /> },
-      { path: '/real-time-monitoring', element: <RealTimeMonitoringPage /> },
-      { path: '/alerts', element: <AlertsPage /> },
-      { path: '/reports', element: <ReportsPage /> },
-      { path: '/remote-device-control', element: <RemoteDeviceControlPage /> },
-      { path: '/settings', element: <SettingsPage /> },
-      { path: '/logout', element: <LogoutPage /> },
+      {
+        path: '/dashboard',
+        element: <DashboardPage />,
+        handle: ROUTE_HANDLES.dashboard,
+      },
+      {
+        path: '/test-management/new/configure',
+        element: <CreateTestConfigurePage />,
+        handle: ROUTE_HANDLES.testManagement,
+      },
+      {
+        path: '/test-management/new/schedule',
+        element: <CreateTestSchedulePage />,
+        handle: ROUTE_HANDLES.testManagement,
+      },
+      {
+        path: '/test-management/:testId/edit/configure',
+        element: <EditTestConfigurePage />,
+        handle: ROUTE_HANDLES.testManagement,
+      },
+      {
+        path: '/test-management/:testId/edit/schedule',
+        element: <EditTestSchedulePage />,
+        handle: ROUTE_HANDLES.testManagement,
+      },
+      {
+        path: '/test-management/:testId',
+        element: <TestDetailPage />,
+        handle: ROUTE_HANDLES.testManagement,
+      },
+      {
+        path: '/test-management',
+        element: <TestManagementPage />,
+        handle: ROUTE_HANDLES.testManagement,
+      },
+      {
+        path: '/device-management/register',
+        element: <RegisterDevicePage />,
+        handle: ROUTE_HANDLES.deviceManagementDetail,
+      },
+      {
+        path: '/device-management/:deviceId/test-history',
+        element: <DeviceTestHistoryPage />,
+        handle: ROUTE_HANDLES.deviceManagementDetail,
+      },
+      {
+        path: '/device-management/:deviceId/logs',
+        element: <DeviceLogsPage />,
+        handle: ROUTE_HANDLES.deviceManagementDetail,
+      },
+      {
+        path: '/device-management/:deviceId/edit',
+        element: <DeviceEditPage />,
+        handle: ROUTE_HANDLES.deviceManagementDetail,
+      },
+      {
+        path: '/device-management/:deviceId',
+        element: <DeviceDetailPage />,
+        handle: ROUTE_HANDLES.deviceManagementDetail,
+      },
+      {
+        path: '/device-management',
+        element: <DeviceManagementPage />,
+        handle: ROUTE_HANDLES.deviceManagementList,
+      },
+      {
+        path: '/real-time-monitoring',
+        element: <RealTimeMonitoringPage />,
+        handle: ROUTE_HANDLES.realTimeMonitoring,
+      },
+      {
+        path: '/alerts',
+        element: <AlertsPage />,
+        handle: ROUTE_HANDLES.alerts,
+      },
+      {
+        path: '/reports',
+        element: <ReportsPage />,
+        handle: ROUTE_HANDLES.reports,
+      },
+      {
+        path: '/remote-device-control',
+        element: <RemoteDeviceControlPage />,
+        handle: ROUTE_HANDLES.remoteDeviceControl,
+      },
+      {
+        path: '/settings',
+        element: <SettingsPage />,
+        handle: ROUTE_HANDLES.settings,
+      },
+      {
+        path: '/logout',
+        element: <LogoutPage />,
+        handle: ROUTE_HANDLES.logout,
+      },
     ],
   },
   {

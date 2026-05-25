@@ -3,7 +3,6 @@ import { useEffect, useMemo } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ArrowBackIcon, ChevronDownIcon } from '@/components/icons'
-import { Topbar } from '@/components/layout/Topbar'
 import {
   Form,
   FormControl,
@@ -152,8 +151,6 @@ function CreateTestConfigureForm({ step1, restore }: CreateTestConfigureFormProp
 
   return (
     <>
-      <Topbar title="Test Management" subtitle="Test configuration & results" />
-
       <div className="flex flex-col gap-4 px-5 py-6">
         <Form {...form}>
           <form

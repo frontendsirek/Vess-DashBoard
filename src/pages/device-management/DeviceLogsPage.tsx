@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { DeviceLogsList } from '@/components/device-management/DeviceLogsList'
 import { ArrowBackIcon, ExportDownloadIcon, RefreshBoldIcon, SearchIcon } from '@/components/icons'
-import { Topbar } from '@/components/layout/Topbar'
 import {
   Select,
   SelectContent,
@@ -115,7 +114,6 @@ export default function DeviceLogsPage() {
   if (!accessToken?.length) {
     return (
       <>
-        <Topbar title="Device Management" subtitle="Device fleet management" />
         <div className="flex flex-col gap-4 px-5 py-6">
           <p className="text-center text-[15px] text-vess-grey-800">
             Sign in to load this device&apos;s logs.
@@ -135,7 +133,6 @@ export default function DeviceLogsPage() {
   if (apiDeviceQuery.isPending) {
     return (
       <>
-        <Topbar title="Device Management" subtitle="Device fleet management" />
         <div className="px-5 py-6">
           <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
         </div>
@@ -148,7 +145,6 @@ export default function DeviceLogsPage() {
       apiDeviceQuery.error instanceof Error ? apiDeviceQuery.error.message : 'Request failed.'
     return (
       <>
-        <Topbar title="Device Management" subtitle="Device fleet management" />
         <div className="flex flex-col gap-4 px-5 py-6">
           <p className="text-center text-[15px] text-vess-red-800">
             Could not load device. {errMsg}
@@ -167,7 +163,6 @@ export default function DeviceLogsPage() {
 
   return (
     <>
-      <Topbar title="Device Management" subtitle="Device fleet management" />
       <div className="px-5 py-6">
         <div className="flex flex-col gap-8 rounded-2xl bg-vess-grey-100 px-4 py-6 md:px-5">
           <button

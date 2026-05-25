@@ -6,9 +6,21 @@ export type PaginatedResponse<T> = {
   results: T[]
 }
 
-/** Standard envelope for single-resource responses. */
-export type ApiEnvelope<T> = {
-  status: string
-  message: string
-  data: T
+/** Standard envelope for single-resource responses (auth-service, test-service, etc.). */
+export type ApiEnvelopeError = {
+  code?: string
+  description?: string
+  message?: string
+}
+
+export type ApiEnvelope<T = unknown> = {
+  /** Device/test services */
+  isSuccess?: boolean
+  /** Auth service (Postman examples) */
+  success?: boolean
+  /** Live auth-service: `"success"` | `"error"` */
+  status?: string
+  message?: string
+  data?: T
+  error?: ApiEnvelopeError
 }
