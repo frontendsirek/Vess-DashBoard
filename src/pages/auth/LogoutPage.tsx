@@ -1,32 +1,29 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { authService } from '@/services/auth.service'
+import { useLogoutMutation } from '@/hooks/auth/use-logout-mutation'
 import { useAuthStore } from '@/stores/auth-store'
 
 export default function LogoutPage() {
   const navigate = useNavigate()
   const didLogout = useRef(false)
-  const { accessToken, refreshToken, clearTokens } = useAuthStore()
+  const refreshToken = useAuthStore((s) => s.refreshToken)
+  const clearTokens = useAuthStore((s) => s.clearTokens)
+  const logoutMutation = useLogoutMutation()
 
   useEffect(() => {
     if (didLogout.current) return
     didLogout.current = true
 
-    async function performLogout() {
-      if (accessToken && refreshToken) {
-        try {
-          await authService.logout({ refresh_token: refreshToken })
-        } catch {
-          // Proceed with local cleanup even if API call fails
-        }
-      }
-
-      clearTokens()
-      navigate('/auth/sign-in', { replace: true })
+    if (refreshToken) {
+      logoutMutation.mutate(refreshToken)
+      return
     }
 
-    performLogout()
-  }, [navigate, accessToken, refreshToken, clearTokens])
+    clearTokens()
+    navigate('/auth/sign-in', { replace: true })
+    // Run once on mount; refreshToken read at first paint after persist hydrate.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional single logout attempt
+  }, [])
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-vess-grey-100">

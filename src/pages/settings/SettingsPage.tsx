@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Topbar } from '@/components/layout/Topbar'
 import {
   AlertsIcon,
   CloseIcon,
@@ -29,11 +28,6 @@ export default function SettingsPage() {
 
   return (
     <>
-      <Topbar
-        title="Settings"
-        subtitle="Configure notifications, thresholds, and system preferences"
-      />
-
       <div className="flex flex-col gap-6 px-5 py-6">
         <header className="flex items-start justify-between">
           <div className="flex flex-col gap-1">

@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ArrowBackIcon } from '@/components/icons'
-import { Topbar } from '@/components/layout/Topbar'
 import { DateTimePickerField } from '@/components/ui/date-time-picker-field'
 import {
   Form,
@@ -166,8 +165,6 @@ export default function CreateTestSchedulePage() {
 
   return (
     <>
-      <Topbar title="Test Management" subtitle="Test configuration & results" />
-
       <div className="flex flex-col gap-4 px-5 py-6">
         <Form {...form}>
           <form

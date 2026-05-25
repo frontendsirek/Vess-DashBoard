@@ -1,5 +1,5 @@
 import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
-import { isAuthEnvelopeError, parseTokenPairFromRefreshResponse } from '@/lib/api-auth-errors'
+import { isAuthEnvelopeError, parseTokenPairFromAuthEnvelope } from '@/lib/api-auth-errors'
 import { TOKEN_KEYS, useAuthStore } from '@/stores/auth-store'
 
 /** API origin (same in dev and prod). Set `VITE_API_BASE_URL` in `.env` — no trailing slash. */
@@ -77,7 +77,7 @@ async function fetchRefreshTokens(refreshToken: string): Promise<{ access: strin
     { headers: { 'Content-Type': 'application/json' } },
   )
 
-  const tokens = parseTokenPairFromRefreshResponse(data)
+  const tokens = parseTokenPairFromAuthEnvelope(data)
   if (!tokens) {
     throw new Error('Could not refresh session.')
   }

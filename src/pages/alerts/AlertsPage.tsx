@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Topbar } from '@/components/layout/Topbar'
 import { PageTabs } from '@/components/shared/PageTabs'
 import {
   activeAlerts,
@@ -37,8 +36,6 @@ export default function AlertsPage() {
 
   return (
     <>
-      <Topbar title="Alerts & Notifications" subtitle="Notifications & alert rules" />
-
       <div className="flex flex-col gap-6 px-5 py-6">
         <div className="flex flex-col gap-3">
           <h2 className="text-[24px] font-semibold leading-[30px] text-vess-grey-950">

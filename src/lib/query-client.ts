@@ -12,8 +12,11 @@ export function createQueryClient() {
     mutationCache: new MutationCache({
       onError: (error, _variables, _context, mutation) => {
         if (mutation.options.meta?.suppressErrorToast) return
-        const msg = formatApiMutationError(error)
-        toast.error(msg.trim().length > 0 ? msg : 'Something went wrong. Please try again.')
+        const fallback =
+          mutation.options.meta?.errorFallback ??
+          'Something went wrong. Please try again.'
+        const msg = formatApiMutationError(error, { fallback })
+        toast.error(msg.trim().length > 0 ? msg : fallback)
       },
     }),
     queryCache: new QueryCache({

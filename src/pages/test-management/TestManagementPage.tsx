@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ActiveTestsIcon, CheckCircleIcon, FailedTestsIcon, SpeedometerIcon } from '@/components/icons'
 import { KpiCard } from '@/components/dashboard/KpiCard'
-import { Topbar } from '@/components/layout/Topbar'
 import { Pagination } from '@/components/test-management/Pagination'
 import { TestCardGrid } from '@/components/test-management/TestCardGrid'
 import { CreateNewTestModal } from '@/components/test-management/create-test/CreateNewTestModal'
@@ -146,8 +145,6 @@ export default function TestManagementPage() {
 
   return (
     <>
-      <Topbar title="Test Management" subtitle="Test configuration & results" />
-
       <CreateNewTestModal
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}

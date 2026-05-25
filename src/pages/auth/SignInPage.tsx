@@ -1,68 +1,37 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { useForm } from 'react-hook-form'
 import { LoginGlobe } from '@/components/auth/LoginGlobe'
 import { TextInput } from '@/components/ui/text-input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { VessLogoFull } from '@/components/icons'
-import { authService } from '@/services/auth.service'
-import { useAuthStore } from '@/stores/auth-store'
-import { isAxiosError } from 'axios'
-
-const signInSchema = z.object({
-  email: z.string().min(1, 'Email is required').email('Enter a valid email'),
-  password: z.string().min(1, 'Password is required'),
-})
-
-type SignInFormValues = z.infer<typeof signInSchema>
+import { useLoginMutation } from '@/hooks/auth/use-login-mutation'
+import {
+  signInFormDefaultValues,
+  signInFormSchema,
+  type SignInFormValues,
+} from '@/schemas/auth/sign-in.schema'
 
 export default function SignInPage() {
-  const navigate = useNavigate()
   const [rememberMe, setRememberMe] = useState(false)
-  const [apiError, setApiError] = useState<string | null>(null)
-  const { setTokens, setPendingEmail } = useAuthStore()
+  const loginMutation = useLoginMutation()
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<SignInFormValues>({
-    resolver: zodResolver(signInSchema),
+    resolver: zodResolver(signInFormSchema),
+    defaultValues: signInFormDefaultValues,
+    mode: 'onSubmit',
   })
 
-  async function onSubmit(data: SignInFormValues) {
-    setApiError(null)
-    try {
-      const res = await authService.login({
-        email: data.email,
-        password: data.password,
-      })
-
-      const { access_token, refresh_token } = res.data.data
-
-      if (access_token && refresh_token) {
-        // Login returned tokens directly (no OTP required)
-        setTokens(access_token, refresh_token)
-        navigate('/dashboard', { replace: true })
-      } else {
-        // Server requires OTP verification — stash the email
-        setPendingEmail(data.email)
-        navigate('/auth/verify')
-      }
-    } catch (err) {
-      if (isAxiosError(err)) {
-        const msg =
-          err.response?.data?.message ??
-          err.response?.data?.detail ??
-          'Invalid email or password'
-        setApiError(String(msg))
-      } else {
-        setApiError('Something went wrong. Please try again.')
-      }
-    }
+  function onSubmit(values: SignInFormValues) {
+    loginMutation.mutate({
+      email: values.email.trim(),
+      password: values.password,
+    })
   }
 
   return (
@@ -139,13 +108,6 @@ export default function SignInPage() {
 
             {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8" noValidate>
-              {/* API error banner */}
-              {apiError && (
-                <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-[14px] text-red-400">
-                  {apiError}
-                </div>
-              )}
-
               {/* Email */}
               <TextInput
                 label="Email address"
@@ -181,10 +143,10 @@ export default function SignInPage() {
               <div className="flex flex-col items-center gap-10">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={loginMutation.isPending}
                   className="h-[50px] w-full rounded-lg bg-vess-secondary-500 text-[15px] font-semibold text-vess-grey-50 transition-opacity hover:opacity-90 disabled:opacity-60"
                 >
-                  Sign in
+                  {loginMutation.isPending ? 'Signing in…' : 'Sign in'}
                 </button>
 
                 <div className="flex w-full items-center gap-3">

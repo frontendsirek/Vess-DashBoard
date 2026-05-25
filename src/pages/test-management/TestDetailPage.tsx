@@ -10,7 +10,6 @@ import {
   ExecutionSuccessIcon,
   RecentActivityIcon,
 } from '@/components/icons'
-import { Topbar } from '@/components/layout/Topbar'
 import { buildTestDetailFromWizard, type TestDetailRecord, type TestStatus } from '@/data/mock'
 import { useDeleteTestMutation } from '@/hooks/tests/use-delete-test-mutation'
 import { useDevicesListQuery } from '@/hooks/devices/use-devices-list-query'
@@ -100,7 +99,6 @@ export default function TestDetailPage() {
 
   return (
     <>
-      <Topbar title="Test Management" subtitle="Test configuration & results" />
       <div className="px-5 py-6">
         {signedOutBlocked ?
           <div className="flex flex-col gap-8 rounded-2xl bg-vess-grey-50 px-4 py-6">

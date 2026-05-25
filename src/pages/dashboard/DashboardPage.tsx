@@ -6,13 +6,10 @@ import { NetworkOverviewCard } from '@/components/dashboard/NetworkOverviewCard'
 import { RecentAlertsCard } from '@/components/dashboard/RecentAlertsCard'
 import { RunningTestsCard } from '@/components/dashboard/RunningTestsCard'
 import { SuccessRateChart } from '@/components/dashboard/SuccessRateChart'
-import { Topbar } from '@/components/layout/Topbar'
 
 export default function DashboardPage() {
   return (
     <>
-      <Topbar title="Dashboard" subtitle="Real-time network health" />
-
       <div className="flex flex-col gap-4 px-5 py-6">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <KpiCard

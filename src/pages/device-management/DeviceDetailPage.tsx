@@ -12,7 +12,6 @@ import {
   RemoteDeviceIcon,
   SignalBarsIcon,
 } from '@/components/icons'
-import { Topbar } from '@/components/layout/Topbar'
 import { useDeregisterDeviceMutation } from '@/hooks/devices/use-deregister-device-mutation'
 import { useDeviceDetailQuery } from '@/hooks/devices/use-device-detail-query'
 import { useAuthStore } from '@/stores/auth-store'
@@ -58,7 +57,6 @@ export default function DeviceDetailPage() {
   if (!accessToken) {
     return (
       <>
-        <Topbar title="Device Management" subtitle="Device fleet management" />
         <div className="flex flex-col gap-4 px-5 py-6">
           <p className="text-center text-[15px] text-vess-grey-800">
             Sign in to load this device from the API.
@@ -78,7 +76,6 @@ export default function DeviceDetailPage() {
   if (apiDeviceQuery.isPending) {
     return (
       <>
-        <Topbar title="Device Management" subtitle="Device fleet management" />
         <div className="px-5 py-6">
           <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
         </div>
@@ -91,7 +88,6 @@ export default function DeviceDetailPage() {
       apiDeviceQuery.error instanceof Error ? apiDeviceQuery.error.message : 'Request failed.'
     return (
       <>
-        <Topbar title="Device Management" subtitle="Device fleet management" />
         <div className="flex flex-col gap-4 px-5 py-6">
           <p className="text-center text-[15px] text-vess-red-800">
             Could not load this device from the API. {errMsg}
@@ -124,7 +120,6 @@ export default function DeviceDetailPage() {
 
   return (
     <>
-      <Topbar title="Device Management" subtitle="Device fleet management" />
       <div className="px-5 py-6">
         <div className="flex flex-col gap-8 rounded-2xl bg-vess-grey-100 px-4 py-6 md:px-5">
           <button

@@ -14,8 +14,8 @@ export type DeviceKpiSummaryProps = {
   total: number
   online: number
   offline: number
-  /** When unknown from API counts alone; renders em dash in UI */
-  lowBattery: number | null
+  /** Fleet warning count from stats API; renders em dash when null */
+  warning: number | null
 }
 
 type DeviceKpiStripProps = {
@@ -27,8 +27,8 @@ export function DeviceKpiStrip({ summary, summaryPending }: DeviceKpiStripProps)
   const total = summary ? summary.total : KPI_PLACEHOLDER_TOTAL
   const online = summary ? summary.online : KPI_PLACEHOLDER_TOTAL
   const offline = summary ? summary.offline : KPI_PLACEHOLDER_TOTAL
-  const lowBatteryDisplay =
-    summary && summary.lowBattery === null ? '—' : String(summary?.lowBattery ?? KPI_PLACEHOLDER_TOTAL)
+  const warningDisplay =
+    summary && summary.warning === null ? '—' : String(summary?.warning ?? KPI_PLACEHOLDER_TOTAL)
 
   const valueClass = (dimmed: boolean) =>
     cn(
@@ -63,8 +63,8 @@ export function DeviceKpiStrip({ summary, summaryPending }: DeviceKpiStripProps)
         iconClassName="size-[30px] text-vess-red-500"
       />
       <KpiMiniTile
-        label="Low Battery"
-        value={summaryPending ? '…' : lowBatteryDisplay}
+        label="Warning"
+        value={summaryPending ? '…' : warningDisplay}
         valueClassName={valueClass(summaryPending)}
         icon={DeviceKpiBatteryIcon}
         wellClassName="bg-vess-secondary-50"

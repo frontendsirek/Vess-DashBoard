@@ -4,7 +4,6 @@ import { useEffect, useMemo } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowBackIcon, ChevronDownIcon } from '@/components/icons'
-import { Topbar } from '@/components/layout/Topbar'
 import {
   Form,
   FormControl,
@@ -119,7 +118,6 @@ export default function EditTestConfigurePage() {
   if (!accessToken) {
     return (
       <>
-        <Topbar title="Test Management" subtitle="Test configuration & results" />
         <div className="px-5 py-6">
           <p className="text-[15px] text-vess-grey-800">Sign in to edit this test.</p>
         </div>
@@ -130,7 +128,6 @@ export default function EditTestConfigurePage() {
   if (probeQuery.isPending) {
     return (
       <>
-        <Topbar title="Test Management" subtitle="Test configuration & results" />
         <div className="px-5 py-6">
           <p className="text-center text-[15px] text-vess-grey-600">Loading test…</p>
         </div>
@@ -143,7 +140,6 @@ export default function EditTestConfigurePage() {
       probeQuery.error instanceof Error ? probeQuery.error.message : 'Could not load test.'
     return (
       <>
-        <Topbar title="Test Management" subtitle="Test configuration & results" />
         <div className="flex flex-col gap-4 px-5 py-6">
           <p className="text-[15px] text-vess-red-800">{errMsg}</p>
           <button
@@ -211,8 +207,6 @@ function EditTestConfigureForm({ testId, editSeed }: EditTestConfigureFormProps)
 
   return (
     <>
-      <Topbar title="Test Management" subtitle="Test configuration & results" />
-
       <div className="flex flex-col gap-4 px-5 py-6">
         <Form {...form}>
           <form

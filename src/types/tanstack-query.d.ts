@@ -5,6 +5,8 @@ declare module '@tanstack/react-query' {
     mutationMeta: {
       /** Skip global Sonner `toast.error` from `createQueryClient` */
       suppressErrorToast?: boolean
+      /** Override default mutation error toast copy */
+      errorFallback?: string
     }
     queryMeta: {
       /** Opt in: show Sonner `toast.error` when this query fails */

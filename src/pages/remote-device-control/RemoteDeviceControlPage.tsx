@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { RemoteControlSessionView } from '@/components/remote-device-control/RemoteControlSessionView'
-import { Topbar } from '@/components/layout/Topbar'
 import { useDeviceDetailQuery } from '@/hooks/devices/use-device-detail-query'
 import { useDevicesListQuery } from '@/hooks/devices/use-devices-list-query'
 import { useDevicesSearchQuery } from '@/hooks/devices/use-devices-search-query'
@@ -101,8 +100,6 @@ export default function RemoteDeviceControlPage() {
 
   return (
     <>
-      <Topbar title="Remote Device Control" subtitle="Remote device access & control" />
-
       <div className="px-5 py-6">
         {!accessToken ? (
           <section className="rounded-2xl bg-vess-grey-50 p-6">
