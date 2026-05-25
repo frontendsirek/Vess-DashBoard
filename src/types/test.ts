@@ -103,12 +103,12 @@ export type ApiProbeSchedule = {
 
 export type ApiProbe = {
   id: number
-  name: string
+  name?: string
   description?: string
-  type: string
+  type?: string
   sourceDeviceId?: string
   destinationDeviceId?: string
-  deliveryStatus: string
+  deliveryStatus?: string
   enabled?: boolean
   createdAt?: string
   updatedAt?: string
@@ -116,6 +116,24 @@ export type ApiProbe = {
   parameters?: Record<string, string | undefined>
   retryPolicy?: { attempts?: number }
   schedule?: ApiProbeSchedule
+  /** Running test completion (0–100). */
+  progressPercent?: number
+  progress_percent?: number
+  lastExecutionAt?: string
+  last_execution_at?: string
+  lastRunAt?: string
+  last_run_at?: string
+  statistics?: {
+    successRate?: number
+    success_rate?: number
+    avgDurationSeconds?: number
+    avg_duration_seconds?: number
+    totalRuns?: number
+    total_runs?: number
+  }
+  recentExecutions?: unknown[]
+  recent_executions?: unknown[]
+  executions?: unknown[]
 }
 
 export type ListProbesPageable = {

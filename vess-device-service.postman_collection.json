@@ -1,97 +1,248 @@
 {
   "info": {
+    "_postman_id": "f54a8b35-5a45-452d-bba5-15bb20f143fe",
     "name": "Vess Device Service",
-    "_postman_id": "vess-device-service-collection",
     "description": "Complete collection for the Vess Device Management Service API.\n\n**Setup:**\n1. Set `baseUrl` to your deployment URL.\n2. Set `accessToken` to a valid JWT from the auth-service (or import the auth collection and run Login first — the token is shared via the `accessToken` variable if both collections share an environment).\n3. After registering a device, the `deviceId` and `apiKey` variables are auto-populated for use in heartbeat and location requests.\n\n**Auth types used:**\n- `UserJWTAuthentication` — `Authorization: Bearer <accessToken>` for dashboard/user-facing endpoints.\n- `DeviceAPIKeyAuthentication` — `X-API-Key: <apiKey>` for device-originated endpoints (heartbeat, location).\n- Registration endpoints use a dashboard JWT decoded with `SECRET_KEY` (same Bearer token).",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "createdAt": "2026-05-22T23:51:48.000Z",
+    "updatedAt": "2026-05-22T23:51:48.000Z",
+    "lastUpdatedBy": "52839743",
+    "uid": "52839743-f54a8b35-5a45-452d-bba5-15bb20f143fe"
   },
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://vess-dev-alb-385758613.us-east-1.elb.amazonaws.com/device",
-      "type": "string"
-    },
-    {
-      "key": "accessToken",
-      "value": "",
-      "type": "string",
-      "description": "JWT Bearer token from auth-service login. Used for all user-facing endpoints."
-    },
-    {
-      "key": "deviceId",
-      "value": "",
-      "type": "string",
-      "description": "Auto-populated after device registration."
-    },
-    {
-      "key": "apiKey",
-      "value": "",
-      "type": "string",
-      "description": "One-time API key returned on device registration. Used for heartbeat and location endpoints."
-    },
-    {
-      "key": "registrationRequestId",
-      "value": "",
-      "type": "string",
-      "description": "Auto-populated after creating a registration request."
-    },
-    {
-      "key": "syncToken",
-      "value": "",
-      "type": "string",
-      "description": "Sync link token extracted from sync_url after creating a registration request."
-    }
-  ],
   "item": [
     {
       "name": "Health",
       "item": [
         {
           "name": "Service Health",
+          "id": "663c6ea1-066e-4d48-9886-71829016d188",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/health/",
-              "host": ["{{baseUrl}}"],
-              "path": ["health", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health",
+                ""
+              ]
             },
             "description": "Liveness probe. Returns service health including database and cache status."
           },
-          "response": []
+          "response": [
+            {
+              "id": "e0d020b1-2503-4db9-8465-803218a84915",
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/health/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "health",
+                    ""
+                  ]
+                },
+                "description": "Liveness probe. Returns service health including database and cache status."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"status\": \"ok\",\n  \"service\": \"device-service\",\n  \"timestamp\": \"2026-05-16T10:15:00Z\"\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-e0d020b1-2503-4db9-8465-803218a84915"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-663c6ea1-066e-4d48-9886-71829016d188"
         },
         {
           "name": "System Health",
+          "id": "198e8dfe-0a2b-4993-be1e-f29f7e1886bb",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/system/health/",
-              "host": ["{{baseUrl}}"],
-              "path": ["system", "health", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "system",
+                "health",
+                ""
+              ]
             },
-            "description": "Deep system health check across all dependencies. May return 503 if a dependency is degraded."
+            "description": "Deep system health check across all dependencies."
           },
-          "response": []
+          "response": [
+            {
+              "id": "8d8ff5e0-ab80-4135-a603-54c2c959da79",
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/system/health/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "system",
+                    "health",
+                    ""
+                  ]
+                },
+                "description": "Deep system health check across all dependencies."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"status\": \"ok\",\n  \"service\": \"device-service\",\n  \"timestamp\": \"2026-05-16T10:15:00Z\"\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-8d8ff5e0-ab80-4135-a603-54c2c959da79"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-198e8dfe-0a2b-4993-be1e-f29f7e1886bb"
+        },
+        {
+          "name": "API Docs",
+          "id": "1af11e2b-6975-49a5-aa0e-110baeb63d3d",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/docs/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "docs",
+                ""
+              ]
+            },
+            "description": "Swagger UI for the device service API."
+          },
+          "response": [
+            {
+              "id": "bf701e00-a895-4504-8a6a-f7c063c6cb39",
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/docs/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    "docs",
+                    ""
+                  ]
+                },
+                "description": "Swagger UI for the device service API."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"detail\": \"Swagger UI HTML response\"\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-bf701e00-a895-4504-8a6a-f7c063c6cb39"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-1af11e2b-6975-49a5-aa0e-110baeb63d3d"
         }
-      ]
+      ],
+      "id": "298b0b73-0023-4172-b3da-ea986adc87d3",
+      "createdAt": "2026-05-22T23:51:49.000Z",
+      "updatedAt": "2026-05-22T23:51:49.000Z",
+      "uid": "52839743-298b0b73-0023-4172-b3da-ea986adc87d3"
     },
     {
       "name": "Devices",
       "item": [
         {
           "name": "List Devices",
+          "id": "10124e5c-b92a-480a-a49f-5008ff50d961",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/devices/?status=&location=&created_after=&created_before=&ordering=-created_at&page=1&page_size=50",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "devices", ""],
+              "raw": "{{baseUrl}}/api/v1/devices/?status=&location=&created_after=&created_before=&ordering=-created_at&page=1&page_size=50&operator=&group=&search=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                ""
+              ],
               "query": [
                 {
                   "key": "status",
@@ -126,12 +277,209 @@
                   "key": "page_size",
                   "value": "50",
                   "description": "Max 200"
+                },
+                {
+                  "key": "operator",
+                  "value": "",
+                  "description": "Filter by metadata.sim_operator (e.g., MTN Nigeria)"
+                },
+                {
+                  "key": "group",
+                  "value": "",
+                  "description": "Filter by metadata.group_tags entry"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search device_name and location"
                 }
               ]
             },
-            "description": "Returns a paginated list of all devices. Supports filtering by status, location, and date range."
+            "description": "List devices with optional filters. **Scoping rules:** admins and service tokens see all devices; operators and viewers see only devices they registered (where `owner_id` matches their JWT `user_id`)."
           },
-          "response": []
+          "response": [
+            {
+              "id": "ee2e1929-fb35-43f4-a070-52778774a87b",
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/?status=&location=&created_after=&created_before=&ordering=-created_at&page=1&page_size=50&operator=&group=&search=",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "",
+                      "description": "Filter by status: ONLINE | OFFLINE | STALE | TESTING | DEGRADED"
+                    },
+                    {
+                      "key": "location",
+                      "value": "",
+                      "description": "Case-insensitive substring match on location field"
+                    },
+                    {
+                      "key": "created_after",
+                      "value": "",
+                      "description": "ISO 8601 datetime, e.g. 2025-01-01T00:00:00Z"
+                    },
+                    {
+                      "key": "created_before",
+                      "value": "",
+                      "description": "ISO 8601 datetime"
+                    },
+                    {
+                      "key": "ordering",
+                      "value": "-created_at",
+                      "description": "One of: created_at, -created_at, device_name, -device_name, status, -status"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "50",
+                      "description": "Max 200"
+                    },
+                    {
+                      "key": "operator",
+                      "value": "",
+                      "description": "Filter by metadata.sim_operator (e.g., MTN Nigeria)"
+                    },
+                    {
+                      "key": "group",
+                      "value": "",
+                      "description": "Filter by metadata.group_tags entry"
+                    },
+                    {
+                      "key": "search",
+                      "value": "",
+                      "description": "Search device_name and location"
+                    }
+                  ]
+                },
+                "description": "Returns a paginated list of all devices. Supports filtering by status, location, and date range."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"count\": 1,\n  \"page\": 1,\n  \"page_size\": 50,\n  \"results\": [\n    {\n      \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n      \"device_id\": \"DEV-001\",\n      \"device_name\": \"Test Device Lagos\",\n      \"location\": \"Lagos Island, Lagos\",\n      \"status\": \"ONLINE\",\n      \"is_active\": true,\n      \"last_heartbeat\": \"2026-05-16T10:10:00Z\"\n    }\n  ]\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-ee2e1929-fb35-43f4-a070-52778774a87b"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-10124e5c-b92a-480a-a49f-5008ff50d961"
+        },
+        {
+          "name": "Batch Device Status",
+          "id": "b55d9e41-1d53-4e18-92ce-ed3fee15f560",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"device_ids\": [\n    \"DEV-001\",\n    \"DEV-404\",\n    \"DEV-ABC\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/status/batch/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "status",
+                "batch",
+                ""
+              ]
+            },
+            "description": "Return status for each provided device ID. Any unknown ID is returned with found=false and error=not_found. Supports dashboard and service Bearer tokens."
+          },
+          "response": [
+            {
+              "id": "fa3295ab-3b13-4101-ab54-f88c31ed790f",
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"count\": 3,\n  \"results\": [\n    {\n      \"device_id\": \"DEV-001\",\n      \"found\": true,\n      \"status\": \"ONLINE\",\n      \"last_heartbeat\": \"2026-05-16T12:30:00Z\",\n      \"is_active\": true\n    },\n    {\n      \"device_id\": \"DEV-404\",\n      \"found\": false,\n      \"error\": \"not_found\"\n    },\n    {\n      \"device_id\": \"DEV-ABC\",\n      \"found\": true,\n      \"status\": \"DEGRADED\",\n      \"last_heartbeat\": \"2026-05-16T12:28:10Z\",\n      \"is_active\": true\n    }\n  ]\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-fa3295ab-3b13-4101-ab54-f88c31ed790f"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-b55d9e41-1d53-4e18-92ce-ed3fee15f560"
         },
         {
           "name": "Register Device",
@@ -148,60 +496,222 @@
                   "    console.log('API Key (save this — it is shown only once):', body.api_key);",
                   "}"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "id": "4ebe2af2-f57e-4815-9664-d734011eafdd"
               }
             }
           ],
+          "id": "76035655-fc3f-4a16-971c-4254ed346042",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"device_id\": \"DEV-001\",\n  \"device_name\": \"Test Device Lagos\",\n  \"location\": \"Lagos Island, Lagos\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"metadata\": {\n    \"manufacturer\": \"Samsung\",\n    \"model\": \"Galaxy A54\",\n    \"android_version\": \"13\",\n    \"app_version\": \"1.0.0\"\n  }\n}"
+              "raw": "{\n  \"device_id\": \"DEV-001\",\n  \"device_name\": \"Test Device Lagos\",\n  \"location\": \"Lagos Island, Lagos\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"msisdn\": \"+2348012345678\",\n  \"device_group\": \"south-west\",\n  \"tags\": [\"urban\", \"speedtest\", \"4G\"],\n  \"manufacturer\": \"Samsung\",\n  \"model\": \"Galaxy A54\",\n  \"os\": \"Android\",\n  \"os_version\": \"13\",\n  \"app_version\": \"2.4.1\",\n  \"alert_battery_threshold\": 15,\n  \"alert_offline_duration_minutes\": 30,\n  \"metadata\": {}\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/devices/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "devices", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                ""
+              ]
             },
-            "description": "Register a new device. Returns a one-time `api_key` — store it immediately as it cannot be retrieved again. Coordinates must be within Nigeria bounds (lat 4–14°N, lng 3–15°E). The `deviceId` and `apiKey` variables are auto-saved."
+            "description": "Register a new device. Returns a one-time `api_key` — store it immediately as it cannot be retrieved again. Coordinates must be within Nigeria bounds (lat 4–14°N, lng 3–15°E). The `owner_id` is automatically set from the caller's JWT `user_id`. Non-admin users (operator/viewer) can only access their own devices after registration. The `deviceId` and `apiKey` variables are auto-saved."
           },
-          "response": []
+          "response": [
+            {
+              "id": "0e1ead8a-6994-4a99-b83e-899d64c2bc20",
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"device_id\": \"DEV-001\",\n  \"device_name\": \"Test Device Lagos\",\n  \"location\": \"Lagos Island, Lagos\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"msisdn\": \"+2348012345678\",\n  \"device_group\": \"south-west\",\n  \"tags\": [\"urban\", \"speedtest\", \"4G\"],\n  \"manufacturer\": \"Samsung\",\n  \"model\": \"Galaxy A54\",\n  \"os\": \"Android\",\n  \"os_version\": \"13\",\n  \"app_version\": \"2.4.1\",\n  \"alert_battery_threshold\": 15,\n  \"alert_offline_duration_minutes\": 30\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    ""
+                  ]
+                },
+                "description": "Register a new device. Returns a one-time `api_key` — store it immediately as it cannot be retrieved again. Coordinates must be within Nigeria bounds (lat 4–14°N, lng 3–15°E). The `deviceId` and `apiKey` variables are auto-saved."
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n  \"owner_id\": \"user-uuid-from-jwt\",\n  \"device_id\": \"DEV-001\",\n  \"api_key\": \"<one-time-device-api-key>\",\n  \"created_at\": \"2026-05-16T10:00:00Z\"\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-0e1ead8a-6994-4a99-b83e-899d64c2bc20"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-76035655-fc3f-4a16-971c-4254ed346042"
         },
         {
           "name": "Get Device Details",
+          "id": "e67c10cd-a0a2-4d6d-bbbd-f75e7aa1b80c",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "devices", "{{deviceId}}", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}",
+                ""
+              ]
             },
-            "description": "Retrieve full device details including health metrics, recent test executions (from test-service), and aggregated statistics."
+            "description": "Retrieve full device details. Non-admin users can only access their own devices — attempting to access another user’s device returns 404."
           },
-          "response": []
+          "response": [
+            {
+              "id": "2dcf15e4-ed37-4dbb-b255-890bcb915cb1",
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    "{{deviceId}}",
+                    ""
+                  ]
+                },
+                "description": "Retrieve full device details including health metrics, recent test executions (from test-service), and aggregated statistics."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n  \"owner_id\": \"user-uuid-from-jwt\",\n  \"device_id\": \"DEV-001\",\n  \"device_name\": \"Test Device Lagos\",\n  \"location\": \"Lagos Island, Lagos\",\n  \"physical_address\": \"Plot 123 Ikoyi, Lagos\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"status\": \"ONLINE\",\n  \"last_heartbeat\": \"2026-05-22T08:15:30Z\",\n  \"last_heartbeat_ago_seconds\": 45,\n  \"msisdn\": \"+2348012345678\",\n  \"device_group\": \"south-west\",\n  \"tags\": [\"urban\", \"speedtest\", \"4G\"],\n  \"hardware\": {\n    \"manufacturer\": \"Samsung\",\n    \"model\": \"Galaxy A54\",\n    \"os\": \"Android\",\n    \"os_version\": \"13\",\n    \"app_version\": \"2.4.1\"\n  },\n  \"health_metrics\": {\n    \"battery\": {\n      \"level\": 78,\n      \"is_charging\": false\n    },\n    \"storage\": {\n      \"available_mb\": 12800,\n      \"used_mb\": 3200\n    },\n    \"memory\": {\n      \"available_mb\": 1500,\n      \"used_mb\": 2500\n    }\n  },\n  \"network\": {\n    \"operator\": \"MTN Nigeria\",\n    \"type\": \"4G\",\n    \"signal_strength\": -75,\n    \"msisdn\": \"+2348012345678\",\n    \"status\": \"ONLINE\"\n  },\n  \"alert_thresholds\": {\n    \"battery_threshold\": 15,\n    \"offline_duration_minutes\": 30\n  },\n  \"test_summary\": {\n    \"total_tests\": 0,\n    \"successful_tests\": 0,\n    \"failed_tests\": 0,\n    \"avg_network_speed_mbps\": null,\n    \"success_rate\": 0.0\n  },\n  \"is_active\": true,\n  \"created_at\": \"2026-05-20T10:00:00Z\",\n  \"updated_at\": \"2026-05-22T08:15:30Z\"\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-2dcf15e4-ed37-4dbb-b255-890bcb915cb1"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-e67c10cd-a0a2-4d6d-bbbd-f75e7aa1b80c"
         },
         {
           "name": "Update Device",
+          "id": "05b629e7-1877-45fa-a54c-863ceab7c381",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -209,23 +719,104 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "devices", "{{deviceId}}", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}",
+                ""
+              ]
             },
             "description": "Update device configuration or metadata. Requires `admin` or `operator` role in the JWT. All fields are optional — only provided fields are updated. Metadata is merged (not replaced)."
           },
-          "response": []
+          "response": [
+            {
+              "id": "9bb7ff03-79d2-4df1-a38d-9ec316f1698f",
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"device_name\": \"Updated Device Name\",\n  \"location\": \"Abuja, FCT\",\n  \"latitude\": 9.0579,\n  \"longitude\": 7.4951,\n  \"metadata\": {\n    \"app_version\": \"1.1.0\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    "{{deviceId}}",
+                    ""
+                  ]
+                },
+                "description": "Update device configuration or metadata. Requires `admin` or `operator` role in the JWT. All fields are optional — only provided fields are updated. Metadata is merged (not replaced)."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n  \"owner_id\": \"user-uuid-from-jwt\",\n  \"device_id\": \"DEV-001\",\n  \"device_name\": \"Updated Device Name\",\n  \"location\": \"Abuja, FCT\",\n  \"latitude\": 9.0579,\n  \"longitude\": 7.4951,\n  \"metadata\": {\n    \"app_version\": \"1.1.0\"\n  }\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-9bb7ff03-79d2-4df1-a38d-9ec316f1698f"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-05b629e7-1877-45fa-a54c-863ceab7c381"
         },
         {
           "name": "Deregister Device",
+          "id": "8c846488-c8bf-4969-b36c-8089ebb18ed4",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "DELETE",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -233,26 +824,112 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "devices", "{{deviceId}}", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}",
+                ""
+              ]
             },
             "description": "Soft-deregisters a device by setting `is_active=false` and recording `deregistered_at`. Requires `admin` role in the JWT. Publishes a `device.deregistered` event."
           },
-          "response": []
+          "response": [
+            {
+              "id": "633c6522-c82e-43a7-8afa-1ef7bdd4a39f",
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Device decommissioned\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    "{{deviceId}}",
+                    ""
+                  ]
+                },
+                "description": "Soft-deregisters a device by setting `is_active=false` and recording `deregistered_at`. Requires `admin` role in the JWT. Publishes a `device.deregistered` event."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"detail\": \"Device deregistered.\"\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-633c6522-c82e-43a7-8afa-1ef7bdd4a39f"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-8c846488-c8bf-4969-b36c-8089ebb18ed4"
         },
         {
           "name": "Search Devices",
+          "id": "7b8218c1-b022-4e03-9fd0-0ccff3340156",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/devices/search/?q=Lagos",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "devices", "search", ""],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "search",
+                ""
+              ],
               "query": [
                 {
                   "key": "q",
@@ -263,21 +940,97 @@
             },
             "description": "Full-text search across `device_id`, `device_name`, and `location`. Returns up to 50 results ordered by `created_at` descending."
           },
-          "response": []
+          "response": [
+            {
+              "id": "2fbcf604-5fe5-4bd2-91e3-7b746eca1f44",
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/search/?q=Lagos",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    "search",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "Lagos",
+                      "description": "Required. Searches across device_id, device_name, and location fields."
+                    }
+                  ]
+                },
+                "description": "Full-text search across `device_id`, `device_name`, and `location`. Returns up to 50 results ordered by `created_at` descending."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"count\": 1,\n  \"results\": [\n    {\n      \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n      \"device_id\": \"DEV-001\",\n      \"device_name\": \"Test Device Lagos\",\n      \"location\": \"Lagos Island, Lagos\",\n      \"status\": \"ONLINE\"\n    }\n  ]\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-2fbcf604-5fe5-4bd2-91e3-7b746eca1f44"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-7b8218c1-b022-4e03-9fd0-0ccff3340156"
         },
         {
           "name": "Find Nearby Devices",
+          "id": "620e5103-188a-4420-a27e-f30bef6ca38f",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/devices/nearby/?lat=6.4541&lng=3.3947&radius_km=50",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "devices", "nearby", ""],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "nearby",
+                ""
+              ],
               "query": [
                 {
                   "key": "lat",
@@ -298,41 +1051,277 @@
             },
             "description": "Geospatial search using the Haversine formula. Returns all devices within `radius_km` of the given coordinates, sorted by distance ascending. Each result includes a `distance_km` field."
           },
-          "response": []
+          "response": [
+            {
+              "id": "c1d331a2-3021-4015-b66a-c6d253e8602e",
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/nearby/?lat=6.4541&lng=3.3947&radius_km=50",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    "nearby",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "lat",
+                      "value": "6.4541",
+                      "description": "Required. Centre latitude."
+                    },
+                    {
+                      "key": "lng",
+                      "value": "3.3947",
+                      "description": "Required. Centre longitude."
+                    },
+                    {
+                      "key": "radius_km",
+                      "value": "50",
+                      "description": "Optional. Search radius in kilometres. Defaults to 50."
+                    }
+                  ]
+                },
+                "description": "Geospatial search using the Haversine formula. Returns all devices within `radius_km` of the given coordinates, sorted by distance ascending. Each result includes a `distance_km` field."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"count\": 1,\n  \"radius_km\": 50.0,\n  \"results\": [\n    {\n      \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n      \"device_id\": \"DEV-001\",\n      \"device_name\": \"Test Device Lagos\",\n      \"location\": \"Lagos Island, Lagos\",\n      \"distance_km\": 2.314\n    }\n  ]\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-c1d331a2-3021-4015-b66a-c6d253e8602e"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-620e5103-188a-4420-a27e-f30bef6ca38f"
+        },
+        {
+          "name": "Device Statistics",
+          "id": "43fc1fb0-cca9-4eeb-86ac-8c189b002b58",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/stats/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "stats",
+                ""
+              ]
+            },
+            "description": "Get aggregate device statistics (count by status, active/inactive breakdown, warning count)."
+          },
+          "response": [
+            {
+              "id": "d43d8df5-81e5-4c5f-a83f-4333817484e0",
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/stats/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "stats",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"total\": 5,\n  \"active\": 4,\n  \"inactive\": 1,\n  \"by_status\": {\n    \"online\": 2,\n    \"offline\": 1,\n    \"stale\": 1,\n    \"degraded\": 1,\n    \"testing\": 0\n  },\n  \"warning_count\": 2\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-d43d8df5-81e5-4c5f-a83f-4333817484e0"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-43fc1fb0-cca9-4eeb-86ac-8c189b002b58"
         }
-      ]
+      ],
+      "id": "406a8ea8-9307-430b-802e-dd9c79eec8ce",
+      "createdAt": "2026-05-22T23:51:49.000Z",
+      "updatedAt": "2026-05-22T23:51:49.000Z",
+      "uid": "52839743-406a8ea8-9307-430b-802e-dd9c79eec8ce"
     },
     {
       "name": "Device Operations",
       "item": [
         {
           "name": "Send Heartbeat",
+          "id": "f61e9ad1-8ffc-4867-b469-faa3e77d3096",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-API-Key", "value": "{{apiKey}}", "description": "Device API key returned at registration" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "description": "Device API key returned at registration"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"battery_level\": 85,\n  \"storage_available_mb\": 2048,\n  \"network_type\": \"4G\",\n  \"signal_strength\": -75,\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"app_version\": \"1.0.0\"\n}"
+              "raw": "{\n  \"battery_level\": 78,\n  \"is_charging\": false,\n  \"storage_available_mb\": 12800,\n  \"storage_used_mb\": 3200,\n  \"memory_available_mb\": 1500,\n  \"memory_used_mb\": 2500,\n  \"network_type\": \"4G\",\n  \"network_operator\": \"MTN Nigeria\",\n  \"signal_strength\": -75,\n  \"os_version\": \"13\",\n  \"app_version\": \"2.4.1\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"location\": \"Lagos Island, Lagos\",\n  \"physical_address\": \"Plot 123 Ikoyi, Lagos\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/heartbeat/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "devices", "{{deviceId}}", "heartbeat", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}",
+                "heartbeat",
+                ""
+              ]
             },
             "description": "Device-originated endpoint. Authenticated via `X-API-Key` header (not Bearer JWT).\n\nUpdates device status based on health metrics:\n- `battery_level < 15` → DEGRADED (low_battery)\n- `signal_strength < -100` → DEGRADED (low_signal)\n- `storage_available_mb < 500` → DEGRADED (low_storage)\n- `network_type == '2G'` → DEGRADED (poor_network)\n- Otherwise → ONLINE\n- TESTING status is preserved regardless of metrics.\n\nReturns `pending_commands` count and `next_heartbeat_in_ms`."
           },
-          "response": []
+          "response": [
+            {
+              "id": "24c74c9f-061b-4c9c-8458-5f54860cb9ae",
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{apiKey}}",
+                    "description": "Device API key returned at registration"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"battery_level\": 78,\n  \"is_charging\": false,\n  \"storage_available_mb\": 12800,\n  \"storage_used_mb\": 3200,\n  \"memory_available_mb\": 1500,\n  \"memory_used_mb\": 2500,\n  \"network_type\": \"4G\",\n  \"network_operator\": \"MTN Nigeria\",\n  \"signal_strength\": -75,\n  \"os_version\": \"13\",\n  \"app_version\": \"2.4.1\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"location\": \"Lagos Island, Lagos\",\n  \"physical_address\": \"Plot 123 Ikoyi, Lagos\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/heartbeat/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    "{{deviceId}}",
+                    "heartbeat",
+                    ""
+                  ]
+                },
+                "description": "Device-originated endpoint. Authenticated via `X-API-Key` header (not Bearer JWT).\n\nUpdates device status based on health metrics:\n- `battery_level < 15` → DEGRADED (low_battery)\n- `signal_strength < -100` → DEGRADED (low_signal)\n- `storage_available_mb < 500` → DEGRADED (low_storage)\n- `network_type == '2G'` → DEGRADED (poor_network)\n- Otherwise → ONLINE\n- TESTING status is preserved regardless of metrics.\n\nReturns `pending_commands` count and `next_heartbeat_in_ms`."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"status\": \"ONLINE\",\n  \"server_timestamp\": \"2026-05-16T10:20:00Z\",\n  \"device_id\": \"DEV-001\",\n  \"next_heartbeat_in_ms\": 30000,\n  \"pending_commands\": 0\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-24c74c9f-061b-4c9c-8458-5f54860cb9ae"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-f61e9ad1-8ffc-4867-b469-faa3e77d3096"
         },
         {
           "name": "Update Location",
+          "id": "b3782b94-46f7-4ada-93f8-92646d7a73a5",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-API-Key", "value": "{{apiKey}}", "description": "Device API key returned at registration" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "description": "Device API key returned at registration"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -340,14 +1329,444 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/location/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "devices", "{{deviceId}}", "location", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}",
+                "location",
+                ""
+              ]
             },
             "description": "Device-originated endpoint. Authenticated via `X-API-Key` header. A device can only update its own location. Coordinates must be within Nigeria bounds."
           },
-          "response": []
+          "response": [
+            {
+              "id": "d04fd62a-eeab-4104-80f1-eba7121d47ca",
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{apiKey}}",
+                    "description": "Device API key returned at registration"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"latitude\": 6.5244,\n  \"longitude\": 3.3792,\n  \"location\": \"Victoria Island, Lagos\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/location/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    "{{deviceId}}",
+                    "location",
+                    ""
+                  ]
+                },
+                "description": "Device-originated endpoint. Authenticated via `X-API-Key` header. A device can only update its own location. Coordinates must be within Nigeria bounds."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"device_id\": \"DEV-001\",\n  \"latitude\": 6.5244,\n  \"longitude\": 3.3792,\n  \"location\": \"Victoria Island, Lagos\",\n  \"updated_at\": \"2026-05-16T10:21:00Z\"\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-d04fd62a-eeab-4104-80f1-eba7121d47ca"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-b3782b94-46f7-4ada-93f8-92646d7a73a5"
+        },
+        {
+          "name": "Get Device Logs",
+          "id": "d2b880f6-1a5f-439a-968c-ebfce1fc224d",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/{{deviceId}}/logs/?page=1&page_size=50&level=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "{{deviceId}}",
+                "logs",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "page_size",
+                  "value": "50"
+                },
+                {
+                  "key": "level",
+                  "value": "",
+                  "description": "Optional: DEBUG, INFO, WARNING, ERROR, CRITICAL"
+                }
+              ]
+            },
+            "description": "List paginated device logs, optionally filtered by level."
+          },
+          "response": [
+            {
+              "id": "6d30041e-e587-48e3-93bd-d9709924b637",
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/{{deviceId}}/logs/?page=1&page_size=50",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{deviceId}}",
+                    "logs",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "50"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"count\": 10,\n  \"page\": 1,\n  \"page_size\": 50,\n  \"results\": [\n    {\n      \"id\": \"uuid\",\n      \"level\": \"INFO\",\n      \"message\": \"Device started up successfully.\",\n      \"context\": {},\n      \"timestamp\": \"2026-05-22T08:00:00Z\",\n      \"created_at\": \"2026-05-22T08:00:00Z\"\n    }\n  ]\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-6d30041e-e587-48e3-93bd-d9709924b637"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-d2b880f6-1a5f-439a-968c-ebfce1fc224d"
+        },
+        {
+          "name": "Submit Device Log",
+          "id": "977d148e-914f-482b-8a8d-0d7b55c12987",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"level\": \"INFO\",\n  \"message\": \"Network scan completed.\",\n  \"context\": {\"operator\": \"MTN\", \"type\": \"4G\"},\n  \"timestamp\": \"2026-05-22T08:15:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/{{deviceId}}/logs/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "{{deviceId}}",
+                "logs",
+                ""
+              ]
+            },
+            "description": "Device submits a log entry (authentication via X-API-Key)."
+          },
+          "response": [
+            {
+              "id": "5f7e35f2-c248-4b27-ab0c-d62f626a67c4",
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{apiKey}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"level\": \"INFO\",\n  \"message\": \"Network scan completed.\",\n  \"context\": {\"operator\": \"MTN\", \"type\": \"4G\"}\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/{{deviceId}}/logs/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{deviceId}}",
+                    "logs",
+                    ""
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"id\": \"uuid\",\n  \"level\": \"INFO\",\n  \"message\": \"Network scan completed.\",\n  \"context\": {\"operator\": \"MTN\", \"type\": \"4G\"},\n  \"timestamp\": \"2026-05-22T08:15:00Z\",\n  \"created_at\": \"2026-05-22T08:15:00Z\"\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-5f7e35f2-c248-4b27-ab0c-d62f626a67c4"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-977d148e-914f-482b-8a8d-0d7b55c12987"
+        },
+        {
+          "name": "Get Device Test History",
+          "id": "b91546f4-6875-4d57-9d4c-715293c95c12",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/{{deviceId}}/tests/?page=1&page_size=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "{{deviceId}}",
+                "tests",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "page_size",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get paginated test execution history for a device (proxied from test-service)."
+          },
+          "response": [
+            {
+              "id": "17caa170-f993-47cf-a646-ecea34e8de85",
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/{{deviceId}}/tests/?page=1&page_size=20",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{deviceId}}",
+                    "tests",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "20"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"count\": 5,\n  \"page\": 1,\n  \"page_size\": 20,\n  \"results\": []\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-17caa170-f993-47cf-a646-ecea34e8de85"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-b91546f4-6875-4d57-9d4c-715293c95c12"
+        },
+        {
+          "name": "Get Device Test Summary",
+          "id": "712ed790-3452-4c51-87c0-5cd629444d97",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/{{deviceId}}/tests/summary/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "{{deviceId}}",
+                "tests",
+                "summary",
+                ""
+              ]
+            },
+            "description": "Get aggregated test statistics for a device (proxied from test-service)."
+          },
+          "response": [
+            {
+              "id": "0bfb5a1a-3316-442d-8210-bb24e1310cac",
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/{{deviceId}}/tests/summary/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "{{deviceId}}",
+                    "tests",
+                    "summary",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"total_tests\": 0,\n  \"successful_tests\": 0,\n  \"failed_tests\": 0,\n  \"avg_network_speed_mbps\": null,\n  \"success_rate\": 0.0\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-0bfb5a1a-3316-442d-8210-bb24e1310cac"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-712ed790-3452-4c51-87c0-5cd629444d97"
         }
-      ]
+      ],
+      "id": "c6a9bdfb-0652-436d-99f6-f59486d04a69",
+      "createdAt": "2026-05-22T23:51:49.000Z",
+      "updatedAt": "2026-05-22T23:51:49.000Z",
+      "uid": "52839743-c6a9bdfb-0652-436d-99f6-f59486d04a69"
     },
     {
       "name": "Registration Requests",
@@ -373,18 +1792,32 @@
                   "    }",
                   "}"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "id": "820f9adb-ea24-40f6-b5c9-7f93709ffd72"
               }
             }
           ],
+          "id": "12d37bef-5316-4510-a873-f8ecd7a13383",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -392,23 +1825,104 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/registration/requests/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "registration", "requests", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "registration",
+                "requests",
+                ""
+              ]
             },
             "description": "Create a single device registration request. Generates a one-time sync URL sent via SMS to the field agent's phone number. The `registrationRequestId` and `syncToken` variables are auto-saved from the response."
           },
-          "response": []
+          "response": [
+            {
+              "id": "8d735739-7ddd-4fbd-874a-cb4cbce4e33b",
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone_number\": \"+2348012345678\",\n  \"reference\": \"FIELD-AGENT-001\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/registration/requests/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "registration",
+                    "requests",
+                    ""
+                  ]
+                },
+                "description": "Create a single device registration request. Generates a one-time sync URL sent via SMS to the field agent's phone number. The `registrationRequestId` and `syncToken` variables are auto-saved from the response."
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"phone_number\": \"+2348012345678\",\n  \"reference\": \"pilot-device-1\",\n  \"requested_by_user_id\": \"42\",\n  \"organization_id\": \"org_001\",\n  \"status\": \"pending\",\n  \"link_expires_at\": \"2026-05-17T10:22:00Z\",\n  \"created_at\": \"2026-05-16T10:22:00Z\",\n  \"device_id\": null,\n  \"sync_url\": \"{{baseUrl}}/api/v1/registration/sync/<token>/\"\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-8d735739-7ddd-4fbd-874a-cb4cbce4e33b"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-12d37bef-5316-4510-a873-f8ecd7a13383"
         },
         {
           "name": "Create Bulk Registration Requests",
+          "id": "a65129e4-2751-4bf1-b4a3-3b75a1e7c290",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -416,37 +1930,188 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/registration/requests/bulk/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "registration", "requests", "bulk", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "registration",
+                "requests",
+                "bulk",
+                ""
+              ]
             },
             "description": "Create up to 500 registration requests in a single call. Each entry gets its own sync URL and SMS. Returns `count` and `results` array."
           },
-          "response": []
+          "response": [
+            {
+              "id": "a92538d4-d552-4fed-a916-9a206009104d",
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"registrations\": [\n    {\n      \"phone_number\": \"+2348012345678\",\n      \"reference\": \"AGENT-001\"\n    },\n    {\n      \"phone_number\": \"+2348087654321\",\n      \"reference\": \"AGENT-002\"\n    },\n    {\n      \"phone_number\": \"+2348055556666\",\n      \"reference\": \"AGENT-003\"\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/registration/requests/bulk/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "registration",
+                    "requests",
+                    "bulk",
+                    ""
+                  ]
+                },
+                "description": "Create up to 500 registration requests in a single call. Each entry gets its own sync URL and SMS. Returns `count` and `results` array."
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"count\": 2,\n  \"results\": [\n    {\n      \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n      \"phone_number\": \"+2348012345678\",\n      \"status\": \"pending\",\n      \"sync_url\": \"{{baseUrl}}/api/v1/registration/sync/<token1>/\"\n    },\n    {\n      \"registration_id\": \"68f2e4aa-aaaa-bbbb-cccc-123456789013\",\n      \"phone_number\": \"+2348098765432\",\n      \"status\": \"pending\",\n      \"sync_url\": \"{{baseUrl}}/api/v1/registration/sync/<token2>/\"\n    }\n  ]\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-a92538d4-d552-4fed-a916-9a206009104d"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-a65129e4-2751-4bf1-b4a3-3b75a1e7c290"
         },
         {
           "name": "Get Registration Request",
+          "id": "b02f8d5b-510d-42b1-a825-96e8e3e57f6f",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/registration/requests/{{registrationRequestId}}/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "registration", "requests", "{{registrationRequestId}}", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "registration",
+                "requests",
+                "{{registrationRequestId}}",
+                ""
+              ]
             },
             "description": "Retrieve details of a specific registration request. Only the user who created the request can access it."
           },
-          "response": []
+          "response": [
+            {
+              "id": "3c82668c-e7b2-409c-aa47-380b7e4012ca",
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/registration/requests/{{registrationRequestId}}/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "registration",
+                    "requests",
+                    "{{registrationRequestId}}",
+                    ""
+                  ]
+                },
+                "description": "Retrieve details of a specific registration request. Only the user who created the request can access it."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"phone_number\": \"+2348012345678\",\n  \"reference\": \"pilot-device-1\",\n  \"requested_by_user_id\": \"42\",\n  \"organization_id\": \"org_001\",\n  \"status\": \"pending\",\n  \"link_expires_at\": \"2026-05-17T10:22:00Z\",\n  \"created_at\": \"2026-05-16T10:22:00Z\",\n  \"device_id\": null\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-3c82668c-e7b2-409c-aa47-380b7e4012ca"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-b02f8d5b-510d-42b1-a825-96e8e3e57f6f"
         },
         {
           "name": "Revoke Registration Request",
+          "id": "92bcb3e9-4469-458d-b733-78e10a5d048f",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "POST",
             "header": [],
@@ -456,12 +2121,79 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/registration/requests/{{registrationRequestId}}/revoke/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "registration", "requests", "{{registrationRequestId}}", "revoke", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "registration",
+                "requests",
+                "{{registrationRequestId}}",
+                "revoke",
+                ""
+              ]
             },
             "description": "Revoke a pending registration sync link by marking it as expired. Returns 409 if the request has already been approved."
           },
-          "response": []
+          "response": [
+            {
+              "id": "564d8083-da85-45d1-b79d-d63b71bb667a",
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/registration/requests/{{registrationRequestId}}/revoke/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "registration",
+                    "requests",
+                    "{{registrationRequestId}}",
+                    "revoke",
+                    ""
+                  ]
+                },
+                "description": "Revoke a pending registration sync link by marking it as expired. Returns 409 if the request has already been approved."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"status\": \"expired\",\n  \"revoked\": true\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-564d8083-da85-45d1-b79d-d63b71bb667a"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-92bcb3e9-4469-458d-b733-78e10a5d048f"
         },
         {
           "name": "Regenerate Sync Link",
@@ -480,14 +2212,25 @@
                   "    }",
                   "}"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "id": "b8f31a6e-aeac-420e-9504-1852dc7a8bc1"
               }
             }
           ],
+          "id": "372d437c-c7a6-4d46-acb5-be03197609e6",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "POST",
             "header": [],
@@ -497,31 +2240,157 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/registration/requests/{{registrationRequestId}}/regenerate/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "registration", "requests", "{{registrationRequestId}}", "regenerate", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "registration",
+                "requests",
+                "{{registrationRequestId}}",
+                "regenerate",
+                ""
+              ]
             },
             "description": "Generate a new sync link for an existing registration request (e.g. if the previous link expired). Resets status to `pending` and issues a new SMS. Returns 409 if already approved. The new `syncToken` is auto-saved."
           },
-          "response": []
+          "response": [
+            {
+              "id": "a0b894ec-6145-4fb1-8b4b-cc137e807e2d",
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/registration/requests/{{registrationRequestId}}/regenerate/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "registration",
+                    "requests",
+                    "{{registrationRequestId}}",
+                    "regenerate",
+                    ""
+                  ]
+                },
+                "description": "Generate a new sync link for an existing registration request (e.g. if the previous link expired). Resets status to `pending` and issues a new SMS. Returns 409 if already approved. The new `syncToken` is auto-saved."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"phone_number\": \"+2348012345678\",\n  \"status\": \"pending\",\n  \"sync_url\": \"{{baseUrl}}/api/v1/registration/sync/<new-token>/\",\n  \"regenerated\": true\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-a0b894ec-6145-4fb1-8b4b-cc137e807e2d"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-372d437c-c7a6-4d46-acb5-be03197609e6"
         }
-      ]
+      ],
+      "id": "926978db-8e0d-411f-979e-a29a9f5427d1",
+      "createdAt": "2026-05-22T23:51:49.000Z",
+      "updatedAt": "2026-05-22T23:51:49.000Z",
+      "uid": "52839743-926978db-8e0d-411f-979e-a29a9f5427d1"
     },
     {
       "name": "Sync Link (Device-side)",
       "item": [
         {
           "name": "Validate Sync URL",
+          "id": "9f651adf-51a6-425f-9a20-4ff5ec453e64",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/registration/sync/{{syncToken}}/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "registration", "sync", "{{syncToken}}", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "registration",
+                "sync",
+                "{{syncToken}}",
+                ""
+              ]
             },
             "description": "Called by the device app when the field agent opens the sync URL. Validates the token and returns registration metadata (phone number, reference, expiry). Returns 404 for invalid tokens, 410 for used or expired ones.\n\nRate-limited (validate throttle)."
           },
-          "response": []
+          "response": [
+            {
+              "id": "ce6c66b6-51ca-41ef-845f-516f768af543",
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/registration/sync/{{syncToken}}/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "registration",
+                    "sync",
+                    "{{syncToken}}",
+                    ""
+                  ]
+                },
+                "description": "Called by the device app when the field agent opens the sync URL. Validates the token and returns registration metadata (phone number, reference, expiry). Returns 404 for invalid tokens, 410 for used or expired ones.\n\nRate-limited (validate throttle)."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"phone_number\": \"+2348012345678\",\n  \"reference\": \"pilot-device-1\",\n  \"organization_id\": \"org_001\",\n  \"status\": \"pending\",\n  \"link_expires_at\": \"2026-05-17T10:22:00Z\"\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-ce6c66b6-51ca-41ef-845f-516f768af543"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-9f651adf-51a6-425f-9a20-4ff5ec453e64"
         },
         {
           "name": "Complete Sync (Approve Registration)",
@@ -538,14 +2407,22 @@
                   "    console.log('API Key (save this — shown only once):', body.api_key);",
                   "}"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "id": "4b181c7e-dfa5-4b5b-aca4-8defb227ab79"
               }
             }
           ],
+          "id": "90962d8f-4dfd-4a24-93f5-f40debf66f6b",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -553,14 +2430,109 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/registration/sync/{{syncToken}}/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "registration", "sync", "{{syncToken}}", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "registration",
+                "sync",
+                "{{syncToken}}",
+                ""
+              ]
             },
             "description": "Called by the device app to complete registration via the sync link. Atomically creates the device record, marks the registration request as `approved`, and returns a one-time `api_key`. The sync link is consumed and cannot be reused.\n\nRate-limited (complete throttle). `deviceId` and `apiKey` are auto-saved."
           },
-          "response": []
+          "response": [
+            {
+              "id": "3358dea1-c597-4197-a380-a4306fc8daeb",
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"device_id\": \"DEV-SYNC-001\",\n  \"device_name\": \"Field Device Kano\",\n  \"location\": \"Kano Municipal, Kano\",\n  \"latitude\": 12.0022,\n  \"longitude\": 8.5920,\n  \"metadata\": {\n    \"manufacturer\": \"Tecno\",\n    \"model\": \"Spark 10\",\n    \"android_version\": \"12\",\n    \"app_version\": \"1.0.0\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/registration/sync/{{syncToken}}/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "registration",
+                    "sync",
+                    "{{syncToken}}",
+                    ""
+                  ]
+                },
+                "description": "Called by the device app to complete registration via the sync link. Atomically creates the device record, marks the registration request as `approved`, and returns a one-time `api_key`. The sync link is consumed and cannot be reused.\n\nRate-limited (complete throttle). `deviceId` and `apiKey` are auto-saved."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"device_id\": \"DEV-001\",\n  \"approved\": true,\n  \"approved_at\": \"2026-05-16T10:30:00Z\",\n  \"api_key\": \"<one-time-device-api-key>\"\n}",
+              "createdAt": "2026-05-22T23:51:49.000Z",
+              "updatedAt": "2026-05-22T23:51:49.000Z",
+              "uid": "52839743-3358dea1-c597-4197-a380-a4306fc8daeb"
+            }
+          ],
+          "createdAt": "2026-05-22T23:51:49.000Z",
+          "updatedAt": "2026-05-22T23:51:49.000Z",
+          "uid": "52839743-90962d8f-4dfd-4a24-93f5-f40debf66f6b"
         }
-      ]
+      ],
+      "id": "3af737aa-3eff-442d-8674-3bc04f0850e4",
+      "createdAt": "2026-05-22T23:51:49.000Z",
+      "updatedAt": "2026-05-22T23:51:49.000Z",
+      "uid": "52839743-3af737aa-3eff-442d-8674-3bc04f0850e4"
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://vess-dev-alb-385758613.us-east-1.elb.amazonaws.com/device"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "description": "JWT Bearer token from auth-service login. Used for all user-facing endpoints."
+    },
+    {
+      "key": "deviceId",
+      "value": "",
+      "description": "Auto-populated after device registration."
+    },
+    {
+      "key": "apiKey",
+      "value": "",
+      "description": "One-time API key returned on device registration. Used for heartbeat and location endpoints."
+    },
+    {
+      "key": "registrationRequestId",
+      "value": "",
+      "description": "Auto-populated after creating a registration request."
+    },
+    {
+      "key": "syncToken",
+      "value": "",
+      "description": "Sync link token extracted from sync_url after creating a registration request."
     }
   ]
 }

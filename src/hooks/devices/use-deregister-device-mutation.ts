@@ -5,20 +5,20 @@ import { deviceQueryKeys } from '@/lib/device-query-keys'
 import { resolveApiSuccessMessage } from '@/lib/format-api-success-message'
 import { deviceService } from '@/services/device.service'
 
-/** Backend requires a short reason body on DELETE `/devices/:id/` */
-const DEREGISTER_REASON_DEFAULT =
-  'Unregister requested from device management dashboard'
-
 export function useDeregisterDeviceMutation(accessToken: string | null, routeDeviceId: string) {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (reason: string) => {
       if (!accessToken?.length || !routeDeviceId.trim().length) {
         throw new Error('Not signed in or missing device.')
       }
-      const { data } = await deviceService.deregisterDevice(routeDeviceId, DEREGISTER_REASON_DEFAULT)
+      const trimmedReason = reason.trim()
+      if (!trimmedReason.length) {
+        throw new Error('Please provide a reason for unregistering this device.')
+      }
+      const { data } = await deviceService.deregisterDevice(routeDeviceId, trimmedReason)
       return data
     },
     onSuccess: (data) => {

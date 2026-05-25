@@ -1,28 +1,31 @@
 import { useQuery } from '@tanstack/react-query'
 import { deviceQueryKeys } from '@/lib/device-query-keys'
 import { deviceService } from '@/services/device.service'
+import type { ApiDeviceStats } from '@/types/device'
 
 export type DevicesKpiSummary = {
   total: number
   online: number
   offline: number
+  lowBattery: number
+}
+
+function mapApiDeviceStatsToKpiSummary(stats: ApiDeviceStats): DevicesKpiSummary {
+  return {
+    total: stats.total,
+    online: stats.active,
+    offline: stats.inactive,
+    lowBattery: stats.warning_count,
+  }
 }
 
 export function useDevicesKpiQuery(accessToken: string | null) {
   return useQuery({
-    queryKey: deviceQueryKeys.kpiCounts(accessToken),
+    queryKey: deviceQueryKeys.stats(accessToken),
     enabled: !!accessToken,
     queryFn: async (): Promise<DevicesKpiSummary> => {
-      const [allRes, onlineRes, offlineRes] = await Promise.all([
-        deviceService.listDevices({ page: 1, page_size: 1 }),
-        deviceService.listDevices({ page: 1, page_size: 1, status: 'ONLINE' }),
-        deviceService.listDevices({ page: 1, page_size: 1, status: 'OFFLINE' }),
-      ])
-      return {
-        total: allRes.data.count,
-        online: onlineRes.data.count,
-        offline: offlineRes.data.count,
-      }
+      const { data } = await deviceService.getDeviceStats()
+      return mapApiDeviceStatsToKpiSummary(data)
     },
   })
 }

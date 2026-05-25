@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { throwIfApiEnvelopeError } from '@/lib/assert-api-envelope'
 import { formatApiMutationError } from '@/lib/format-api-mutation-error'
 import { resolveApiSuccessMessage } from '@/lib/format-api-success-message'
 import { testQueryKeys } from '@/lib/test-query-keys'
@@ -16,10 +17,7 @@ export function useDeleteTestMutation(accessToken: string | null, testId: string
         throw new Error('Not signed in or missing test.')
       }
       const { data } = await testService.deleteTest(testId)
-      if (!data.isSuccess) {
-        const msg = data.error?.description ?? data.message ?? 'Could not delete test.'
-        throw new Error(msg)
-      }
+      throwIfApiEnvelopeError(data, 'Could not delete test.')
       return data
     },
     onSuccess: (data) => {

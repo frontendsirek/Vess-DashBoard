@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { throwIfApiEnvelopeFailed } from '@/lib/assert-api-envelope'
 import { testQueryKeys } from '@/lib/test-query-keys'
 import { testService } from '@/services/test.service'
 import type { TestsDashboardParams } from '@/types/test'
@@ -9,10 +10,7 @@ export function useTestsDashboardQuery(accessToken: string | null, params: Tests
     enabled: !!accessToken,
     queryFn: async () => {
       const { data } = await testService.getTestsDashboard(params)
-      if (!data.isSuccess) {
-        const msg = data.error?.description ?? data.message ?? 'Could not load test dashboard.'
-        throw new Error(msg)
-      }
+      throwIfApiEnvelopeFailed(data, 'Could not load test dashboard.')
       return data
     },
   })

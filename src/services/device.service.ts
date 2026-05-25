@@ -3,6 +3,12 @@ import type { PaginatedResponse } from '@/types/api'
 import type {
   ApiDevice,
   ApiDeviceDetail,
+  ApiDeviceLogsPage,
+  ApiDeviceLogsParams,
+  ApiDeviceStats,
+  ApiDeviceTestSummary,
+  ApiDeviceTestsPage,
+  ApiDeviceTestsParams,
   HeartbeatPayload,
   ListDevicesParams,
   RegisterDevicePayload,
@@ -34,8 +40,28 @@ export const deviceService = {
     })
   },
 
+  getDeviceStats() {
+    return apiClient.get<ApiDeviceStats>(`${DEVICES_PREFIX}/stats/`)
+  },
+
   getDevice(deviceId: string) {
     return apiClient.get<ApiDeviceDetail>(`${DEVICES_PREFIX}/${deviceId}/`)
+  },
+
+  getDeviceLogs(deviceId: string, params?: ApiDeviceLogsParams) {
+    return apiClient.get<ApiDeviceLogsPage>(`${DEVICES_PREFIX}/${deviceId}/logs/`, {
+      params,
+    })
+  },
+
+  getDeviceTestHistory(deviceId: string, params?: ApiDeviceTestsParams) {
+    return apiClient.get<ApiDeviceTestsPage>(`${DEVICES_PREFIX}/${deviceId}/tests/`, {
+      params,
+    })
+  },
+
+  getDeviceTestSummary(deviceId: string) {
+    return apiClient.get<ApiDeviceTestSummary>(`${DEVICES_PREFIX}/${deviceId}/tests/summary/`)
   },
 
   registerDevice(payload: RegisterDevicePayload) {
@@ -56,9 +82,12 @@ export const deviceService = {
   },
 
   searchDevices(query: string) {
-    return apiClient.get<ApiDevice[]>(`${DEVICES_PREFIX}/search/`, {
-      params: { q: query },
-    })
+    return apiClient.get<ApiDevice[] | PaginatedResponse<ApiDevice>>(
+      `${DEVICES_PREFIX}/search/`,
+      {
+        params: { q: query },
+      },
+    )
   },
 
   findNearby(lat: number, lng: number, radiusKm: number) {

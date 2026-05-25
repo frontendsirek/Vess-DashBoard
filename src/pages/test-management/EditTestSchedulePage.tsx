@@ -80,19 +80,6 @@ export default function EditTestSchedulePage() {
   const accessToken = useAuthStore((state) => state.accessToken)
   const editState = location.state as TestManagementEditScheduleState | null
   const configure = editState?.configure
-  const updateMutation = useUpdateTestMutation(accessToken, trimId)
-
-  const [authError, setAuthError] = useState<string | null>(null)
-  const [enabled, setEnabled] = useState(editState?.enabled ?? true)
-
-  const form = useForm<ScheduleFormValues>({
-    resolver: zodResolver(scheduleFormSchema),
-    defaultValues: scheduleDefaultValues,
-    mode: 'onSubmit',
-  })
-
-  const scheduleKind = useWatch({ control: form.control, name: 'scheduleKind' })
-  const immediate = useWatch({ control: form.control, name: 'immediate' })
 
   useEffect(() => {
     if (!trimId) {
@@ -104,15 +91,43 @@ export default function EditTestSchedulePage() {
     }
   }, [configure, editState?.testId, navigate, trimId])
 
-  useEffect(() => {
-    if (editState?.scheduleRestore) {
-      form.reset({ ...scheduleDefaultValues, ...editState.scheduleRestore })
-    }
-  }, [editState?.scheduleRestore, form])
+  if (!editState || !configure || editState.testId !== trimId) return null
 
-  if (!configure || editState?.testId !== trimId) return null
+  return (
+    <EditTestScheduleForm
+      key={location.key}
+      trimId={trimId}
+      editState={editState}
+      accessToken={accessToken}
+    />
+  )
+}
 
-  const configureState = configure
+type EditTestScheduleFormProps = {
+  trimId: string
+  editState: TestManagementEditScheduleState
+  accessToken: string | null
+}
+
+function EditTestScheduleForm({ trimId, editState, accessToken }: EditTestScheduleFormProps) {
+  const navigate = useNavigate()
+  const configureState = editState.configure
+  const updateMutation = useUpdateTestMutation(accessToken, trimId)
+
+  const [authError, setAuthError] = useState<string | null>(null)
+
+  const form = useForm<ScheduleFormValues>({
+    resolver: zodResolver(scheduleFormSchema),
+    defaultValues: {
+      ...scheduleDefaultValues,
+      ...editState.scheduleRestore,
+    },
+    mode: 'onSubmit',
+  })
+
+  const scheduleKind = useWatch({ control: form.control, name: 'scheduleKind' })
+  const immediate = useWatch({ control: form.control, name: 'immediate' })
+
   const dateDisabled = scheduleKind === 'one-time' && immediate
   const nextExecutions = [
     '13/03/2026, 17:44:45',
@@ -141,10 +156,7 @@ export default function EditTestSchedulePage() {
     }
     setAuthError(null)
     try {
-      const payload = mapCreateTestScheduleDraftToUpdatePayload(
-        toScheduleDraft(configureState, values),
-        { enabled },
-      )
+      const payload = mapCreateTestScheduleDraftToUpdatePayload(toScheduleDraft(configureState, values))
       await updateMutation.mutateAsync(payload)
     } catch {
       // mutation onError handles toast
@@ -416,22 +428,6 @@ export default function EditTestSchedulePage() {
                   )}
                 />
               )}
-            </div>
-
-            <div className="flex items-center justify-between gap-4 rounded-lg border border-vess-grey-200 bg-vess-grey-50 px-4 py-4">
-              <span className="text-[18px] font-normal leading-[21.6px] text-vess-grey-950">Enabled</span>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={enabled}
-                onClick={() => setEnabled((current) => !current)}
-                className={cn(
-                  'relative flex h-[22px] w-9 shrink-0 items-center rounded-full p-[3px] transition-colors',
-                  enabled ? 'justify-end bg-vess-primary-500' : 'justify-start bg-vess-grey-200',
-                )}
-              >
-                <span className="size-4 shrink-0 rounded-full bg-vess-grey-50 shadow-sm" />
-              </button>
             </div>
 
             {submitError && (

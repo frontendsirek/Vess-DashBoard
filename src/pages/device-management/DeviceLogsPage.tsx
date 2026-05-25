@@ -12,9 +12,13 @@ import {
 } from '@/components/ui/select'
 import type { DeviceLogEntry } from '@/data/device-management'
 import { useDeviceDetailQuery } from '@/hooks/devices/use-device-detail-query'
+import { useDeviceLogsQuery } from '@/hooks/devices/use-device-logs-query'
+import { mapApiDeviceLogsToEntries } from '@/lib/map-api-device-logs'
 import { useAuthStore } from '@/stores/auth-store'
 
 const LEVEL_OPTIONS = ['All Levels', 'INFO', 'DEBUG', 'WARNING', 'ERROR'] as const
+
+const LOGS_PAGE_SIZE = 50
 
 const CATEGORY_OPTIONS = [
   'All Categories',
@@ -43,9 +47,6 @@ function downloadLogsCsv(deviceName: string, entries: DeviceLogEntry[]) {
   URL.revokeObjectURL(objectUrl)
 }
 
-/** Logs list is not wired to a VeSS logs API yet; device detail establishes context + display name only. */
-const EMPTY_DEVICE_LOGS: DeviceLogEntry[] = []
-
 export default function DeviceLogsPage() {
   const { deviceId = '' } = useParams()
   const navigate = useNavigate()
@@ -54,13 +55,27 @@ export default function DeviceLogsPage() {
   const apiQueryEnabled = Boolean(accessToken?.length && deviceId.trim())
   const apiDeviceQuery = useDeviceDetailQuery(accessToken, deviceId, apiQueryEnabled)
 
-  const allLogs = EMPTY_DEVICE_LOGS
-
-  const deviceDisplayName = apiDeviceQuery.data?.device_name ?? ''
-
   const [search, setSearch] = useState('')
   const [levelFilter, setLevelFilter] = useState<string>(LEVEL_OPTIONS[0])
   const [categoryFilter, setCategoryFilter] = useState<string>(CATEGORY_OPTIONS[0])
+
+  const logsQueryParams = useMemo(
+    () => ({
+      page: 1,
+      page_size: LOGS_PAGE_SIZE,
+      ...(levelFilter !== LEVEL_OPTIONS[0] ? { level: levelFilter } : {}),
+    }),
+    [levelFilter],
+  )
+
+  const logsQuery = useDeviceLogsQuery(accessToken, deviceId, logsQueryParams, apiQueryEnabled)
+
+  const allLogs = useMemo(
+    () => mapApiDeviceLogsToEntries(logsQuery.data?.results),
+    [logsQuery.data?.results],
+  )
+
+  const deviceDisplayName = apiDeviceQuery.data?.device_name ?? ''
 
   useEffect(() => {
     if (!deviceId.trim()) {
@@ -89,6 +104,7 @@ export default function DeviceLogsPage() {
     setCategoryFilter(CATEGORY_OPTIONS[0])
     if (accessToken && deviceId) {
       void apiDeviceQuery.refetch()
+      void logsQuery.refetch()
     }
   }
 
@@ -217,7 +233,19 @@ export default function DeviceLogsPage() {
                 </div>
               </div>
 
-              <DeviceLogsList entries={filteredLogs} totalInDataset={allLogs.length} />
+              {logsQuery.isPending ? (
+                <p className="text-center text-[15px] text-vess-grey-600">Loading logs…</p>
+              ) : logsQuery.isError ? (
+                <p className="text-center text-[15px] text-vess-red-800">
+                  Could not load logs.{' '}
+                  {logsQuery.error instanceof Error ? logsQuery.error.message : 'Request failed.'}
+                </p>
+              ) : (
+                <DeviceLogsList
+                  entries={filteredLogs}
+                  totalInDataset={logsQuery.data?.count ?? allLogs.length}
+                />
+              )}
             </div>
           </section>
         </div>

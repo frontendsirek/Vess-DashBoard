@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { deviceQueryKeys } from '@/lib/device-query-keys'
+import { normalizeDeviceListResults } from '@/lib/normalize-device-list-response'
 import { deviceService } from '@/services/device.service'
 import type { ApiDevice } from '@/types/device'
 
@@ -10,7 +11,7 @@ export function useDevicesSearchQuery(accessToken: string | null, searchQuery: s
     enabled: !!accessToken && enabled && hasQuery,
     queryFn: async (): Promise<ApiDevice[]> => {
       const { data } = await deviceService.searchDevices(searchQuery.trim())
-      return data
+      return normalizeDeviceListResults(data)
     },
   })
 }
