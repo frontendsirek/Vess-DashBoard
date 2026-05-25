@@ -11,7 +11,6 @@ import {
   SearchIcon,
   SpeedometerIcon,
 } from '@/components/icons'
-import { Topbar } from '@/components/layout/Topbar'
 import { Pagination } from '@/components/test-management/Pagination'
 import {
   Select,
@@ -117,7 +116,6 @@ export default function DeviceTestHistoryPage() {
   if (!accessToken?.length) {
     return (
       <>
-        <Topbar title="Device Management" subtitle="Device fleet management" />
         <div className="flex flex-col gap-4 px-5 py-6">
           <p className="text-center text-[15px] text-vess-grey-800">
             Sign in to load this device&apos;s test history.
@@ -137,7 +135,6 @@ export default function DeviceTestHistoryPage() {
   if (isPageLoading) {
     return (
       <>
-        <Topbar title="Device Management" subtitle="Device fleet management" />
         <div className="px-5 py-6">
           <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
         </div>
@@ -149,7 +146,6 @@ export default function DeviceTestHistoryPage() {
     const errMsg = pageLoadError instanceof Error ? pageLoadError.message : 'Request failed.'
     return (
       <>
-        <Topbar title="Device Management" subtitle="Device fleet management" />
         <div className="flex flex-col gap-4 px-5 py-6">
           <p className="text-center text-[15px] text-vess-red-800">
             Could not load device. {errMsg}
@@ -168,7 +164,6 @@ export default function DeviceTestHistoryPage() {
 
   return (
     <>
-      <Topbar title="Device Management" subtitle="Device fleet management" />
       <div className="px-5 py-6">
         <div className="flex flex-col gap-8 rounded-2xl bg-vess-grey-100 px-4 py-6 md:px-5">
           <button

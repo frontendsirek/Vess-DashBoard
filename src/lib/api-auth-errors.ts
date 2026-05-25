@@ -1,9 +1,11 @@
-/** VeSS-style envelope auth failures (often HTTP 200 with `isSuccess: false`). */
+import { isEnvelopeFailed, isExplicitEnvelopeFailure } from '@/lib/assert-api-envelope'
+
+/** VeSS-style envelope auth failures (often HTTP 200 with `success: false`). */
 export function isAuthEnvelopeError(body: unknown): boolean {
   if (!body || typeof body !== 'object') return false
 
   const record = body as Record<string, unknown>
-  if (record.isSuccess !== false) return false
+  if (!isExplicitEnvelopeFailure(record)) return false
 
   const err = record.error
   if (err && typeof err === 'object') {
@@ -29,11 +31,17 @@ export function isAuthEnvelopeError(body: unknown): boolean {
   )
 }
 
-export function parseTokenPairFromRefreshResponse(body: unknown): { access: string; refresh: string } | null {
+export type AuthTokenPair = {
+  access: string
+  refresh: string
+}
+
+/** Reads JWT pair from login, verify-otp, or refresh envelopes (`access` or `access_token`). */
+export function parseTokenPairFromAuthEnvelope(body: unknown): AuthTokenPair | null {
   if (!body || typeof body !== 'object') return null
 
   const record = body as Record<string, unknown>
-  if (record.isSuccess === false) return null
+  if (isEnvelopeFailed(record)) return null
 
   const inner =
     record.data && typeof record.data === 'object' ?

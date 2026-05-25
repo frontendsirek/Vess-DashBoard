@@ -1,4 +1,5 @@
 import { isAxiosError } from 'axios'
+import { envelopeErrorMessage, isEnvelopeFailed } from '@/lib/assert-api-envelope'
 
 export type FormatApiMutationErrorOptions = {
   /** When `error` is not an `Error` or Axios error-shaped value */
@@ -46,6 +47,7 @@ function stringifyPayloadFragment(value: unknown): string | undefined {
       'meta',
       '_meta',
       'isSuccess',
+      'success',
       'status',
       'code',
       'timestamp',
@@ -71,9 +73,25 @@ function messageFromResponseBody(data: unknown): string | undefined {
   if (!data || typeof data !== 'object') return undefined
 
   const obj = data as Record<string, unknown>
-  /** VeSS envelopes: top-level message first ({ message, error: { description } }). */
-  const fromMessage = nonEmptyTrimmed(obj.message)
-  if (fromMessage !== undefined) return fromMessage
+
+  /** Failed envelopes: prefer nested `error`, then top-level `message` / field `data`. */
+  if (isEnvelopeFailed(obj)) {
+    const err = obj.error
+    if (err !== null && err !== undefined && typeof err === 'object') {
+      const errObj = err as Record<string, unknown>
+      const fromErr =
+        nonEmptyTrimmed(errObj.description) ?? nonEmptyTrimmed(errObj.message)
+      if (fromErr !== undefined) return fromErr
+    }
+
+    const fromDetail = stringifyPayloadFragment(obj.detail)
+    if (fromDetail !== undefined) return fromDetail
+
+    const fromEnvelope = envelopeErrorMessage(obj, '')
+    if (fromEnvelope.trim()) return fromEnvelope
+
+    return undefined
+  }
 
   const fromDetail = stringifyPayloadFragment(obj.detail)
   if (fromDetail !== undefined) return fromDetail
@@ -83,6 +101,9 @@ function messageFromResponseBody(data: unknown): string | undefined {
     const envelope = stringifyPayloadFragment(err)
     if (envelope !== undefined) return envelope
   }
+
+  const fromMessage = nonEmptyTrimmed(obj.message)
+  if (fromMessage !== undefined) return fromMessage
 
   return stringifyPayloadFragment(data)
 }
@@ -105,10 +126,19 @@ export function formatApiMutationError(
   if (isAxiosError(error)) {
     const fromPayload = messageFromResponseBody(error.response?.data)
     const fromAxios = stripGenericAxiosStatusHint(error.message ?? '')
-    const primary =
+    const status = error.response?.status
+    let primary =
       nonEmptyTrimmed(fromPayload ?? '') ??
       nonEmptyTrimmed(fromAxios ?? '') ??
       nonEmptyTrimmed((error.message ?? '').trim())
+
+    if (
+      (status === 401 || status === 403) &&
+      primary &&
+      /^login successful$/i.test(primary)
+    ) {
+      primary = undefined
+    }
 
     return primary ?? fallback
   }

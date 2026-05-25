@@ -171,13 +171,25 @@ export type ListDevicesParams = {
   page_size?: number
 }
 
-export type RegisterDevicePayload = {
-  device_id: string
+/** Dashboard-managed device fields (no `metadata` — that is device/mobile-reported). */
+export type DashboardDeviceConfigurationPayload = {
   device_name: string
   location: string
   latitude: number
   longitude: number
-  metadata?: Record<string, string>
+  msisdn?: string
+  device_group?: string
+  tags?: string[]
+  alert_battery_threshold?: number
+  alert_offline_duration_minutes?: number
+}
+
+export type RegisterDevicePayload = DashboardDeviceConfigurationPayload & {
+  device_id: string
+}
+
+export type UpdateDevicePayload = Partial<DashboardDeviceConfigurationPayload> & {
+  device_id?: string
 }
 
 export type HeartbeatPayload = {

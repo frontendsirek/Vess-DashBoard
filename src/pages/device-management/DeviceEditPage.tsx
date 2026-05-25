@@ -6,7 +6,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowBackIcon } from '@/components/icons'
 import { DeviceConfigurationForm } from '@/components/device-management/DeviceConfigurationForm'
 import type { DeviceConfigurationDetectedLocation } from '@/components/device-management/DeviceConfigurationForm'
-import { Topbar } from '@/components/layout/Topbar'
 import { Form } from '@/components/ui/form'
 import type { DeviceEditDefaults } from '@/data/device-management'
 import { formatDeviceCoordinatesDisplay } from '@/data/device-management'
@@ -16,8 +15,8 @@ import { deviceQueryKeys } from '@/lib/device-query-keys'
 import { formatApiMutationError } from '@/lib/format-api-mutation-error'
 import { resolveApiSuccessMessage } from '@/lib/format-api-success-message'
 import {
-  buildOptionalDeviceMetadataFromForm,
   deviceEditDefaultsToFormValues,
+  mapDeviceConfigurationFormToUpdatePayload,
 } from '@/lib/map-device-configuration-form'
 import { deviceService } from '@/services/device.service'
 import type { ApiDeviceDetail } from '@/types/device'
@@ -98,14 +97,13 @@ function DeviceEditConfiguredForm({
   const updateDeviceMutation = useMutation({
     mutationFn: async (input: UpdateDeviceMutationInput) => {
       if (!deviceId.trim()) throw new Error('Missing device.')
-      const metadata = buildOptionalDeviceMetadataFromForm(input.values)
       const { data } = await deviceService.updateDevice(deviceId, {
         device_id: apiSnapshot.device_id,
-        device_name: input.values.deviceName.trim(),
-        location: input.location,
-        latitude: input.latitude,
-        longitude: input.longitude,
-        ...(metadata ? { metadata } : {}),
+        ...mapDeviceConfigurationFormToUpdatePayload(input.values, {
+          latitude: input.latitude,
+          longitude: input.longitude,
+          location: input.location,
+        }),
       })
       return data
     },
@@ -140,7 +138,6 @@ function DeviceEditConfiguredForm({
 
   return (
     <>
-      <Topbar title="Device Management" subtitle="Device fleet management" />
       <div className="flex flex-col gap-4 px-5 py-6">
         <Form {...form}>
           <form
@@ -239,7 +236,6 @@ export default function DeviceEditPage() {
   if (!accessToken?.length) {
     return (
       <>
-        <Topbar title="Device Management" subtitle="Device fleet management" />
         <div className="flex flex-col gap-4 px-5 py-6">
           <p className="text-center text-[15px] text-vess-grey-800">
             Sign in to edit this device.
@@ -259,7 +255,6 @@ export default function DeviceEditPage() {
   if (apiDeviceQuery.isPending) {
     return (
       <>
-        <Topbar title="Device Management" subtitle="Device fleet management" />
         <div className="px-5 py-6">
           <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
         </div>
@@ -272,7 +267,6 @@ export default function DeviceEditPage() {
       apiDeviceQuery.error instanceof Error ? apiDeviceQuery.error.message : 'Request failed.'
     return (
       <>
-        <Topbar title="Device Management" subtitle="Device fleet management" />
         <div className="flex flex-col gap-4 px-5 py-6">
           <p className="text-center text-[15px] text-vess-red-800">
             Could not load device. {errMsg}

@@ -1,45 +1,100 @@
 {
   "info": {
-    "name": "Vess Auth Service",
+    "name": "VeSS Auth Service API",
     "_postman_id": "vess-auth-service-collection",
-    "description": "Complete collection for the Vess Auth Service API.\n\n**Setup:**\n1. Set the `baseUrl` collection variable to your deployment URL (default points to the ALB).\n2. Set `deviceServiceSecret` to match `DEVICE_SERVICE_SECRET` on the server (used for HMAC-signed service-to-service calls).\n3. Run requests in order — login/verify-otp responses auto-populate `accessToken` and `refreshToken` variables.",
+    "description": "Complete VeSS Authentication Service API collection with JWT auth, email OTP, password reset, and Google OAuth 2.0 three-step secure flow.\n\n## Setup\n1. Set the `baseUrl` collection variable to your deployment (e.g., `http://localhost:8000` or Kong ALB URL)\n2. Set `deviceServiceSecret` to match the service secret on the backend\n3. Run requests in order \u2014 responses auto-populate `accessToken`, `refreshToken`, `otp`, and `resetToken` variables\n\n## Google OAuth Flow\n**Secure three-step flow** (recommended):\n1. **Google OAuth Start** \u2192 Get `auth_url` to redirect user\n2. **Google OAuth Callback** \u2192 Backend exchanges code for tokens (one-time code returned in fragment)\n3. **Google OAuth Exchange** \u2192 Frontend exchanges one-time code for VeSS JWT tokens\n\nTokens are never exposed in the URL; all exchanges happen server-side.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
       "value": "http://vess-dev-alb-385758613.us-east-1.elb.amazonaws.com/auth",
-      "type": "string"
+      "type": "string",
+      "description": "Base URL for auth service. Dev: http://localhost:8000. Prod: https://<ALB_DOMAIN>/auth"
     },
     {
       "key": "accessToken",
       "value": "",
-      "type": "string"
+      "type": "string",
+      "description": "JWT access token (auto-populated after login/verify-otp)"
     },
     {
       "key": "refreshToken",
       "value": "",
-      "type": "string"
+      "type": "string",
+      "description": "JWT refresh token for obtaining new access tokens (auto-populated)"
     },
     {
       "key": "deviceServiceSecret",
       "value": "device-secret-key",
-      "type": "string"
+      "type": "string",
+      "description": "Device service secret for HMAC signing (match server AUTH_JWT_SIGNING_KEY)"
     },
     {
       "key": "testEmail",
       "value": "integration@vess-test.com",
-      "type": "string"
+      "type": "string",
+      "description": "Test user email address"
     },
     {
       "key": "testPassword",
       "value": "IntegrationPass123!",
-      "type": "string"
+      "type": "string",
+      "description": "Test user password"
     },
     {
       "key": "resetToken",
       "value": "",
-      "type": "string"
+      "type": "string",
+      "description": "Password reset token (auto-populated from password reset request)"
+    },
+    {
+      "key": "otp",
+      "value": "",
+      "type": "string",
+      "description": "Email OTP for verification (auto-populated from registration)"
+    },
+    {
+      "key": "registeredUserId",
+      "value": "",
+      "type": "string",
+      "description": "User ID from registration (auto-populated)"
+    },
+    {
+      "key": "oauthClientId",
+      "value": "",
+      "type": "string",
+      "description": "Set after registering an OAuth client"
+    },
+    {
+      "key": "oauthClientSecret",
+      "value": "",
+      "type": "string",
+      "description": "Set after registering an OAuth client \u2014 treat as a secret"
+    },
+    {
+      "key": "serviceToken",
+      "value": "",
+      "type": "string",
+      "description": "Auto-populated from Get Service Token response"
+    },
+    {
+      "key": "serviceTokenScope",
+      "value": "",
+      "type": "string",
+      "description": "Auto-populated from Get Service Token response"
+    },
+    {
+      "key": "pk",
+      "value": "1",
+      "type": "string",
+      "description": "User primary key for admin user detail endpoints"
+    },
+    {
+      "key": "user_id",
+      "value": "1",
+      "type": "string",
+      "description": "User ID for internal service user lookup endpoint"
     }
   ],
   "item": [
@@ -53,12 +108,53 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/health/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "health", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "health",
+                ""
+              ]
             },
             "description": "Returns auth-service health status including database and cache checks."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/health/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "health",
+                    ""
+                  ]
+                },
+                "description": "Returns auth-service health status including database and cache checks."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"ok\",\n  \"service\": \"auth-service\",\n  \"timestamp\": \"2026-05-16T10:15:00Z\"\n}"
+            }
+          ]
         },
         {
           "name": "Root Health",
@@ -67,12 +163,47 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/health/",
-              "host": ["{{baseUrl}}"],
-              "path": ["health", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health",
+                ""
+              ]
             },
             "description": "Simple liveness probe at the root path."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/health/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "health",
+                    ""
+                  ]
+                },
+                "description": "Simple liveness probe at the root path."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"ok\",\n  \"service\": \"auth-service\",\n  \"timestamp\": \"2026-05-16T10:15:00Z\"\n}"
+            }
+          ]
         },
         {
           "name": "System Health",
@@ -81,12 +212,153 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/system/health/",
-              "host": ["{{baseUrl}}"],
-              "path": ["system", "health", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "system",
+                "health",
+                ""
+              ]
             },
-            "description": "Deep system health check across all dependencies. May return 503 if a dependency is degraded."
+            "description": "Deep system health check across all dependencies."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/system/health/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "system",
+                    "health",
+                    ""
+                  ]
+                },
+                "description": "Deep system health check across all dependencies."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"ok\",\n  \"service\": \"auth-service\",\n  \"timestamp\": \"2026-05-16T10:15:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Auth Swagger UI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/swagger/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "swagger",
+                ""
+              ]
+            },
+            "description": "Swagger UI for auth endpoints mounted at /api/v1/auth/swagger/."
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/swagger/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "swagger",
+                    ""
+                  ]
+                },
+                "description": "Swagger UI for auth endpoints mounted at /api/v1/auth/swagger/."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"detail\": \"Swagger UI HTML response\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Root Swagger UI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/swagger/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "swagger",
+                ""
+              ]
+            },
+            "description": "Swagger UI mounted at /swagger/."
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/swagger/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "swagger",
+                    ""
+                  ]
+                },
+                "description": "Swagger UI mounted at /swagger/."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"detail\": \"Swagger UI HTML response\"\n}"
+            }
+          ]
         }
       ]
     },
@@ -114,7 +386,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -122,12 +397,62 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/register/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "register", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register",
+                ""
+              ]
             },
-            "description": "Register a new user. Returns an OTP in `data.otp_for_testing` (dev/staging only). The OTP is auto-saved to the `otp` collection variable."
+            "description": "Register a new user. Returns OTP in `data.otp_for_testing` (dev/staging only). OTP is auto-saved."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"password_confirm\": \"{{testPassword}}\",\n  \"first_name\": \"Integration\",\n  \"last_name\": \"Test\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/register/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register",
+                    ""
+                  ]
+                },
+                "description": "Register a new user. Returns OTP in `data.otp_for_testing` (dev/staging only). OTP is auto-saved."
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Registration successful. Verify OTP to activate account.\",\n  \"data\": {\n    \"user\": {\n      \"id\": \"42\",\n      \"email\": \"integration@vess-test.com\",\n      \"first_name\": \"Integration\",\n      \"roles\": [\n        \"user\"\n      ],\n      \"is_active\": false\n    },\n    \"otp_for_testing\": \"482901\",\n    \"otp_expires_in_seconds\": 600\n  }\n}"
+            }
+          ]
         },
         {
           "name": "Verify OTP",
@@ -150,7 +475,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -158,12 +486,62 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/verify-otp/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "verify-otp", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "verify-otp",
+                ""
+              ]
             },
-            "description": "Verify the 6-digit OTP sent after registration. Activates the account and returns JWT tokens. Tokens are auto-saved to `accessToken` and `refreshToken`."
+            "description": "Verify the 6-digit OTP. Activates the account and returns JWT tokens."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"otp\": \"{{otp}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/verify-otp/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "verify-otp",
+                    ""
+                  ]
+                },
+                "description": "Verify the 6-digit OTP. Activates the account and returns JWT tokens."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"OTP verified successfully\",\n  \"data\": {\n    \"access_token\": \"<jwt-access-token>\",\n    \"refresh_token\": \"<jwt-refresh-token>\",\n    \"expires_in\": 900,\n    \"user\": {\n      \"id\": \"42\",\n      \"email\": \"integration@vess-test.com\",\n      \"first_name\": \"Integration\",\n      \"roles\": [\n        \"user\"\n      ]\n    }\n  }\n}"
+            }
+          ]
         },
         {
           "name": "Login",
@@ -186,7 +564,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -194,19 +575,72 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/login/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "login", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login",
+                ""
+              ]
             },
-            "description": "Authenticate with email and password. Returns `access_token` and `refresh_token`. Both are auto-saved to collection variables."
+            "description": "Authenticate with email and password. Returns access and refresh tokens."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/login/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "login",
+                    ""
+                  ]
+                },
+                "description": "Authenticate with email and password. Returns access and refresh tokens."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Login successful\",\n  \"data\": {\n    \"access_token\": \"<jwt-access-token>\",\n    \"refresh_token\": \"<jwt-refresh-token>\",\n    \"expires_in\": 900,\n    \"user\": {\n      \"id\": \"42\",\n      \"email\": \"integration@vess-test.com\",\n      \"first_name\": \"Integration\",\n      \"roles\": [\n        \"admin\"\n      ]\n    }\n  }\n}"
+            }
+          ]
         },
         {
-          "name": "Google Login",
+          "name": "Google OAuth (Legacy ID Token)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -214,12 +648,275 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/google/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "google", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "google",
+                ""
+              ]
             },
-            "description": "Login or register via a Google OAuth2 ID token. Requires `GOOGLE_CLIENT_ID` to be configured on the server."
+            "description": "**DEPRECATED**: Legacy endpoint for direct ID token exchange. Use the three-step OAuth flow below for better security. Creates or logs in user from Google identity."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id_token\": \"<google-oauth-id-token>\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/google/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "google",
+                    ""
+                  ]
+                },
+                "description": "**DEPRECATED**: Legacy endpoint for direct ID token exchange. Use the three-step OAuth flow below for better security. Creates or logs in user from Google identity."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Google login successful\",\n  \"data\": {\n    \"access_token\": \"<jwt-access-token>\",\n    \"refresh_token\": \"<jwt-refresh-token>\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "1\ufe0f\u20e3 Google OAuth \u2014 Start Authorization",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/google/start/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "google",
+                "start",
+                ""
+              ]
+            },
+            "description": "**Step 1**: Generate a Google OAuth authorization URL.\n\nFrontend uses this to redirect the user to Google's login page. Includes state token for CSRF protection (valid 10 min).\n\n**Response (200)**:\n```json\n{\n  \"message\": \"Google authorization URL generated\",\n  \"data\": {\n    \"auth_url\": \"https://accounts.google.com/o/oauth2/v2/auth?client_id=...\",\n    \"state\": \"eyJub25jZSI6IjkxMjM0NWFiYy4uLiJ9:...\"\n  }\n}\n```\n\n**Frontend flow**:\n1. Store the `state` value\n2. Redirect user to `auth_url`\n3. Google redirects back to your app with `code` and `state`"
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/google/start/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "google",
+                    "start",
+                    ""
+                  ]
+                },
+                "description": "**Step 1**: Generate a Google OAuth authorization URL.\n\nFrontend uses this to redirect the user to Google's login page. Includes state token for CSRF protection (valid 10 min).\n\n**Response (200)**:\n```json\n{\n  \"message\": \"Google authorization URL generated\",\n  \"data\": {\n    \"auth_url\": \"https://accounts.google.com/o/oauth2/v2/auth?client_id=...\",\n    \"state\": \"eyJub25jZSI6IjkxMjM0NWFiYy4uLiJ9:...\"\n  }\n}\n```\n\n**Frontend flow**:\n1. Store the `state` value\n2. Redirect user to `auth_url`\n3. Google redirects back to your app with `code` and `state`"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"auth_url\": \"https://accounts.google.com/o/oauth2/v2/auth?...\",\n  \"state\": \"<signed-state-token>\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "2\ufe0f\u20e3 Google OAuth \u2014 Backend Callback Handler",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/google/callback/?code=<auth-code>&state=<state>",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "google",
+                "callback",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "code",
+                  "value": "<auth-code>",
+                  "description": "Authorization code from Google redirect"
+                },
+                {
+                  "key": "state",
+                  "value": "<state>",
+                  "description": "State value returned by Google (must match Step 1)"
+                }
+              ]
+            },
+            "description": "**Step 2**: Backend callback handler (called by Google redirect).\n\nBackend:\n1. Verifies state token (prevents replay attacks)\n2. Exchanges code for Google ID token\n3. Validates ID token signature\n4. Creates/fetches user from Google email\n5. Generates one-time exchange code\n6. Redirects frontend to callback URL with one-time code in URL fragment\n\n**Frontend redirect URL**:\n```\nhttps://yourapp.com/auth/callback#code=abc123def456&state=xyz789\n```\n\n**Error redirects** (also in fragment):\n```\nhttps://yourapp.com/auth/callback#error=invalid_state\n```\n\n**Error codes**:\n- `google_authorization_denied`: User cancelled OAuth\n- `invalid_state`: State mismatch\n- `expired_state`: State token >10 min old\n- `token_exchange_failed`: Google token endpoint error\n- `invalid_google_token`: Token signature validation failed\n- `google_email_not_verified`: Email not verified in Google account"
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/google/callback/?code=<auth-code>&state=<state>",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "google",
+                    "callback",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "code",
+                      "value": "<auth-code>",
+                      "description": "Authorization code from Google redirect"
+                    },
+                    {
+                      "key": "state",
+                      "value": "<state>",
+                      "description": "State value returned by Google (must match Step 1)"
+                    }
+                  ]
+                },
+                "description": "**Step 2**: Backend callback handler (called by Google redirect).\n\nBackend:\n1. Verifies state token (prevents replay attacks)\n2. Exchanges code for Google ID token\n3. Validates ID token signature\n4. Creates/fetches user from Google email\n5. Generates one-time exchange code\n6. Redirects frontend to callback URL with one-time code in URL fragment\n\n**Frontend redirect URL**:\n```\nhttps://yourapp.com/auth/callback#code=abc123def456&state=xyz789\n```\n\n**Error redirects** (also in fragment):\n```\nhttps://yourapp.com/auth/callback#error=invalid_state\n```\n\n**Error codes**:\n- `google_authorization_denied`: User cancelled OAuth\n- `invalid_state`: State mismatch\n- `expired_state`: State token >10 min old\n- `token_exchange_failed`: Google token endpoint error\n- `invalid_google_token`: Token signature validation failed\n- `google_email_not_verified`: Email not verified in Google account"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Authorization code processed. One-time exchange code issued.\",\n  \"data\": {\n    \"exchange_code\": \"<one-time-code>\",\n    \"expires_in_seconds\": 120\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "3\ufe0f\u20e3 Google OAuth \u2014 Exchange Code for Tokens",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"<one-time-exchange-code>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/google/exchange/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "google",
+                "exchange",
+                ""
+              ]
+            },
+            "description": "**Step 3**: Exchange one-time code for VeSS JWT tokens.\n\n**SECURITY**: Tokens are **NOT** exposed in URL. Frontend extracts the one-time code from the fragment and exchanges it server-side.\n\n**Response (200)**:\n```json\n{\n  \"message\": \"Google authentication completed\",\n  \"data\": {\n    \"access\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"user\": {\n      \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"email\": \"user@gmail.com\",\n      \"first_name\": \"John\",\n      \"last_name\": \"Doe\",\n      \"role\": \"viewer\"\n    }\n  }\n}\n```\n\n**Errors**:\n- `400`: Missing or invalid code\n- `401`: Code expired (valid 2 min only)"
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"code\": \"<one-time-exchange-code>\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/google/exchange/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "google",
+                    "exchange",
+                    ""
+                  ]
+                },
+                "description": "**Step 3**: Exchange one-time code for VeSS JWT tokens.\n\n**SECURITY**: Tokens are **NOT** exposed in URL. Frontend extracts the one-time code from the fragment and exchanges it server-side.\n\n**Response (200)**:\n```json\n{\n  \"message\": \"Google authentication completed\",\n  \"data\": {\n    \"access\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"user\": {\n      \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n      \"email\": \"user@gmail.com\",\n      \"first_name\": \"John\",\n      \"last_name\": \"Doe\",\n      \"role\": \"viewer\"\n    }\n  }\n}\n```\n\n**Errors**:\n- `400`: Missing or invalid code\n- `401`: Code expired (valid 2 min only)"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Google login successful\",\n  \"data\": {\n    \"access_token\": \"<jwt-access-token>\",\n    \"refresh_token\": \"<jwt-refresh-token>\",\n    \"expires_in\": 900,\n    \"user\": {\n      \"id\": \"42\",\n      \"email\": \"integration@vess-test.com\",\n      \"first_name\": \"Integration\"\n    }\n  }\n}"
+            }
+          ]
         },
         {
           "name": "Refresh Token",
@@ -242,7 +939,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -250,23 +950,82 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/refresh/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "refresh", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh",
+                ""
+              ]
             },
-            "description": "Exchange a refresh token for a new access/refresh token pair. The old refresh token is blacklisted. New tokens are auto-saved."
+            "description": "Exchange a refresh token for a new access/refresh token pair. Old refresh token is blacklisted."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refresh\": \"{{refreshToken}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/refresh/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "refresh",
+                    ""
+                  ]
+                },
+                "description": "Exchange a refresh token for a new access/refresh token pair. Old refresh token is blacklisted."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Token refreshed successfully\",\n  \"data\": {\n    \"access\": \"<jwt-access-token>\",\n    \"refresh\": \"<jwt-refresh-token>\",\n    \"expires_in\": 900\n  }\n}"
+            }
+          ]
         },
         {
           "name": "Logout",
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -274,15 +1033,75 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/logout/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "logout", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout",
+                ""
+              ]
             },
-            "description": "Invalidates the access token session in cache and blacklists the refresh token. Requires `Authorization: Bearer <accessToken>`."
+            "description": "Invalidates the access token session and blacklists the refresh token."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refresh_token\": \"{{refreshToken}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/logout/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "logout",
+                    ""
+                  ]
+                },
+                "description": "Invalidates the access token session and blacklists the refresh token."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Logout successful\"\n}"
+            }
+          ]
         },
         {
-          "name": "Password Reset — Request",
+          "name": "Password Reset \u2014 Request",
           "event": [
             {
               "listen": "test",
@@ -303,7 +1122,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -311,19 +1133,72 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/password-reset/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "password-reset", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "password-reset",
+                ""
+              ]
             },
-            "description": "Request a password reset email. Always returns 200 to prevent account enumeration. In dev/staging, `data.token_for_testing` is returned and auto-saved."
+            "description": "Request a password reset. Always returns 200 to prevent account enumeration. Token auto-saved in dev/staging."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{testEmail}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/password-reset/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "password-reset",
+                    ""
+                  ]
+                },
+                "description": "Request a password reset. Always returns 200 to prevent account enumeration. Token auto-saved in dev/staging."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Password reset link sent if account exists\"\n}"
+            }
+          ]
         },
         {
-          "name": "Password Reset — Confirm",
+          "name": "Password Reset \u2014 Confirm",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -331,12 +1206,64 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/password-reset/confirm/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "password-reset", "confirm", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "password-reset",
+                "confirm",
+                ""
+              ]
             },
-            "description": "Confirm a password reset using the token from the reset email (or `resetToken` variable). Sets the new password."
+            "description": "Confirm password reset using the token from the reset email."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"token\": \"{{resetToken}}\",\n  \"new_password\": \"NewPassword123!\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/password-reset/confirm/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "password-reset",
+                    "confirm",
+                    ""
+                  ]
+                },
+                "description": "Confirm password reset using the token from the reset email."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Password reset successful\"\n}"
+            }
+          ]
         }
       ]
     },
@@ -348,29 +1275,95 @@
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/users/me/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "me", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me",
+                ""
+              ]
             },
-            "description": "Returns the authenticated user's profile. Requires a valid `accessToken`."
+            "description": "Returns the authenticated user's profile."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users/me/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me",
+                    ""
+                  ]
+                },
+                "description": "Returns the authenticated user's profile."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 42,\n  \"email\": \"integration@vess-test.com\",\n  \"first_name\": \"Integration\",\n  \"last_name\": \"Test\",\n  \"is_active\": true,\n  \"is_staff\": false\n}"
+            }
+          ]
         },
         {
           "name": "Update My Profile",
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -378,23 +1371,92 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/users/me/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "me", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me",
+                ""
+              ]
             },
             "description": "Partially update the authenticated user's profile. `email`, `id`, and `date_joined` are read-only."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"Updated\",\n  \"last_name\": \"Name\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users/me/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me",
+                    ""
+                  ]
+                },
+                "description": "Partially update the authenticated user's profile. `email`, `id`, and `date_joined` are read-only."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 42,\n  \"email\": \"integration@vess-test.com\",\n  \"first_name\": \"Integration Updated\",\n  \"last_name\": \"Test\",\n  \"is_active\": true\n}"
+            }
+          ]
         },
         {
           "name": "Change Password",
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -402,26 +1464,99 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/users/change-password/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "change-password", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "change-password",
+                ""
+              ]
             },
-            "description": "Change the authenticated user's password. Requires the current password for verification."
+            "description": "Change the authenticated user's password. Requires current password for verification."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"current_password\": \"{{testPassword}}\",\n  \"new_password\": \"NewPassword456!\",\n  \"new_password_confirm\": \"NewPassword456!\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users/change-password/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "change-password",
+                    ""
+                  ]
+                },
+                "description": "Change the authenticated user's password. Requires current password for verification."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"detail\": \"Password changed successfully.\"\n}"
+            }
+          ]
         },
         {
           "name": "List Users (Admin)",
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/users/?search=",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", ""],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                ""
+              ],
               "query": [
                 {
                   "key": "search",
@@ -430,51 +1565,226 @@
                 }
               ]
             },
-            "description": "List all users. Admin only (`is_staff=True`). Supports optional `?search=<email>` query param."
+            "description": "List all users. Admin only (`is_staff=True`)."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users/?search=",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": "",
+                      "description": "Optional email substring filter"
+                    }
+                  ]
+                },
+                "description": "List all users. Admin only (`is_staff=True`)."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"count\": 1,\n  \"next\": null,\n  \"previous\": null,\n  \"results\": [\n    {\n      \"id\": 42,\n      \"email\": \"integration@vess-test.com\",\n      \"first_name\": \"Integration\",\n      \"last_name\": \"Test\",\n      \"is_active\": true\n    }\n  ]\n}"
+            }
+          ]
         },
         {
           "name": "Get User by ID (Admin)",
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/users/1/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "1", ""]
+              "raw": "{{baseUrl}}/api/v1/users/{{pk}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{pk}}",
+                ""
+              ]
             },
             "description": "Retrieve a user by their numeric ID. Admin only."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users/{{pk}}/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "{{pk}}",
+                    ""
+                  ]
+                },
+                "description": "Retrieve a user by their numeric ID. Admin only."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 1,\n  \"email\": \"admin@vess.com\",\n  \"first_name\": \"Admin\",\n  \"last_name\": \"User\",\n  \"is_active\": true,\n  \"is_staff\": true\n}"
+            }
+          ]
         },
         {
           "name": "Update User by ID (Admin)",
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"first_name\": \"Admin\",\n  \"last_name\": \"Updated\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/users/1/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "1", ""]
+              "raw": "{{baseUrl}}/api/v1/users/{{pk}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{pk}}",
+                ""
+              ]
             },
             "description": "Update a user by their numeric ID. Admin only."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"Admin\",\n  \"last_name\": \"Updated\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users/{{pk}}/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "{{pk}}",
+                    ""
+                  ]
+                },
+                "description": "Update a user by their numeric ID. Admin only."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 1,\n  \"email\": \"admin@vess.com\",\n  \"first_name\": \"Admin Updated\",\n  \"last_name\": \"User\",\n  \"is_active\": true,\n  \"is_staff\": true\n}"
+            }
+          ]
         }
       ]
     },
@@ -488,23 +1798,16 @@
               "listen": "prerequest",
               "script": {
                 "exec": [
-                  "// Build HMAC-SHA256 signature matching verify_hmac_signature() in utils.py",
-                  "// message = serviceId + timestamp + body",
                   "const serviceId = 'device-service';",
                   "const secret = pm.collectionVariables.get('deviceServiceSecret') || 'device-secret-key';",
                   "const timestamp = String(Math.floor(Date.now() / 1000));",
                   "const token = pm.collectionVariables.get('accessToken') || '';",
                   "const body = JSON.stringify({ token });",
-                  "",
                   "const message = serviceId + timestamp + body;",
-                  "",
                   "const signature = CryptoJS.HmacSHA256(message, secret).toString(CryptoJS.enc.Hex);",
-                  "",
                   "pm.request.headers.add({ key: 'X-Service-Id', value: serviceId });",
                   "pm.request.headers.add({ key: 'X-Hmac-Signature', value: signature });",
                   "pm.request.headers.add({ key: 'X-Timestamp', value: timestamp });",
-                  "",
-                  "// Overwrite the raw body with the exact string that was signed",
                   "pm.request.body.raw = body;"
                 ],
                 "type": "text/javascript"
@@ -514,7 +1817,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -522,12 +1828,62 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/validate/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "validate", ""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "validate",
+                ""
+              ]
             },
-            "description": "Service-to-service endpoint. Validates a JWT access token and checks its session is still active in cache.\n\nThe pre-request script automatically computes the HMAC-SHA256 signature using the `deviceServiceSecret` variable. Set that variable to match `DEVICE_SERVICE_SECRET` on the server."
+            "description": "Validates a JWT access token and checks its session is active in cache. HMAC signature auto-generated by pre-request script."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"token\": \"{{accessToken}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/validate/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "validate",
+                    ""
+                  ]
+                },
+                "description": "Validates a JWT access token and checks its session is active in cache. HMAC signature auto-generated by pre-request script."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"valid\": true,\n  \"user_id\": \"42\",\n  \"email\": \"integration@vess-test.com\",\n  \"scope\": \"user\"\n}"
+            }
+          ]
         },
         {
           "name": "Get Internal User",
@@ -540,10 +1896,8 @@
                   "const secret = pm.collectionVariables.get('deviceServiceSecret') || 'device-secret-key';",
                   "const timestamp = String(Math.floor(Date.now() / 1000));",
                   "const body = '';",
-                  "",
                   "const message = serviceId + timestamp + body;",
                   "const signature = CryptoJS.HmacSHA256(message, secret).toString(CryptoJS.enc.Hex);",
-                  "",
                   "pm.request.headers.add({ key: 'X-Service-Id', value: serviceId });",
                   "pm.request.headers.add({ key: 'X-Hmac-Signature', value: signature });",
                   "pm.request.headers.add({ key: 'X-Timestamp', value: timestamp });"
@@ -556,13 +1910,501 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/users/internal/1/",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "users", "internal", "1", ""]
+              "raw": "{{baseUrl}}/api/v1/users/internal/{{user_id}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "internal",
+                "{{user_id}}",
+                ""
+              ]
             },
-            "description": "Fetch a user's details for internal service communication. Replace `1` with the target user ID. Requires valid HMAC headers (auto-generated by the pre-request script)."
+            "description": "Fetch a user's details for internal service communication. Replace `1` with the target user ID. HMAC headers auto-generated."
           },
-          "response": []
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users/internal/{{user_id}}/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "internal",
+                    "{{user_id}}",
+                    ""
+                  ]
+                },
+                "description": "Fetch a user's details for internal service communication. Replace `1` with the target user ID. HMAC headers auto-generated."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 1,\n  \"email\": \"service-user@vess.com\",\n  \"is_active\": true\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "OAuth 2.0 \u2014 Service-to-Service",
+      "description": "OAuth 2.0 client credentials flow for inter-service authentication.\n\n**Flow:**\n1. Admin creates a client via **Register OAuth Client** (returns raw secret once)\n2. Service calls **Get Service Token** with client_id + client_secret\n3. Service uses the returned `access_token` as `Bearer` on downstream calls\n\nThe token `type` claim is `\"service\"` \u2014 middleware routes it separately from user JWTs so existing user requests are never affected.",
+      "item": [
+        {
+          "name": "Get Service Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.access_token) {",
+                  "  pm.collectionVariables.set('serviceToken', json.data.access_token);",
+                  "  pm.collectionVariables.set('serviceTokenScope', json.data.scope || '');",
+                  "  console.log('Service token saved. Scope:', json.data.scope);",
+                  "}",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has access_token', () => pm.expect(json.data).to.have.property('access_token'));",
+                  "pm.test('Token type is Bearer', () => pm.expect(json.data.token_type).to.eql('Bearer'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{oauthClientId}}\",\n  \"client_secret\": \"{{oauthClientSecret}}\",\n  \"scope\": \"device:read device:commands:write\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/oauth/token/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "oauth",
+                "token",
+                ""
+              ]
+            },
+            "description": "Exchange client credentials for a short-lived service JWT (15 min).\n\nThe response `access_token` has `type: \"service\"` in its payload \u2014 device-service middleware will validate scopes, not user permissions.\n\nThe test script auto-saves `serviceToken` to the collection variable."
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{oauthClientId}}\",\n  \"client_secret\": \"{{oauthClientSecret}}\",\n  \"scope\": \"device:read device:commands:write\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/oauth/token/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "oauth",
+                    "token",
+                    ""
+                  ]
+                },
+                "description": "Exchange client credentials for a short-lived service JWT (15 min).\n\nThe response `access_token` has `type: \"service\"` in its payload \u2014 device-service middleware will validate scopes, not user permissions.\n\nThe test script auto-saves `serviceToken` to the collection variable."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"access_token\": \"<service-access-token>\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 3600,\n  \"scope\": \"devices:write devices:read\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Register OAuth Client (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.client_id) {",
+                  "  pm.collectionVariables.set('oauthClientId', json.data.client_id);",
+                  "  pm.collectionVariables.set('oauthClientSecret', json.data.client_secret);",
+                  "  console.log('OAuth client registered. client_id:', json.data.client_id);",
+                  "  console.log('IMPORTANT: Store this secret securely \u2014 it will not be shown again:', json.data.client_secret);",
+                  "}",
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Has client_id and client_secret', () => {",
+                  "  pm.expect(json.data).to.have.property('client_id');",
+                  "  pm.expect(json.data).to.have.property('client_secret');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"service_name\": \"device-service\",\n  \"allowed_scopes\": \"device:read device:commands:write device:provisioning:read\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/oauth/clients/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "oauth",
+                "clients",
+                ""
+              ]
+            },
+            "description": "**Admin only.** Creates a new OAuth client for a microservice.\n\nThe `client_secret` is returned **once only** \u2014 store it immediately in your secrets manager / CI/CD secrets.\n\n**`allowed_scopes`** \u2014 space-separated list of scopes this client may ever request:\n- `device:read` \u2014 read device data\n- `device:commands:write` \u2014 issue commands to devices\n- `device:provisioning:read` \u2014 read provisioning data\n\nRequires an admin Bearer token (`{{accessToken}}`)."
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"service_name\": \"device-service\",\n  \"allowed_scopes\": \"device:read device:commands:write device:provisioning:read\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/oauth/clients/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "oauth",
+                    "clients",
+                    ""
+                  ]
+                },
+                "description": "**Admin only.** Creates a new OAuth client for a microservice.\n\nThe `client_secret` is returned **once only** \u2014 store it immediately in your secrets manager / CI/CD secrets.\n\n**`allowed_scopes`** \u2014 space-separated list of scopes this client may ever request:\n- `device:read` \u2014 read device data\n- `device:commands:write` \u2014 issue commands to devices\n- `device:provisioning:read` \u2014 read provisioning data\n\nRequires an admin Bearer token (`{{accessToken}}`)."
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"client_id\": \"svc_device_service\",\n  \"client_name\": \"Device Service\",\n  \"scopes\": [\n    \"devices:read\",\n    \"devices:write\"\n  ],\n  \"client_secret\": \"<generated-secret>\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List OAuth Clients (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/oauth/clients/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "oauth",
+                "clients",
+                ""
+              ]
+            },
+            "description": "**Admin only.** Returns all registered OAuth clients (secrets are never returned)."
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/oauth/clients/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "oauth",
+                    "clients",
+                    ""
+                  ]
+                },
+                "description": "**Admin only.** Returns all registered OAuth clients (secrets are never returned)."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"count\": 1,\n  \"results\": [\n    {\n      \"client_id\": \"svc_device_service\",\n      \"client_name\": \"Device Service\",\n      \"is_active\": true,\n      \"scopes\": [\n        \"devices:read\",\n        \"devices:write\"\n      ]\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Rotate Client Secret (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.client_secret) {",
+                  "  pm.collectionVariables.set('oauthClientSecret', json.data.client_secret);",
+                  "  console.log('Secret rotated. New secret:', json.data.client_secret);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/oauth/clients/{{oauthClientId}}/rotate-secret/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "oauth",
+                "clients",
+                "{{oauthClientId}}",
+                "rotate-secret",
+                ""
+              ]
+            },
+            "description": "**Admin only.** Rotates the client secret. The **old secret is immediately invalidated**.\n\nThe new raw secret is returned once \u2014 update your secrets manager immediately."
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/oauth/clients/{{oauthClientId}}/rotate-secret/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "oauth",
+                    "clients",
+                    "{{oauthClientId}}",
+                    "rotate-secret",
+                    ""
+                  ]
+                },
+                "description": "**Admin only.** Rotates the client secret. The **old secret is immediately invalidated**.\n\nThe new raw secret is returned once \u2014 update your secrets manager immediately."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"client_id\": \"svc_device_service\",\n  \"client_secret\": \"<new-generated-secret>\",\n  \"rotated\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "Deactivate / Reactivate Client (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_active\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/oauth/clients/{{oauthClientId}}/deactivate/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "oauth",
+                "clients",
+                "{{oauthClientId}}",
+                "deactivate",
+                ""
+              ]
+            },
+            "description": "**Admin only.** Toggle client active state. Pass `{\"is_active\": false}` to disable, `{\"is_active\": true}` to re-enable. Disabled clients cannot obtain tokens."
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"is_active\": false\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/oauth/clients/{{oauthClientId}}/deactivate/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "oauth",
+                    "clients",
+                    "{{oauthClientId}}",
+                    "deactivate",
+                    ""
+                  ]
+                },
+                "description": "**Admin only.** Toggle client active state. Pass `{\"is_active\": false}` to disable, `{\"is_active\": true}` to re-enable. Disabled clients cannot obtain tokens."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"client_id\": \"svc_device_service\",\n  \"is_active\": false,\n  \"updated\": true\n}"
+            }
+          ]
         }
       ]
     }

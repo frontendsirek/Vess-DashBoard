@@ -5,7 +5,6 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowBackIcon } from '@/components/icons'
 import { DeviceConfigurationForm } from '@/components/device-management/DeviceConfigurationForm'
-import { Topbar } from '@/components/layout/Topbar'
 import { Form } from '@/components/ui/form'
 import { formatDeviceCoordinatesDisplay } from '@/data/device-management'
 import { useBrowserGeolocation } from '@/hooks/use-browser-geolocation'
@@ -92,8 +91,6 @@ export default function RegisterDevicePage() {
 
   return (
     <>
-      <Topbar title="Device Management" subtitle="Device fleet management" />
-
       <div className="flex flex-col gap-4 px-5 py-6">
         <Form {...form}>
           <form

@@ -1,4 +1,3 @@
-import { Topbar } from '@/components/layout/Topbar'
 import { ActiveTestExecutionCard } from '@/components/real-time-monitoring/ActiveTestExecutionCard'
 import { DeviceStatusGrid } from '@/components/real-time-monitoring/DeviceStatusGrid'
 import { LiveAlertFeed } from '@/components/real-time-monitoring/LiveAlertFeed'
@@ -10,8 +9,6 @@ import { activeExecutions } from '@/data/real-time-monitoring'
 export default function RealTimeMonitoringPage() {
   return (
     <>
-      <Topbar title="Real-time Monitoring" subtitle="Active test execution" />
-
       <div className="flex flex-col gap-4 px-5 py-6">
         <MonitoringSummaryStrip />
 

@@ -12,6 +12,7 @@ import type {
   HeartbeatPayload,
   ListDevicesParams,
   RegisterDevicePayload,
+  UpdateDevicePayload,
 } from '@/types/device'
 import type {
   BulkRegistrationRequestPayload,
@@ -71,7 +72,7 @@ export const deviceService = {
     )
   },
 
-  updateDevice(deviceId: string, payload: Partial<RegisterDevicePayload>) {
+  updateDevice(deviceId: string, payload: UpdateDevicePayload) {
     return apiClient.put(`${DEVICES_PREFIX}/${deviceId}/`, payload)
   },
 

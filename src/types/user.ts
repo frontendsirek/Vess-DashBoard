@@ -3,14 +3,15 @@ export type UserRole = 'admin' | 'operator' | 'viewer'
 export type UserStatus = 'active' | 'inactive'
 
 export type ApiUser = {
-  id: number
+  id: number | string
   email: string
   first_name: string
   last_name: string
+  roles?: string[]
   is_active: boolean
-  is_staff: boolean
-  date_joined: string
-  last_login: string | null
+  is_staff?: boolean
+  date_joined?: string
+  last_login?: string | null
 }
 
 export type UpdateProfilePayload = {
@@ -30,8 +31,13 @@ export type LoginPayload = {
 }
 
 export type LoginResponse = {
-  access_token: string
-  refresh_token: string
+  access_token?: string
+  refresh_token?: string
+  access?: string
+  refresh?: string
+  requires_otp?: boolean
+  otp_required?: boolean
+  require_otp?: boolean
 }
 
 export type LogoutPayload = {

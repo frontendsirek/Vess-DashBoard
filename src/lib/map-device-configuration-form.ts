@@ -1,6 +1,10 @@
 import { type DeviceEditDefaults, formatDeviceCoordinatesDisplay } from '@/data/device-management'
 import type { DeviceConfigurationFormValues } from '@/schemas/device/device-configuration-form.schema'
-import type { RegisterDevicePayload } from '@/types/device'
+import type {
+  DashboardDeviceConfigurationPayload,
+  RegisterDevicePayload,
+  UpdateDevicePayload,
+} from '@/types/device'
 
 export function deriveRegisterDeviceId(deviceName: string): string {
   const slug =
@@ -16,9 +20,48 @@ export function deriveRegisterDeviceId(deviceName: string): string {
   return `${base}-${suffix}`
 }
 
-function compactMetadata(meta: Record<string, string>): Record<string, string> | undefined {
-  const entries = Object.entries(meta).filter(([, v]) => v.trim().length > 0)
-  return entries.length > 0 ? Object.fromEntries(entries) : undefined
+function parseTagsFromForm(tags: string): string[] {
+  return tags
+    .split(/[,;]/)
+    .map((tag) => tag.trim())
+    .filter((tag) => tag.length > 0)
+}
+
+/** Normalizes `VessPhoneInput` value to E.164 for the device API. */
+function normalizeMsisdnForApi(raw: string): string | undefined {
+  const trimmed = raw.trim()
+  if (!trimmed.length) return undefined
+  if (trimmed.startsWith('+')) return trimmed
+
+  const digits = trimmed.replace(/\D/g, '')
+  if (digits.length === 13 && digits.startsWith('234')) return `+${digits}`
+  if (digits.length === 11 && digits.startsWith('0')) return `+234${digits.slice(1)}`
+  if (digits.length > 0) return `+${digits}`
+
+  return undefined
+}
+
+function mapDashboardConfigFieldsFromForm(
+  values: DeviceConfigurationFormValues,
+): Pick<
+  DashboardDeviceConfigurationPayload,
+  | 'msisdn'
+  | 'device_group'
+  | 'tags'
+  | 'alert_battery_threshold'
+  | 'alert_offline_duration_minutes'
+> {
+  const deviceGroup = values.deviceGroup.trim()
+  const tags = parseTagsFromForm(values.tags)
+  const msisdn = normalizeMsisdnForApi(values.msisdn)
+
+  return {
+    ...(msisdn ? { msisdn } : {}),
+    ...(deviceGroup.length > 0 ? { device_group: deviceGroup } : {}),
+    ...(tags.length > 0 ? { tags } : {}),
+    alert_battery_threshold: values.lowBatteryPercent,
+    alert_offline_duration_minutes: values.offlineMinutes,
+  }
 }
 
 /** Maps validated form values + browser GPS coordinates to REST payload. Coordinates come from "Use detected location". */
@@ -32,20 +75,26 @@ export function mapRegisterFormToPayload(
   const location =
     values.locationMode === 'detected' ? coordinateLabel : values.locationManual.trim()
 
-  const metadata: Record<string, string> = {}
-  if (values.deviceGroup.trim()) metadata.group = values.deviceGroup.trim()
-  if (values.tags.trim()) metadata.tags = values.tags.trim()
-  metadata.low_battery_percent = String(values.lowBatteryPercent)
-  metadata.offline_minutes = String(values.offlineMinutes)
-  if (values.msisdn.trim()) metadata.phone_number = values.msisdn.trim()
-
   return {
     device_id,
     device_name,
     location,
     latitude: coords.latitude,
     longitude: coords.longitude,
-    metadata: compactMetadata(metadata),
+    ...mapDashboardConfigFieldsFromForm(values),
+  }
+}
+
+export function mapDeviceConfigurationFormToUpdatePayload(
+  values: DeviceConfigurationFormValues,
+  coords: { latitude: number; longitude: number; location: string },
+): UpdateDevicePayload {
+  return {
+    device_name: values.deviceName.trim(),
+    location: coords.location,
+    latitude: coords.latitude,
+    longitude: coords.longitude,
+    ...mapDashboardConfigFieldsFromForm(values),
   }
 }
 
@@ -60,21 +109,4 @@ export function deviceEditDefaultsToFormValues(defaults: DeviceEditDefaults): De
     lowBatteryPercent: defaults.lowBatteryPercent,
     offlineMinutes: defaults.offlineMinutes,
   }
-}
-
-function metadataPatchFromEditForm(values: DeviceConfigurationFormValues): Record<string, string> {
-  const metadata: Record<string, string> = {}
-  if (values.deviceGroup.trim()) metadata.group = values.deviceGroup.trim()
-  if (values.tags.trim()) metadata.tags = values.tags.trim()
-  metadata.low_battery_percent = String(values.lowBatteryPercent)
-  metadata.offline_minutes = String(values.offlineMinutes)
-  if (values.msisdn.trim()) metadata.phone_number = values.msisdn.trim()
-  return metadata
-}
-
-/** Optional `metadata` body for `updateDevice` when at least one key is non-empty. */
-export function buildOptionalDeviceMetadataFromForm(
-  values: DeviceConfigurationFormValues,
-): Record<string, string> | undefined {
-  return compactMetadata(metadataPatchFromEditForm(values))
 }
