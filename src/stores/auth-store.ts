@@ -11,11 +11,16 @@ type AuthState = {
   refreshToken: string | null
   /** Email stashed between sign-in → OTP screens */
   pendingEmail: string | null
+  /** OTP shown for testing (dev/staging only) */
+  pendingOtpForTesting: string | null
+  /** Challenge token from login OTP response */
+  challengeToken: string | null
 
   setTokens: (access: string, refresh: string) => void
   clearTokens: () => void
   setPendingEmail: (email: string) => void
   clearPendingEmail: () => void
+  setPendingOtp: (otp: string | null, challengeToken?: string | null) => void
   isAuthenticated: () => boolean
 }
 
@@ -25,6 +30,8 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       refreshToken: null,
       pendingEmail: null,
+      pendingOtpForTesting: null,
+      challengeToken: null,
 
       setTokens(access, refresh) {
         localStorage.setItem(TOKEN_KEYS.access, access)
@@ -43,7 +50,11 @@ export const useAuthStore = create<AuthState>()(
       },
 
       clearPendingEmail() {
-        set({ pendingEmail: null })
+        set({ pendingEmail: null, pendingOtpForTesting: null, challengeToken: null })
+      },
+
+      setPendingOtp(otp, challengeToken) {
+        set({ pendingOtpForTesting: otp ?? null, challengeToken: challengeToken ?? null })
       },
 
       isAuthenticated() {
