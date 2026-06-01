@@ -38,6 +38,9 @@ export type LoginResponse = {
   requires_otp?: boolean
   otp_required?: boolean
   require_otp?: boolean
+  challenge_token?: string
+  otp_expires_in_seconds?: number
+  otp_for_testing?: string
 }
 
 export type LogoutPayload = {

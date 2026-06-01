@@ -9,27 +9,53 @@ import { useAuthStore } from '@/stores/auth-store'
 
 const LOGIN_FAILURE_MESSAGE = 'Invalid email or password.'
 
+type LoginResult =
+  | { type: 'otp_required' }
+  | { type: 'authenticated'; access: string; refresh: string }
+
 export function useLoginMutation() {
   const navigate = useNavigate()
-  const setTokens = useAuthStore((s) => s.setTokens)
 
   return useMutation({
     mutationKey: authQueryKeys.login(),
     meta: { errorFallback: LOGIN_FAILURE_MESSAGE },
-    mutationFn: async (payload: LoginPayload) => {
+    mutationFn: async (payload: LoginPayload): Promise<LoginResult> => {
       const { data: envelope } = await authService.login(payload)
       throwIfApiEnvelopeError(envelope, LOGIN_FAILURE_MESSAGE)
 
+      // Check if login requires OTP verification
+      const data = (envelope as Record<string, unknown>).data as Record<string, unknown> | undefined
+      const requiresOtp =
+        data?.requires_otp === true ||
+        data?.otp_required === true ||
+        (envelope as Record<string, unknown>).requires_otp === true
+
+      if (requiresOtp) {
+        const store = useAuthStore.getState()
+        store.setPendingEmail(payload.email)
+        store.setPendingOtp(
+          (data?.otp_for_testing as string) ?? null,
+          (data?.challenge_token as string) ?? null,
+        )
+        return { type: 'otp_required' }
+      }
+
+      // Direct token response (fallback)
       const tokenPair = parseTokenPairFromAuthEnvelope(envelope)
       if (!tokenPair) {
         throw new Error(envelopeErrorMessage(envelope, LOGIN_FAILURE_MESSAGE))
       }
 
-      return tokenPair
+      return { type: 'authenticated', ...tokenPair }
     },
-    onSuccess: (tokenPair) => {
-      setTokens(tokenPair.access, tokenPair.refresh)
-      navigate('/dashboard', { replace: true })
+    onSuccess: (result) => {
+      if (result.type === 'authenticated') {
+        const store = useAuthStore.getState()
+        store.setTokens(result.access, result.refresh)
+        navigate('/dashboard', { replace: true })
+      } else {
+        navigate('/auth/verify', { replace: true })
+      }
     },
   })
 }

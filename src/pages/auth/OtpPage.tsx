@@ -17,6 +17,7 @@ const OTP_DURATION_SECONDS = 5 * 60
 export default function OtpPage() {
   const navigate = useNavigate()
   const pendingEmail = useAuthStore((s) => s.pendingEmail)
+  const pendingOtpForTesting = useAuthStore((s) => s.pendingOtpForTesting)
   const [secondsLeft, setSecondsLeft] = useState(OTP_DURATION_SECONDS)
   const [otpInputKey, setOtpInputKey] = useState(0)
 
@@ -109,6 +110,11 @@ export default function OtpPage() {
             <p className="text-[16px] font-light leading-[21.6px] text-vess-grey-400 sm:text-[18px]">
               Enter the 6-digit code sent to your email: {pendingEmail}
             </p>
+            {pendingOtpForTesting && (
+              <p className="mt-2 rounded-md border border-yellow-600/40 bg-yellow-900/30 px-3 py-2 text-[14px] font-mono text-yellow-300">
+                🧪 Test OTP: <span className="font-bold tracking-widest">{pendingOtpForTesting}</span>
+              </p>
+            )}
           </header>
 
           <div className="flex w-full flex-col gap-3">
