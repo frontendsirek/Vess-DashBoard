@@ -25,6 +25,7 @@ import {
   deviceTestHistorySummaryFromApiSummary,
 } from '@/data/device-management'
 import { useDeviceDetailQuery } from '@/hooks/devices/use-device-detail-query'
+import { useExportDeviceTestHistoryMutation } from '@/hooks/devices/use-export-device-test-history-mutation'
 import { useDeviceTestHistoryQuery } from '@/hooks/devices/use-device-test-history-query'
 import { useDeviceTestSummaryQuery } from '@/hooks/devices/use-device-test-summary-query'
 import { mapRecentTestsToDeviceTestHistoryRows } from '@/lib/map-device-recent-tests-to-history-rows'
@@ -51,6 +52,7 @@ export default function DeviceTestHistoryPage() {
     apiQueryEnabled,
   )
   const testSummaryQuery = useDeviceTestSummaryQuery(accessToken, deviceId, apiQueryEnabled)
+  const exportTestHistoryMutation = useExportDeviceTestHistoryMutation(accessToken)
 
   const allRows = useMemo(() => {
     return mapRecentTestsToDeviceTestHistoryRows(deviceId, testHistoryQuery.data?.results)
@@ -182,10 +184,12 @@ export default function DeviceTestHistoryPage() {
             </div>
             <button
               type="button"
-              className="inline-flex items-center justify-center gap-3 rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
+              disabled={exportTestHistoryMutation.isPending}
+              onClick={() => exportTestHistoryMutation.mutate({ deviceId })}
+              className="inline-flex items-center justify-center gap-3 rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <ExportDownloadIcon className="size-6 shrink-0 text-vess-primary-500" />
-              Export
+              {exportTestHistoryMutation.isPending ? 'Exporting…' : 'Export'}
             </button>
           </div>
 

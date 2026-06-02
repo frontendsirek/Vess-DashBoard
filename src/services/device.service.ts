@@ -3,15 +3,23 @@ import type { PaginatedResponse } from '@/types/api'
 import type {
   ApiDevice,
   ApiDeviceDetail,
+  ApiDeviceDiagnosticsResult,
   ApiDeviceLogsPage,
   ApiDeviceLogsParams,
   ApiDeviceStats,
   ApiDeviceTestSummary,
   ApiDeviceTestsPage,
   ApiDeviceTestsParams,
+  ApiDevicesExportPage,
+  ApiRemoteCommandResponse,
+  ApiRemoteControlSessionResponse,
+  ExportDeviceTestHistoryParams,
+  ExportDevicesParams,
   HeartbeatPayload,
   ListDevicesParams,
   RegisterDevicePayload,
+  SendRemoteCommandPayload,
+  StartRemoteControlSessionPayload,
   UpdateDevicePayload,
 } from '@/types/device'
 import type {
@@ -63,6 +71,55 @@ export const deviceService = {
 
   getDeviceTestSummary(deviceId: string) {
     return apiClient.get<ApiDeviceTestSummary>(`${DEVICES_PREFIX}/${deviceId}/tests/summary/`)
+  },
+
+  exportDevices(params?: ExportDevicesParams) {
+    const format = params?.format ?? 'json'
+    return apiClient.get<ApiDevicesExportPage | string>(`${DEVICES_PREFIX}/export/`, {
+      params,
+      responseType: format === 'csv' ? 'text' : 'json',
+    })
+  },
+
+  runDeviceDiagnostics(deviceId: string) {
+    return apiClient.post<ApiDeviceDiagnosticsResult>(`${DEVICES_PREFIX}/${deviceId}/diagnostics/`)
+  },
+
+  exportDeviceTestHistory(deviceId: string, params?: ExportDeviceTestHistoryParams) {
+    const format = params?.format ?? 'json'
+    return apiClient.get<ApiDeviceTestsPage | string>(
+      `${DEVICES_PREFIX}/${deviceId}/tests/export/`,
+      {
+        params,
+        responseType: format === 'csv' ? 'text' : 'json',
+      },
+    )
+  },
+
+  getRemoteControlSession(deviceId: string) {
+    return apiClient.get<ApiRemoteControlSessionResponse>(
+      `${DEVICES_PREFIX}/${deviceId}/remote-control/session/`,
+    )
+  },
+
+  startRemoteControlSession(deviceId: string, payload: StartRemoteControlSessionPayload) {
+    return apiClient.post<ApiRemoteControlSessionResponse>(
+      `${DEVICES_PREFIX}/${deviceId}/remote-control/session/`,
+      payload,
+    )
+  },
+
+  sendRemoteCommand(deviceId: string, sessionId: string, payload: SendRemoteCommandPayload) {
+    return apiClient.post<ApiRemoteCommandResponse>(
+      `${DEVICES_PREFIX}/${deviceId}/remote-control/session/${sessionId}/command/`,
+      payload,
+    )
+  },
+
+  endRemoteControlSession(deviceId: string, sessionId: string) {
+    return apiClient.delete(`${DEVICES_PREFIX}/${deviceId}/remote-control/session/`, {
+      params: { session_id: sessionId },
+    })
   },
 
   registerDevice(payload: RegisterDevicePayload) {

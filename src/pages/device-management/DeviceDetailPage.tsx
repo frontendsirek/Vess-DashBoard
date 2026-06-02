@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { ComponentType } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { DeviceStatusBadge } from '@/components/device-management/DeviceStatusBadge'
+import { DeviceDiagnosticsModal } from '@/components/device-management/DeviceDiagnosticsModal'
 import { DeregisterDeviceModal } from '@/components/device-management/DeregisterDeviceModal'
 import {
   ArrowBackIcon,
@@ -13,8 +14,11 @@ import {
   SignalBarsIcon,
 } from '@/components/icons'
 import { useDeregisterDeviceMutation } from '@/hooks/devices/use-deregister-device-mutation'
+import { useExportDeviceDataMutation } from '@/hooks/devices/use-export-device-data-mutation'
+import { useRunDeviceDiagnosticsMutation } from '@/hooks/devices/use-run-device-diagnostics-mutation'
 import { useDeviceDetailQuery } from '@/hooks/devices/use-device-detail-query'
 import { useAuthStore } from '@/stores/auth-store'
+import type { ApiDeviceDiagnosticsResult } from '@/types/device'
 
 import {
   MISSING_API_FIELD_DISPLAY,
@@ -36,7 +40,13 @@ export default function DeviceDetailPage() {
   )
 
   const deregisterMutation = useDeregisterDeviceMutation(accessToken, deviceId)
+  const exportDeviceDataMutation = useExportDeviceDataMutation(accessToken)
+  const diagnosticsMutation = useRunDeviceDiagnosticsMutation(accessToken, deviceId)
   const [deregisterModalOpen, setDeregisterModalOpen] = useState(false)
+  const [diagnosticsModalOpen, setDiagnosticsModalOpen] = useState(false)
+  const [diagnosticsResult, setDiagnosticsResult] = useState<ApiDeviceDiagnosticsResult | null>(
+    null,
+  )
 
   const apiDevice = apiDeviceQuery.data ?? null
   const model = useMemo(
@@ -113,6 +123,20 @@ export default function DeviceDetailPage() {
   const goRemote = () => {
     navigate(`/remote-device-control?deviceId=${encodeURIComponent(routeId)}`, {
       state: { deviceId: routeId },
+    })
+  }
+
+  function handleExportDeviceData() {
+    exportDeviceDataMutation.mutate({ deviceId: routeId })
+  }
+
+  function handleRunDiagnostics() {
+    setDiagnosticsModalOpen(true)
+    setDiagnosticsResult(null)
+    diagnosticsMutation.mutate(undefined, {
+      onSuccess: (result) => {
+        setDiagnosticsResult(result)
+      },
     })
   }
 
@@ -336,15 +360,19 @@ export default function DeviceDetailPage() {
                   </button>
                   <button
                     type="button"
-                    className="flex h-[50px] w-full items-center justify-center rounded-lg border border-vess-primary-500 bg-vess-grey-50 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
+                    disabled={exportDeviceDataMutation.isPending}
+                    onClick={handleExportDeviceData}
+                    className="flex h-[50px] w-full items-center justify-center rounded-lg border border-vess-primary-500 bg-vess-grey-50 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Export device data
+                    {exportDeviceDataMutation.isPending ? 'Exporting…' : 'Export device data'}
                   </button>
                   <button
                     type="button"
-                    className="flex h-[50px] w-full items-center justify-center rounded-lg border border-vess-primary-500 bg-vess-grey-50 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
+                    disabled={diagnosticsMutation.isPending}
+                    onClick={handleRunDiagnostics}
+                    className="flex h-[50px] w-full items-center justify-center rounded-lg border border-vess-primary-500 bg-vess-grey-50 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Run diagnostics
+                    {diagnosticsMutation.isPending ? 'Running…' : 'Run diagnostics'}
                   </button>
                   <button
                     type="button"
@@ -367,6 +395,14 @@ export default function DeviceDetailPage() {
         deviceName={model?.displayName ?? deviceId}
         isPending={deregisterMutation.isPending}
         onConfirm={(reason) => deregisterMutation.mutate(reason)}
+      />
+
+      <DeviceDiagnosticsModal
+        open={diagnosticsModalOpen}
+        onClose={() => setDiagnosticsModalOpen(false)}
+        deviceName={model.displayName}
+        result={diagnosticsResult}
+        isPending={diagnosticsMutation.isPending}
       />
     </>
   )
