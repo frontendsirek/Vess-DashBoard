@@ -30,7 +30,7 @@ export const authService = {
 
   verifyOtp(payload: VerifyOtpPayload) {
     return apiClient.post<ApiEnvelope<LoginResponse>>(
-      `${AUTH_PREFIX}/verify-otp/`,
+      `${AUTH_PREFIX}/login/verify-otp/`,
       payload,
     )
   },
