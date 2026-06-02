@@ -8,18 +8,20 @@ import {
 } from '@/components/ui/select'
 import { type DeviceManagementView } from '@/stores/ui-store'
 import { cn } from '@/lib/utils'
+import {
+  DEVICE_LIST_STATUS_FILTER_OPTIONS,
+  type DeviceListStatusFilter,
+} from '@/lib/device-list-status-filter'
 import { DeviceManagementViewToggle } from '@/components/device-management/DeviceManagementViewToggle'
 
 type DeviceFilterBarProps = {
   search: string
   onSearchChange: (value: string) => void
-  statusFilter: string
-  onStatusFilterChange: (value: string) => void
+  statusFilter: DeviceListStatusFilter
+  onStatusFilterChange: (value: DeviceListStatusFilter) => void
   view: DeviceManagementView
   onViewChange: (view: DeviceManagementView) => void
 }
-
-const statusOptions = ['All Status', 'Online', 'Offline', 'Warning', 'Low Battery'] as const
 
 export function DeviceFilterBar({
   search,
@@ -52,9 +54,9 @@ export function DeviceFilterBar({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {statusOptions.map((opt) => (
-              <SelectItem key={opt} value={opt}>
-                {opt}
+            {DEVICE_LIST_STATUS_FILTER_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label}
               </SelectItem>
             ))}
           </SelectContent>

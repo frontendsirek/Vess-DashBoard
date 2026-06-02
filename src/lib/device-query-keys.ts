@@ -14,4 +14,6 @@ export const deviceQueryKeys = {
     [...deviceQueryKeys.all, 'testHistory', accessToken, deviceId, params] as const,
   testSummary: (accessToken: string | null, deviceId: string) =>
     [...deviceQueryKeys.all, 'testSummary', accessToken, deviceId] as const,
+  remoteSession: (accessToken: string | null, deviceId: string) =>
+    [...deviceQueryKeys.all, 'remoteSession', accessToken, deviceId] as const,
 }

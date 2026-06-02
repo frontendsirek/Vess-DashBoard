@@ -9,9 +9,13 @@ import { Pagination } from '@/components/test-management/Pagination'
 import type { DeviceRecord } from '@/data/device-management'
 import { useDevicesKpiQuery } from '@/hooks/devices/use-devices-kpi-query'
 import { useDevicesListQuery } from '@/hooks/devices/use-devices-list-query'
-import { useDevicesSearchQuery } from '@/hooks/devices/use-devices-search-query'
 import { SEARCH_DEBOUNCE_MS, useDebouncedValue } from '@/hooks/use-debounced-value'
 import { mapApiDeviceToDeviceRecord } from '@/lib/api-device-mapper'
+import {
+  DEVICE_LIST_STATUS_FILTER_ALL,
+  deviceListStatusFilterToApiParam,
+  type DeviceListStatusFilter,
+} from '@/lib/device-list-status-filter'
 import type { ListDevicesParams } from '@/types/device'
 import { useAuthStore } from '@/stores/auth-store'
 import { useUiStore } from '@/stores/ui-store'
@@ -25,7 +29,9 @@ export default function DeviceManagementPage() {
   const setView = useUiStore((state) => state.setDeviceManagementView)
 
   const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState('All Status')
+  const [statusFilter, setStatusFilter] = useState<DeviceListStatusFilter>(
+    DEVICE_LIST_STATUS_FILTER_ALL,
+  )
   const [currentPage, setCurrentPage] = useState(1)
 
   const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS)
@@ -35,7 +41,7 @@ export default function DeviceManagementPage() {
     setCurrentPage(1)
   }
 
-  function handleStatusFilterChange(value: string) {
+  function handleStatusFilterChange(value: DeviceListStatusFilter) {
     setStatusFilter(value)
     setCurrentPage(1)
   }
@@ -44,49 +50,35 @@ export default function DeviceManagementPage() {
     const params: ListDevicesParams = {
       page: currentPage,
       page_size: PAGE_SIZE,
+      ordering: '-created_at',
     }
-    if (statusFilter === 'Online') params.status = 'ONLINE'
-    else if (statusFilter === 'Offline') params.status = 'OFFLINE'
+
+    const apiStatus = deviceListStatusFilterToApiParam(statusFilter)
+    if (apiStatus) {
+      params.status = apiStatus
+    }
+
+    if (debouncedSearch.length > 0) {
+      params.search = debouncedSearch
+    }
+
     return params
-  }, [currentPage, statusFilter])
+  }, [currentPage, debouncedSearch, statusFilter])
 
   const kpiQuery = useDevicesKpiQuery(accessToken)
 
-  const listQuery = useDevicesListQuery(accessToken, listParams, debouncedSearch.length === 0)
+  const listQuery = useDevicesListQuery(accessToken, listParams, true)
 
-  const searchQuery = useDevicesSearchQuery(accessToken, debouncedSearch, debouncedSearch.length > 0)
-
-  const mappedFromList = useMemo(() => {
+  const devices = useMemo<DeviceRecord[]>(() => {
+    if (!accessToken) return []
     const rows = listQuery.data?.results ?? []
     return rows.map(mapApiDeviceToDeviceRecord)
-  }, [listQuery.data])
+  }, [accessToken, listQuery.data])
 
-  const mappedFromSearch = useMemo(() => {
-    const rows = searchQuery.data ?? []
-    return rows.map(mapApiDeviceToDeviceRecord)
-  }, [searchQuery.data])
+  const totalPages = Math.max(1, Math.ceil((listQuery.data?.count ?? 0) / PAGE_SIZE))
 
-  const filteredDevices = useMemo<DeviceRecord[]>(() => {
-    if (!accessToken) return []
-    const base = debouncedSearch.length > 0 ? mappedFromSearch : mappedFromList
-    if (statusFilter === 'All Status') return base
-    if (statusFilter === 'Online' || statusFilter === 'Offline') return base
-    return base.filter((d) => d.status === statusFilter)
-  }, [accessToken, debouncedSearch.length, mappedFromList, mappedFromSearch, statusFilter])
-
-  const totalPages =
-    debouncedSearch.length > 0 ?
-      1
-      : Math.max(1, Math.ceil((listQuery.data?.count ?? 0) / PAGE_SIZE))
-
-  const listPending =
-    debouncedSearch.length === 0 && accessToken ? listQuery.isPending : false
-  const searchPending =
-    debouncedSearch.length > 0 && accessToken ? searchQuery.isPending : false
-  const listError =
-    debouncedSearch.length === 0 && accessToken ? listQuery.isError : false
-  const searchError =
-    debouncedSearch.length > 0 && accessToken ? searchQuery.isError : false
+  const listPending = accessToken ? listQuery.isPending : false
+  const listError = accessToken ? listQuery.isError : false
 
   function handleViewDevice(device: DeviceRecord) {
     navigate(`/device-management/${device.id}`)
@@ -134,24 +126,24 @@ export default function DeviceManagementPage() {
               </p>
             )}
 
-            {(listError || searchError) && (
+            {listError && (
               <p className="rounded-xl border border-vess-red-200 bg-vess-red-50 px-4 py-3 text-[15px] text-vess-red-800">
                 Could not load devices. Check your connection and try again.
               </p>
             )}
 
-            {(listPending || searchPending) && accessToken ? (
+            {listPending && accessToken ? (
               <div className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-8 text-center text-[15px] text-vess-grey-600">
                 Loading devices…
               </div>
             ) : (
               <>
                 {view === 'list' ? (
-                  <DeviceTable devices={filteredDevices} onView={handleViewDevice} />
+                  <DeviceTable devices={devices} onView={handleViewDevice} />
                 ) : (
-                  <DeviceCardGrid devices={filteredDevices} onView={handleViewDevice} />
+                  <DeviceCardGrid devices={devices} onView={handleViewDevice} />
                 )}
-                {accessToken && !listPending && !searchPending && filteredDevices.length === 0 ?
+                {accessToken && !listPending && devices.length === 0 ?
                   <p className="py-2 text-center text-[14px] text-vess-grey-500">
                     No devices match your filters.
                   </p>
@@ -163,7 +155,7 @@ export default function DeviceManagementPage() {
             )}
           </div>
 
-          {accessToken && debouncedSearch.length === 0 && totalPages > 1 ? (
+          {accessToken && totalPages > 1 ? (
             <Pagination currentPage={currentPage} totalPages={totalPages} onChange={setCurrentPage} />
           ) : null}
         </section>

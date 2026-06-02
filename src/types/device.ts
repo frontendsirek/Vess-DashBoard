@@ -164,6 +164,9 @@ export type ApiDevice = {
 export type ListDevicesParams = {
   status?: DeviceStatus
   location?: string
+  search?: string
+  operator?: string
+  group?: string
   created_after?: string
   created_before?: string
   ordering?: string
@@ -200,4 +203,81 @@ export type HeartbeatPayload = {
   latitude: number
   longitude: number
   app_version: string
+}
+
+export type DeviceExportFormat = 'json' | 'csv'
+
+export type ExportDevicesParams = {
+  format?: DeviceExportFormat
+  status?: DeviceStatus
+  search?: string
+  ordering?: string
+}
+
+export type ApiDeviceExportRecord = {
+  id: string
+  device_id: string
+  device_name: string
+  status: DeviceStatus
+  location?: string
+}
+
+export type ApiDevicesExportPage = {
+  count: number
+  results: ApiDeviceExportRecord[]
+}
+
+export type ExportDeviceTestHistoryParams = {
+  format?: DeviceExportFormat
+  page?: number
+  page_size?: number
+}
+
+export type ApiDeviceDiagnosticsResult = {
+  device_id: string
+  status: string
+  issues: string[]
+  heartbeat_age_seconds: number | null
+  battery_level: number | null
+  signal_strength: number | null
+  error_logs_last_24h: number | null
+  checked_at: string
+}
+
+export type ApiRemoteControlSession = {
+  session_id: string
+  device_id: string
+  started_by: string
+  started_at: string
+  expires_at: string
+  status: string
+  reason?: string
+  channel: string
+}
+
+export type ApiRemoteControlSessionResponse = {
+  active: boolean
+  session: ApiRemoteControlSession | null
+}
+
+export type StartRemoteControlSessionPayload = {
+  expires_in_minutes: number
+  reason: string
+}
+
+export type SendRemoteCommandPayload = {
+  command: string
+  args?: Record<string, unknown>
+}
+
+export type ApiRemoteCommandResponse = {
+  queued: boolean
+  session_id: string
+  command: {
+    command_id: string
+    command: string
+    args?: Record<string, unknown>
+    issued_at: string
+    issued_by: string
+  }
 }

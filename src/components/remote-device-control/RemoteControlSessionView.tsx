@@ -19,39 +19,47 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import type { ApiRemoteControlSession } from '@/types/device'
 import type { RemoteControlDevice } from '@/types/remote-device-control'
 import { cn } from '@/lib/utils'
 
 const QUALITY_OPTIONS = ['High Quality', 'Medium Quality', 'Low Quality'] as const
 
-/** Figma 464:14114 — session console copy. */
-const REMOTE_CONSOLE_LINES = [
-  '[12:34:56] Connected to device',
-  '[12:34:57] Screen mirroring started',
-  '[12:34:58] Device ready for remote control',
-  '[16:31:24] Screen refreshed',
-  '[16:31:24] Screen refreshed',
-] as const
-
-const HEADER_LATENCY_MS = '145ms'
-const SIDEBAR_LATENCY_MS = '134ms'
+const QUICK_ACTION_COMMANDS = {
+  'Reboot Device': 'reboot',
+  'Clear Cache': 'clear_cache',
+  'Update App': 'update_app',
+  'Change Settings': 'change_settings',
+} as const
 
 type RemoteControlSessionViewProps = {
   device: RemoteControlDevice
   /** Hardware line beside device name (Figma subtitle). */
   modelLabel: string
+  session: ApiRemoteControlSession | null
   /** Return to device picker / clear session. */
   onExitSession: () => void
+  onSendCommand: (command: string, args?: Record<string, unknown>) => void
+  isEnding: boolean
+  isCommandPending: boolean
 }
 
 export function RemoteControlSessionView({
   device,
   modelLabel,
+  session,
   onExitSession,
+  onSendCommand,
+  isEnding,
+  isCommandPending,
 }: RemoteControlSessionViewProps) {
   const [quality, setQuality] = useState<string>(QUALITY_OPTIONS[0])
 
   const signalDisplay = device.signal === 'N/A' ? '—' : device.signal
+  const sessionStatus = session?.status ?? 'active'
+  const sessionChannel = session?.channel ?? '—'
+  const expiresLabel =
+    session?.expires_at ? new Date(session.expires_at).toLocaleString() : '—'
 
   return (
     <div className="flex flex-col gap-8 rounded-2xl bg-vess-grey-100 px-4 py-6 md:px-5">
@@ -90,20 +98,21 @@ export function RemoteControlSessionView({
         </div>
         <div className="flex flex-wrap items-center gap-5">
           <div className="flex items-center gap-3 rounded-lg">
-            <span className="text-[15px] font-light leading-[18px] text-vess-grey-950">Latency:</span>
+            <span className="text-[15px] font-light leading-[18px] text-vess-grey-950">Session:</span>
             <div className="flex items-center gap-1.5">
               <span className="text-[15px] font-medium leading-[18px] text-vess-green-500">
-                {HEADER_LATENCY_MS}
+                {sessionStatus}
               </span>
               <span className="size-2 shrink-0 rounded-full bg-vess-green-500" aria-hidden />
             </div>
           </div>
           <button
             type="button"
+            disabled={isEnding}
             onClick={onExitSession}
-            className="rounded-lg bg-vess-red-500 px-6 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90"
+            className="rounded-lg bg-vess-red-500 px-6 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            End Session
+            {isEnding ? 'Ending…' : 'End Session'}
           </button>
         </div>
       </div>
@@ -130,27 +139,43 @@ export function RemoteControlSessionView({
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <ToolbarIconButton label="Keyboard">
+              <ToolbarIconButton
+                label="Keyboard"
+                disabled={isCommandPending}
+                onClick={() => onSendCommand('keyboard')}
+              >
                 <RemoteKeyboardIcon className="size-[30px]" />
               </ToolbarIconButton>
-              <ToolbarIconButton label="Home">
+              <ToolbarIconButton
+                label="Home"
+                disabled={isCommandPending}
+                onClick={() => onSendCommand('home')}
+              >
                 <RemoteHomeIcon className="size-[25px]" />
               </ToolbarIconButton>
-              <ToolbarIconButton label="Settings">
+              <ToolbarIconButton
+                label="Settings"
+                disabled={isCommandPending}
+                onClick={() => onSendCommand('settings')}
+              >
                 <RemoteToolbarSettingsIcon className="size-[25px]" />
               </ToolbarIconButton>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
-                className="inline-flex h-[45px] items-center justify-center gap-1.5 rounded-lg bg-vess-grey-100 px-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-200"
+                disabled={isCommandPending}
+                onClick={() => onSendCommand('screenshot')}
+                className="inline-flex h-[45px] items-center justify-center gap-1.5 rounded-lg bg-vess-grey-100 px-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-200 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <RemoteScreenshotIcon className="size-[25px] shrink-0" />
                 Screenshot
               </button>
               <button
                 type="button"
-                className="inline-flex h-[45px] items-center justify-center gap-1.5 rounded-lg bg-vess-grey-100 px-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-200"
+                disabled={isCommandPending}
+                onClick={() => onSendCommand('record')}
+                className="inline-flex h-[45px] items-center justify-center gap-1.5 rounded-lg bg-vess-grey-100 px-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-200 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <RemoteRecordIcon className="size-[25px] shrink-0" />
                 Record
@@ -177,36 +202,41 @@ export function RemoteControlSessionView({
         <aside className="flex w-full shrink-0 flex-col gap-8 lg:w-[354px]">
           <SessionCard title="Manual Tests">
             <div className="flex flex-col gap-4">
-              <button
-                type="button"
-                className="w-full rounded-lg bg-vess-primary-500 px-6 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90"
-              >
-                Initiate Call Test
-              </button>
-              <button
-                type="button"
-                className="w-full rounded-lg bg-vess-secondary-500 px-6 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90"
-              >
-                Send SMS test
-              </button>
-              <button
-                type="button"
-                className="w-full rounded-lg bg-vess-green-500 px-6 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90"
-              >
-                Data Connection Test
-              </button>
+              <ManualTestButton
+                label="Initiate Call Test"
+                command="initiate_call_test"
+                tone="primary"
+                disabled={isCommandPending}
+                onSendCommand={onSendCommand}
+              />
+              <ManualTestButton
+                label="Send SMS test"
+                command="send_sms_test"
+                tone="secondary"
+                disabled={isCommandPending}
+                onSendCommand={onSendCommand}
+              />
+              <ManualTestButton
+                label="Data Connection Test"
+                command="data_connection_test"
+                tone="green"
+                disabled={isCommandPending}
+                onSendCommand={onSendCommand}
+              />
             </div>
           </SessionCard>
 
           <SessionCard title="Quick Actions">
             <div className="flex flex-col gap-4">
               {(
-                ['Reboot Device', 'Clear Cache', 'Update App', 'Change Settings'] as const
-              ).map((label) => (
+                Object.entries(QUICK_ACTION_COMMANDS) as [string, string][]
+              ).map(([label, command]) => (
                 <button
-                  key={label}
+                  key={command}
                   type="button"
-                  className="w-full rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-6 py-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
+                  disabled={isCommandPending}
+                  onClick={() => onSendCommand(command)}
+                  className="w-full rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-6 py-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {label}
                 </button>
@@ -221,23 +251,26 @@ export function RemoteControlSessionView({
                   Status
                 </span>
                 <span className="inline-flex min-w-[102px] justify-center rounded-full bg-vess-green-50 px-3 py-1 text-[15px] font-normal leading-[18px] text-vess-green-500">
-                  Connected
+                  {sessionStatus}
                 </span>
               </div>
-              <ConnectionRow label="Latency" value={SIDEBAR_LATENCY_MS} />
-              <ConnectionRow label="Frame Rate" value="28 fps" />
-              <ConnectionRow label="Bandwidth" value="2.4 Mbps" />
+              <ConnectionRow label="Channel" value={sessionChannel} />
+              <ConnectionRow label="Expires" value={expiresLabel} />
+              <ConnectionRow label="Session ID" value={session?.session_id ?? '—'} />
             </div>
           </SessionCard>
 
           <SessionCard title="Device Logs">
             <div className="rounded-lg bg-vess-grey-950 p-3">
               <div className="flex flex-col gap-4 font-light leading-[18px]">
-                {REMOTE_CONSOLE_LINES.map((line, index) => (
-                  <p key={`${index}-${line}`} className="text-[15px] text-vess-green-500">
-                    {line}
+                <p className="text-[15px] text-vess-green-500">
+                  [{new Date().toLocaleTimeString()}] Remote control session active
+                </p>
+                {session?.reason ?
+                  <p className="text-[15px] text-vess-green-500">
+                    [{new Date().toLocaleTimeString()}] {session.reason}
                   </p>
-                ))}
+                : null}
               </div>
             </div>
           </SessionCard>
@@ -265,19 +298,58 @@ function ConnectionRow({ label, value }: { label: string; value: string }) {
   )
 }
 
+function ManualTestButton({
+  label,
+  command,
+  tone,
+  disabled,
+  onSendCommand,
+}: {
+  label: string
+  command: string
+  tone: 'primary' | 'secondary' | 'green'
+  disabled: boolean
+  onSendCommand: (command: string) => void
+}) {
+  const toneClass =
+    tone === 'primary' ? 'bg-vess-primary-500'
+    : tone === 'secondary' ? 'bg-vess-secondary-500'
+    : 'bg-vess-green-500'
+
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={() => onSendCommand(command)}
+      className={cn(
+        'w-full rounded-lg px-6 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60',
+        toneClass,
+      )}
+    >
+      {label}
+    </button>
+  )
+}
+
 function ToolbarIconButton({
   label,
   children,
+  disabled,
+  onClick,
 }: {
   label: string
   children: ReactNode
+  disabled?: boolean
+  onClick?: () => void
 }) {
   return (
     <button
       type="button"
       title={label}
       aria-label={label}
-      className="flex size-[45px] items-center justify-center rounded-lg bg-vess-grey-100 p-2 text-vess-grey-950 transition-colors hover:bg-vess-grey-200"
+      disabled={disabled}
+      onClick={onClick}
+      className="flex size-[45px] items-center justify-center rounded-lg bg-vess-grey-100 p-2 text-vess-grey-950 transition-colors hover:bg-vess-grey-200 disabled:cursor-not-allowed disabled:opacity-60"
     >
       {children}
     </button>
