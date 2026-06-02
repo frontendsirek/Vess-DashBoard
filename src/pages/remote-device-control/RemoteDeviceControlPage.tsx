@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { RemoteControlSessionView } from '@/components/remote-device-control/RemoteControlSessionView'
+import { RemoteControlSessionGate } from '@/components/remote-device-control/RemoteControlSessionGate'
 import { useDeviceDetailQuery } from '@/hooks/devices/use-device-detail-query'
 import { useDevicesListQuery } from '@/hooks/devices/use-devices-list-query'
 import { useDevicesSearchQuery } from '@/hooks/devices/use-devices-search-query'
@@ -110,9 +110,9 @@ export default function RemoteDeviceControlPage() {
             <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
           </section>
         ) : inSession && selectedDevice ? (
-          <RemoteControlSessionView
+          <RemoteControlSessionGate
+            accessToken={accessToken}
             device={selectedDevice}
-            modelLabel={selectedDevice.model}
             onExitSession={exitSession}
           />
         ) : (
