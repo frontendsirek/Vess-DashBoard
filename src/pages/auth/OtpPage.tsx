@@ -65,9 +65,12 @@ export default function OtpPage() {
 
   function onSubmit(values: VerifyOtpFormValues) {
     if (!pendingEmail) return
+    const challengeToken = useAuthStore.getState().challengeToken
+    if (!challengeToken) return
     verifyOtpMutation.mutate({
       email: pendingEmail,
       otp: values.otp.trim(),
+      challenge_token: challengeToken,
     })
   }
 

@@ -63,6 +63,7 @@ export type RegisterResponse = {
 export type VerifyOtpPayload = {
   email: string
   otp: string
+  challenge_token: string
 }
 
 export type GoogleLoginPayload = {
