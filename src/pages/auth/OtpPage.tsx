@@ -36,7 +36,8 @@ export default function OtpPage() {
   })
 
   useEffect(() => {
-    if (!pendingEmail) {
+    const accessToken = useAuthStore.getState().accessToken
+    if (!pendingEmail && !accessToken) {
       navigate('/auth/sign-in', { replace: true })
     }
   }, [pendingEmail, navigate])

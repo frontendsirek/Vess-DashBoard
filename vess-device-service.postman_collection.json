@@ -1,24 +1,59 @@
 {
   "info": {
-    "_postman_id": "f54a8b35-5a45-452d-bba5-15bb20f143fe",
     "name": "Vess Device Service",
-    "description": "Complete collection for the Vess Device Management Service API.\n\n**Setup:**\n1. Set `baseUrl` to your deployment URL.\n2. Set `accessToken` to a valid JWT from the auth-service (or import the auth collection and run Login first — the token is shared via the `accessToken` variable if both collections share an environment).\n3. After registering a device, the `deviceId` and `apiKey` variables are auto-populated for use in heartbeat and location requests.\n\n**Auth types used:**\n- `UserJWTAuthentication` — `Authorization: Bearer <accessToken>` for dashboard/user-facing endpoints.\n- `DeviceAPIKeyAuthentication` — `X-API-Key: <apiKey>` for device-originated endpoints (heartbeat, location).\n- Registration endpoints use a dashboard JWT decoded with `SECRET_KEY` (same Bearer token).",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "createdAt": "2026-05-22T23:51:48.000Z",
-    "updatedAt": "2026-05-22T23:51:48.000Z",
-    "lastUpdatedBy": "52839743",
-    "uid": "52839743-f54a8b35-5a45-452d-bba5-15bb20f143fe"
+    "_postman_id": "vess-device-service-collection",
+    "description": "Complete collection for the Vess Device Management Service API.\n\n**Setup:**\n1. Set `baseUrl` to your deployment URL.\n2. Set `accessToken` to a valid JWT from the auth-service (or import the auth collection and run Login first \u2014 the token is shared via the `accessToken` variable if both collections share an environment).\n3. After registering a device, the `deviceId` and `apiKey` variables are auto-populated for use in heartbeat and location requests.\n\n**Auth types used:**\n- `UserJWTAuthentication` \u2014 `Authorization: Bearer <accessToken>` for dashboard/user-facing endpoints.\n- `DeviceAPIKeyAuthentication` \u2014 `X-API-Key: <apiKey>` for device-originated endpoints (heartbeat, location).\n- Registration endpoints use a dashboard JWT decoded with `SECRET_KEY` (same Bearer token).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://vess-dev-alb-385758613.us-east-1.elb.amazonaws.com/device",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string",
+      "description": "JWT Bearer token from auth-service login. Used for all user-facing endpoints."
+    },
+    {
+      "key": "deviceId",
+      "value": "",
+      "type": "string",
+      "description": "Auto-populated after device registration."
+    },
+    {
+      "key": "apiKey",
+      "value": "",
+      "type": "string",
+      "description": "One-time API key returned on device registration. Used for heartbeat and location endpoints."
+    },
+    {
+      "key": "registrationRequestId",
+      "value": "",
+      "type": "string",
+      "description": "Auto-populated after creating a registration request."
+    },
+    {
+      "key": "syncToken",
+      "value": "",
+      "type": "string",
+      "description": "Sync link token extracted from sync_url after creating a registration request."
+    },
+    {
+      "key": "remoteSessionId",
+      "value": "",
+      "type": "string",
+      "description": "Active remote-control session ID (set by Start Remote Control Session)."
+    }
+  ],
   "item": [
     {
       "name": "Health",
       "item": [
         {
           "name": "Service Health",
-          "id": "663c6ea1-066e-4d48-9886-71829016d188",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "GET",
             "header": [],
@@ -36,7 +71,6 @@
           },
           "response": [
             {
-              "id": "e0d020b1-2503-4db9-8465-803218a84915",
               "name": "Example Success",
               "originalRequest": {
                 "method": "GET",
@@ -63,23 +97,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"status\": \"ok\",\n  \"service\": \"device-service\",\n  \"timestamp\": \"2026-05-16T10:15:00Z\"\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-e0d020b1-2503-4db9-8465-803218a84915"
+              "body": "{\n  \"status\": \"ok\",\n  \"service\": \"device-service\",\n  \"timestamp\": \"2026-05-16T10:15:00Z\"\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-663c6ea1-066e-4d48-9886-71829016d188"
+          ]
         },
         {
           "name": "System Health",
-          "id": "198e8dfe-0a2b-4993-be1e-f29f7e1886bb",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "GET",
             "header": [],
@@ -98,7 +121,6 @@
           },
           "response": [
             {
-              "id": "8d8ff5e0-ab80-4135-a603-54c2c959da79",
               "name": "Example Success",
               "originalRequest": {
                 "method": "GET",
@@ -126,23 +148,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"status\": \"ok\",\n  \"service\": \"device-service\",\n  \"timestamp\": \"2026-05-16T10:15:00Z\"\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-8d8ff5e0-ab80-4135-a603-54c2c959da79"
+              "body": "{\n  \"status\": \"ok\",\n  \"service\": \"device-service\",\n  \"timestamp\": \"2026-05-16T10:15:00Z\"\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-198e8dfe-0a2b-4993-be1e-f29f7e1886bb"
+          ]
         },
         {
           "name": "API Docs",
-          "id": "1af11e2b-6975-49a5-aa0e-110baeb63d3d",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "GET",
             "header": [],
@@ -163,7 +174,6 @@
           },
           "response": [
             {
-              "id": "bf701e00-a895-4504-8a6a-f7c063c6cb39",
               "name": "Example Success",
               "originalRequest": {
                 "method": "GET",
@@ -193,32 +203,17 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"detail\": \"Swagger UI HTML response\"\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-bf701e00-a895-4504-8a6a-f7c063c6cb39"
+              "body": "{\n  \"detail\": \"Swagger UI HTML response\"\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-1af11e2b-6975-49a5-aa0e-110baeb63d3d"
+          ]
         }
-      ],
-      "id": "298b0b73-0023-4172-b3da-ea986adc87d3",
-      "createdAt": "2026-05-22T23:51:49.000Z",
-      "updatedAt": "2026-05-22T23:51:49.000Z",
-      "uid": "52839743-298b0b73-0023-4172-b3da-ea986adc87d3"
+      ]
     },
     {
       "name": "Devices",
       "item": [
         {
           "name": "List Devices",
-          "id": "10124e5c-b92a-480a-a49f-5008ff50d961",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "auth": {
               "type": "bearer",
@@ -233,7 +228,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/devices/?status=&location=&created_after=&created_before=&ordering=-created_at&page=1&page_size=50&operator=&group=&search=",
+              "raw": "{{baseUrl}}/api/v1/devices/?status=&location=&operator=&group=&search=&created_after=&created_before=&ordering=-created_at&page=1&page_size=50",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -299,7 +294,6 @@
           },
           "response": [
             {
-              "id": "ee2e1929-fb35-43f4-a070-52778774a87b",
               "name": "Example Success",
               "originalRequest": {
                 "auth": {
@@ -315,7 +309,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/api/v1/devices/?status=&location=&created_after=&created_before=&ordering=-created_at&page=1&page_size=50&operator=&group=&search=",
+                  "raw": "{{baseUrl}}/api/v1/devices/?status=&location=&operator=&group=&search=&created_after=&created_before=&ordering=-created_at&page=1&page_size=50",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -389,23 +383,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"count\": 1,\n  \"page\": 1,\n  \"page_size\": 50,\n  \"results\": [\n    {\n      \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n      \"device_id\": \"DEV-001\",\n      \"device_name\": \"Test Device Lagos\",\n      \"location\": \"Lagos Island, Lagos\",\n      \"status\": \"ONLINE\",\n      \"is_active\": true,\n      \"last_heartbeat\": \"2026-05-16T10:10:00Z\"\n    }\n  ]\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-ee2e1929-fb35-43f4-a070-52778774a87b"
+              "body": "{\n  \"count\": 1,\n  \"page\": 1,\n  \"page_size\": 50,\n  \"results\": [\n    {\n      \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n      \"device_id\": \"DEV-001\",\n      \"device_name\": \"Test Device Lagos\",\n      \"location\": \"Lagos Island, Lagos\",\n      \"status\": \"ONLINE\",\n      \"is_active\": true,\n      \"last_heartbeat\": \"2026-05-16T10:10:00Z\"\n    }\n  ]\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-10124e5c-b92a-480a-a49f-5008ff50d961"
+          ]
         },
         {
           "name": "Batch Device Status",
-          "id": "b55d9e41-1d53-4e18-92ce-ed3fee15f560",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "auth": {
               "type": "bearer",
@@ -446,7 +429,6 @@
           },
           "response": [
             {
-              "id": "fa3295ab-3b13-4101-ab54-f88c31ed790f",
               "name": "Example Success",
               "originalRequest": {
                 "method": "POST",
@@ -457,7 +439,7 @@
                   }
                 ],
                 "url": {
-                  "raw": ""
+                  "raw": "{{baseUrl}}/api/v1/devices/status/batch/"
                 }
               },
               "status": "OK",
@@ -470,16 +452,9 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"count\": 3,\n  \"results\": [\n    {\n      \"device_id\": \"DEV-001\",\n      \"found\": true,\n      \"status\": \"ONLINE\",\n      \"last_heartbeat\": \"2026-05-16T12:30:00Z\",\n      \"is_active\": true\n    },\n    {\n      \"device_id\": \"DEV-404\",\n      \"found\": false,\n      \"error\": \"not_found\"\n    },\n    {\n      \"device_id\": \"DEV-ABC\",\n      \"found\": true,\n      \"status\": \"DEGRADED\",\n      \"last_heartbeat\": \"2026-05-16T12:28:10Z\",\n      \"is_active\": true\n    }\n  ]\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-fa3295ab-3b13-4101-ab54-f88c31ed790f"
+              "body": "{\n  \"count\": 3,\n  \"results\": [\n    {\n      \"device_id\": \"DEV-001\",\n      \"found\": true,\n      \"status\": \"ONLINE\",\n      \"last_heartbeat\": \"2026-05-16T12:30:00Z\",\n      \"is_active\": true\n    },\n    {\n      \"device_id\": \"DEV-404\",\n      \"found\": false,\n      \"error\": \"not_found\"\n    },\n    {\n      \"device_id\": \"DEV-ABC\",\n      \"found\": true,\n      \"status\": \"DEGRADED\",\n      \"last_heartbeat\": \"2026-05-16T12:28:10Z\",\n      \"is_active\": true\n    }\n  ]\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-b55d9e41-1d53-4e18-92ce-ed3fee15f560"
+          ]
         },
         {
           "name": "Register Device",
@@ -493,18 +468,13 @@
                   "    pm.collectionVariables.set('deviceId', body.device_id);",
                   "    pm.collectionVariables.set('apiKey', body.api_key);",
                   "    console.log('Device registered. device_id:', body.device_id);",
-                  "    console.log('API Key (save this — it is shown only once):', body.api_key);",
+                  "    console.log('API Key (save this \u2014 it is shown only once):', body.api_key);",
                   "}"
                 ],
-                "type": "text/javascript",
-                "id": "4ebe2af2-f57e-4815-9664-d734011eafdd"
+                "type": "text/javascript"
               }
             }
           ],
-          "id": "76035655-fc3f-4a16-971c-4254ed346042",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "auth": {
               "type": "bearer",
@@ -539,11 +509,10 @@
                 ""
               ]
             },
-            "description": "Register a new device. Returns a one-time `api_key` — store it immediately as it cannot be retrieved again. Coordinates must be within Nigeria bounds (lat 4–14°N, lng 3–15°E). The `owner_id` is automatically set from the caller's JWT `user_id`. Non-admin users (operator/viewer) can only access their own devices after registration. The `deviceId` and `apiKey` variables are auto-saved."
+            "description": "Register a new device. Returns a one-time `api_key` \u2014 store it immediately as it cannot be retrieved again. Coordinates must be within Nigeria bounds (lat 4\u201314\u00b0N, lng 3\u201315\u00b0E). The `owner_id` is automatically set from the caller's JWT `user_id`. Non-admin users (operator/viewer) can only access their own devices after registration. The `deviceId` and `apiKey` variables are auto-saved."
           },
           "response": [
             {
-              "id": "0e1ead8a-6994-4a99-b83e-899d64c2bc20",
               "name": "Example Success",
               "originalRequest": {
                 "auth": {
@@ -579,7 +548,7 @@
                     ""
                   ]
                 },
-                "description": "Register a new device. Returns a one-time `api_key` — store it immediately as it cannot be retrieved again. Coordinates must be within Nigeria bounds (lat 4–14°N, lng 3–15°E). The `deviceId` and `apiKey` variables are auto-saved."
+                "description": "Register a new device. Returns a one-time `api_key` \u2014 store it immediately as it cannot be retrieved again. Coordinates must be within Nigeria bounds (lat 4\u201314\u00b0N, lng 3\u201315\u00b0E). The `deviceId` and `apiKey` variables are auto-saved."
               },
               "status": "Created",
               "code": 201,
@@ -591,23 +560,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n  \"owner_id\": \"user-uuid-from-jwt\",\n  \"device_id\": \"DEV-001\",\n  \"api_key\": \"<one-time-device-api-key>\",\n  \"created_at\": \"2026-05-16T10:00:00Z\"\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-0e1ead8a-6994-4a99-b83e-899d64c2bc20"
+              "body": "{\n  \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n  \"owner_id\": \"user-uuid-from-jwt\",\n  \"device_id\": \"DEV-001\",\n  \"api_key\": \"<one-time-device-api-key>\",\n  \"created_at\": \"2026-05-16T10:00:00Z\"\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-76035655-fc3f-4a16-971c-4254ed346042"
+          ]
         },
         {
           "name": "Get Device Details",
-          "id": "e67c10cd-a0a2-4d6d-bbbd-f75e7aa1b80c",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "auth": {
               "type": "bearer",
@@ -634,11 +592,10 @@
                 ""
               ]
             },
-            "description": "Retrieve full device details. Non-admin users can only access their own devices — attempting to access another user’s device returns 404."
+            "description": "Retrieve full device details. Non-admin users can only access their own devices \u2014 attempting to access another user\u2019s device returns 404."
           },
           "response": [
             {
-              "id": "2dcf15e4-ed37-4dbb-b255-890bcb915cb1",
               "name": "Example Success",
               "originalRequest": {
                 "auth": {
@@ -678,23 +635,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n  \"owner_id\": \"user-uuid-from-jwt\",\n  \"device_id\": \"DEV-001\",\n  \"device_name\": \"Test Device Lagos\",\n  \"location\": \"Lagos Island, Lagos\",\n  \"physical_address\": \"Plot 123 Ikoyi, Lagos\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"status\": \"ONLINE\",\n  \"last_heartbeat\": \"2026-05-22T08:15:30Z\",\n  \"last_heartbeat_ago_seconds\": 45,\n  \"msisdn\": \"+2348012345678\",\n  \"device_group\": \"south-west\",\n  \"tags\": [\"urban\", \"speedtest\", \"4G\"],\n  \"hardware\": {\n    \"manufacturer\": \"Samsung\",\n    \"model\": \"Galaxy A54\",\n    \"os\": \"Android\",\n    \"os_version\": \"13\",\n    \"app_version\": \"2.4.1\"\n  },\n  \"health_metrics\": {\n    \"battery\": {\n      \"level\": 78,\n      \"is_charging\": false\n    },\n    \"storage\": {\n      \"available_mb\": 12800,\n      \"used_mb\": 3200\n    },\n    \"memory\": {\n      \"available_mb\": 1500,\n      \"used_mb\": 2500\n    }\n  },\n  \"network\": {\n    \"operator\": \"MTN Nigeria\",\n    \"type\": \"4G\",\n    \"signal_strength\": -75,\n    \"msisdn\": \"+2348012345678\",\n    \"status\": \"ONLINE\"\n  },\n  \"alert_thresholds\": {\n    \"battery_threshold\": 15,\n    \"offline_duration_minutes\": 30\n  },\n  \"test_summary\": {\n    \"total_tests\": 0,\n    \"successful_tests\": 0,\n    \"failed_tests\": 0,\n    \"avg_network_speed_mbps\": null,\n    \"success_rate\": 0.0\n  },\n  \"is_active\": true,\n  \"created_at\": \"2026-05-20T10:00:00Z\",\n  \"updated_at\": \"2026-05-22T08:15:30Z\"\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-2dcf15e4-ed37-4dbb-b255-890bcb915cb1"
+              "body": "{\n  \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n  \"owner_id\": \"user-uuid-from-jwt\",\n  \"device_id\": \"DEV-001\",\n  \"device_name\": \"Test Device Lagos\",\n  \"location\": \"Lagos Island, Lagos\",\n  \"physical_address\": \"Plot 123 Ikoyi, Lagos\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"status\": \"ONLINE\",\n  \"last_heartbeat\": \"2026-05-22T08:15:30Z\",\n  \"last_heartbeat_ago_seconds\": 45,\n  \"msisdn\": \"+2348012345678\",\n  \"device_group\": \"south-west\",\n  \"tags\": [\"urban\", \"speedtest\", \"4G\"],\n  \"hardware\": {\n    \"manufacturer\": \"Samsung\",\n    \"model\": \"Galaxy A54\",\n    \"os\": \"Android\",\n    \"os_version\": \"13\",\n    \"app_version\": \"2.4.1\"\n  },\n  \"health_metrics\": {\n    \"battery\": {\n      \"level\": 78,\n      \"is_charging\": false\n    },\n    \"storage\": {\n      \"available_mb\": 12800,\n      \"used_mb\": 3200\n    },\n    \"memory\": {\n      \"available_mb\": 1500,\n      \"used_mb\": 2500\n    }\n  },\n  \"network\": {\n    \"operator\": \"MTN Nigeria\",\n    \"type\": \"4G\",\n    \"signal_strength\": -75,\n    \"msisdn\": \"+2348012345678\",\n    \"status\": \"ONLINE\"\n  },\n  \"alert_thresholds\": {\n    \"battery_threshold\": 15,\n    \"offline_duration_minutes\": 30\n  },\n  \"test_summary\": {\n    \"total_tests\": 0,\n    \"successful_tests\": 0,\n    \"failed_tests\": 0,\n    \"avg_network_speed_mbps\": null,\n    \"success_rate\": 0.0\n  },\n  \"is_active\": true,\n  \"created_at\": \"2026-05-20T10:00:00Z\",\n  \"updated_at\": \"2026-05-22T08:15:30Z\"\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-e67c10cd-a0a2-4d6d-bbbd-f75e7aa1b80c"
+          ]
         },
         {
           "name": "Update Device",
-          "id": "05b629e7-1877-45fa-a54c-863ceab7c381",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "auth": {
               "type": "bearer",
@@ -730,11 +676,10 @@
                 ""
               ]
             },
-            "description": "Update device configuration or metadata. Requires `admin` or `operator` role in the JWT. All fields are optional — only provided fields are updated. Metadata is merged (not replaced)."
+            "description": "Update device configuration or metadata. Requires `admin` or `operator` role in the JWT. All fields are optional \u2014 only provided fields are updated. Metadata is merged (not replaced)."
           },
           "response": [
             {
-              "id": "9bb7ff03-79d2-4df1-a38d-9ec316f1698f",
               "name": "Example Success",
               "originalRequest": {
                 "auth": {
@@ -771,7 +716,7 @@
                     ""
                   ]
                 },
-                "description": "Update device configuration or metadata. Requires `admin` or `operator` role in the JWT. All fields are optional — only provided fields are updated. Metadata is merged (not replaced)."
+                "description": "Update device configuration or metadata. Requires `admin` or `operator` role in the JWT. All fields are optional \u2014 only provided fields are updated. Metadata is merged (not replaced)."
               },
               "status": "OK",
               "code": 200,
@@ -783,23 +728,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n  \"owner_id\": \"user-uuid-from-jwt\",\n  \"device_id\": \"DEV-001\",\n  \"device_name\": \"Updated Device Name\",\n  \"location\": \"Abuja, FCT\",\n  \"latitude\": 9.0579,\n  \"longitude\": 7.4951,\n  \"metadata\": {\n    \"app_version\": \"1.1.0\"\n  }\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-9bb7ff03-79d2-4df1-a38d-9ec316f1698f"
+              "body": "{\n  \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n  \"owner_id\": \"user-uuid-from-jwt\",\n  \"device_id\": \"DEV-001\",\n  \"device_name\": \"Updated Device Name\",\n  \"location\": \"Abuja, FCT\",\n  \"latitude\": 9.0579,\n  \"longitude\": 7.4951,\n  \"metadata\": {\n    \"app_version\": \"1.1.0\"\n  }\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-05b629e7-1877-45fa-a54c-863ceab7c381"
+          ]
         },
         {
           "name": "Deregister Device",
-          "id": "8c846488-c8bf-4969-b36c-8089ebb18ed4",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "auth": {
               "type": "bearer",
@@ -839,7 +773,6 @@
           },
           "response": [
             {
-              "id": "633c6522-c82e-43a7-8afa-1ef7bdd4a39f",
               "name": "Example Success",
               "originalRequest": {
                 "auth": {
@@ -888,23 +821,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"detail\": \"Device deregistered.\"\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-633c6522-c82e-43a7-8afa-1ef7bdd4a39f"
+              "body": "{\n  \"detail\": \"Device deregistered.\"\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-8c846488-c8bf-4969-b36c-8089ebb18ed4"
+          ]
         },
         {
           "name": "Search Devices",
-          "id": "7b8218c1-b022-4e03-9fd0-0ccff3340156",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "auth": {
               "type": "bearer",
@@ -942,7 +864,6 @@
           },
           "response": [
             {
-              "id": "2fbcf604-5fe5-4bd2-91e3-7b746eca1f44",
               "name": "Example Success",
               "originalRequest": {
                 "auth": {
@@ -989,23 +910,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"count\": 1,\n  \"results\": [\n    {\n      \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n      \"device_id\": \"DEV-001\",\n      \"device_name\": \"Test Device Lagos\",\n      \"location\": \"Lagos Island, Lagos\",\n      \"status\": \"ONLINE\"\n    }\n  ]\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-2fbcf604-5fe5-4bd2-91e3-7b746eca1f44"
+              "body": "{\n  \"count\": 1,\n  \"results\": [\n    {\n      \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n      \"device_id\": \"DEV-001\",\n      \"device_name\": \"Test Device Lagos\",\n      \"location\": \"Lagos Island, Lagos\",\n      \"status\": \"ONLINE\"\n    }\n  ]\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-7b8218c1-b022-4e03-9fd0-0ccff3340156"
+          ]
         },
         {
           "name": "Find Nearby Devices",
-          "id": "620e5103-188a-4420-a27e-f30bef6ca38f",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "auth": {
               "type": "bearer",
@@ -1053,7 +963,6 @@
           },
           "response": [
             {
-              "id": "c1d331a2-3021-4015-b66a-c6d253e8602e",
               "name": "Example Success",
               "originalRequest": {
                 "auth": {
@@ -1110,23 +1019,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"count\": 1,\n  \"radius_km\": 50.0,\n  \"results\": [\n    {\n      \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n      \"device_id\": \"DEV-001\",\n      \"device_name\": \"Test Device Lagos\",\n      \"location\": \"Lagos Island, Lagos\",\n      \"distance_km\": 2.314\n    }\n  ]\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-c1d331a2-3021-4015-b66a-c6d253e8602e"
+              "body": "{\n  \"count\": 1,\n  \"radius_km\": 50.0,\n  \"results\": [\n    {\n      \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n      \"device_id\": \"DEV-001\",\n      \"device_name\": \"Test Device Lagos\",\n      \"location\": \"Lagos Island, Lagos\",\n      \"distance_km\": 2.314\n    }\n  ]\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-620e5103-188a-4420-a27e-f30bef6ca38f"
+          ]
         },
         {
           "name": "Device Statistics",
-          "id": "43fc1fb0-cca9-4eeb-86ac-8c189b002b58",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "GET",
             "header": [
@@ -1142,11 +1040,14 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/stats/",
+              "raw": "{{baseUrl}}/api/v1/devices/stats/",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
+                "v1",
+                "devices",
                 "stats",
                 ""
               ]
@@ -1155,7 +1056,6 @@
           },
           "response": [
             {
-              "id": "d43d8df5-81e5-4c5f-a83f-4333817484e0",
               "name": "Example Success",
               "originalRequest": {
                 "method": "GET",
@@ -1167,11 +1067,14 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{baseUrl}}/stats/",
+                  "raw": "{{baseUrl}}/api/v1/devices/stats/",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
+                    "api",
+                    "v1",
+                    "devices",
                     "stats",
                     ""
                   ]
@@ -1187,32 +1090,17 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"total\": 5,\n  \"active\": 4,\n  \"inactive\": 1,\n  \"by_status\": {\n    \"online\": 2,\n    \"offline\": 1,\n    \"stale\": 1,\n    \"degraded\": 1,\n    \"testing\": 0\n  },\n  \"warning_count\": 2\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-d43d8df5-81e5-4c5f-a83f-4333817484e0"
+              "body": "{\n  \"total\": 5,\n  \"active\": 4,\n  \"inactive\": 1,\n  \"by_status\": {\n    \"online\": 2,\n    \"offline\": 1,\n    \"stale\": 1,\n    \"degraded\": 1,\n    \"testing\": 0\n  },\n  \"warning_count\": 2\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-43fc1fb0-cca9-4eeb-86ac-8c189b002b58"
+          ]
         }
-      ],
-      "id": "406a8ea8-9307-430b-802e-dd9c79eec8ce",
-      "createdAt": "2026-05-22T23:51:49.000Z",
-      "updatedAt": "2026-05-22T23:51:49.000Z",
-      "uid": "52839743-406a8ea8-9307-430b-802e-dd9c79eec8ce"
+      ]
     },
     {
       "name": "Device Operations",
       "item": [
         {
           "name": "Send Heartbeat",
-          "id": "f61e9ad1-8ffc-4867-b469-faa3e77d3096",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "POST",
             "header": [
@@ -1244,11 +1132,10 @@
                 ""
               ]
             },
-            "description": "Device-originated endpoint. Authenticated via `X-API-Key` header (not Bearer JWT).\n\nUpdates device status based on health metrics:\n- `battery_level < 15` → DEGRADED (low_battery)\n- `signal_strength < -100` → DEGRADED (low_signal)\n- `storage_available_mb < 500` → DEGRADED (low_storage)\n- `network_type == '2G'` → DEGRADED (poor_network)\n- Otherwise → ONLINE\n- TESTING status is preserved regardless of metrics.\n\nReturns `pending_commands` count and `next_heartbeat_in_ms`."
+            "description": "Device-originated endpoint. Authenticated via `X-API-Key` header (not Bearer JWT).\n\nUpdates device status based on health metrics:\n- `battery_level < 15` \u2192 DEGRADED (low_battery)\n- `signal_strength < -100` \u2192 DEGRADED (low_signal)\n- `storage_available_mb < 500` \u2192 DEGRADED (low_storage)\n- `network_type == '2G'` \u2192 DEGRADED (poor_network)\n- Otherwise \u2192 ONLINE\n- TESTING status is preserved regardless of metrics.\n\nReturns `pending_commands` count and `next_heartbeat_in_ms`."
           },
           "response": [
             {
-              "id": "24c74c9f-061b-4c9c-8458-5f54860cb9ae",
               "name": "Example Success",
               "originalRequest": {
                 "method": "POST",
@@ -1281,7 +1168,7 @@
                     ""
                   ]
                 },
-                "description": "Device-originated endpoint. Authenticated via `X-API-Key` header (not Bearer JWT).\n\nUpdates device status based on health metrics:\n- `battery_level < 15` → DEGRADED (low_battery)\n- `signal_strength < -100` → DEGRADED (low_signal)\n- `storage_available_mb < 500` → DEGRADED (low_storage)\n- `network_type == '2G'` → DEGRADED (poor_network)\n- Otherwise → ONLINE\n- TESTING status is preserved regardless of metrics.\n\nReturns `pending_commands` count and `next_heartbeat_in_ms`."
+                "description": "Device-originated endpoint. Authenticated via `X-API-Key` header (not Bearer JWT).\n\nUpdates device status based on health metrics:\n- `battery_level < 15` \u2192 DEGRADED (low_battery)\n- `signal_strength < -100` \u2192 DEGRADED (low_signal)\n- `storage_available_mb < 500` \u2192 DEGRADED (low_storage)\n- `network_type == '2G'` \u2192 DEGRADED (poor_network)\n- Otherwise \u2192 ONLINE\n- TESTING status is preserved regardless of metrics.\n\nReturns `pending_commands` count and `next_heartbeat_in_ms`."
               },
               "status": "OK",
               "code": 200,
@@ -1293,23 +1180,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"status\": \"ONLINE\",\n  \"server_timestamp\": \"2026-05-16T10:20:00Z\",\n  \"device_id\": \"DEV-001\",\n  \"next_heartbeat_in_ms\": 30000,\n  \"pending_commands\": 0\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-24c74c9f-061b-4c9c-8458-5f54860cb9ae"
+              "body": "{\n  \"status\": \"ONLINE\",\n  \"server_timestamp\": \"2026-05-16T10:20:00Z\",\n  \"device_id\": \"DEV-001\",\n  \"next_heartbeat_in_ms\": 30000,\n  \"pending_commands\": 0\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-f61e9ad1-8ffc-4867-b469-faa3e77d3096"
+          ]
         },
         {
           "name": "Update Location",
-          "id": "b3782b94-46f7-4ada-93f8-92646d7a73a5",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "PUT",
             "header": [
@@ -1345,7 +1221,6 @@
           },
           "response": [
             {
-              "id": "d04fd62a-eeab-4104-80f1-eba7121d47ca",
               "name": "Example Success",
               "originalRequest": {
                 "method": "PUT",
@@ -1390,23 +1265,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"device_id\": \"DEV-001\",\n  \"latitude\": 6.5244,\n  \"longitude\": 3.3792,\n  \"location\": \"Victoria Island, Lagos\",\n  \"updated_at\": \"2026-05-16T10:21:00Z\"\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-d04fd62a-eeab-4104-80f1-eba7121d47ca"
+              "body": "{\n  \"device_id\": \"DEV-001\",\n  \"latitude\": 6.5244,\n  \"longitude\": 3.3792,\n  \"location\": \"Victoria Island, Lagos\",\n  \"updated_at\": \"2026-05-16T10:21:00Z\"\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-b3782b94-46f7-4ada-93f8-92646d7a73a5"
+          ]
         },
         {
           "name": "Get Device Logs",
-          "id": "d2b880f6-1a5f-439a-968c-ebfce1fc224d",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "GET",
             "header": [
@@ -1417,11 +1281,14 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/{{deviceId}}/logs/?page=1&page_size=50&level=",
+              "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/logs/?page=1&page_size=50&level=&category=&categories=",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
+                "v1",
+                "devices",
                 "{{deviceId}}",
                 "logs",
                 ""
@@ -1439,14 +1306,23 @@
                   "key": "level",
                   "value": "",
                   "description": "Optional: DEBUG, INFO, WARNING, ERROR, CRITICAL"
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "description": "Optional single category. Matches context.category or context.categories[]"
+                },
+                {
+                  "key": "categories",
+                  "value": "",
+                  "description": "Optional comma-separated categories. Any category match is returned"
                 }
               ]
             },
-            "description": "List paginated device logs, optionally filtered by level."
+            "description": "List paginated device logs, filtered by level/category/categories."
           },
           "response": [
             {
-              "id": "6d30041e-e587-48e3-93bd-d9709924b637",
               "name": "Example Success",
               "originalRequest": {
                 "method": "GET",
@@ -1458,11 +1334,14 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{baseUrl}}/{{deviceId}}/logs/?page=1&page_size=50",
+                  "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/logs/?page=1&page_size=50&level=ERROR&category=network&categories=network,battery",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
+                    "api",
+                    "v1",
+                    "devices",
                     "{{deviceId}}",
                     "logs",
                     ""
@@ -1488,24 +1367,12 @@
                   "value": "application/json"
                 }
               ],
-              "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"count\": 10,\n  \"page\": 1,\n  \"page_size\": 50,\n  \"results\": [\n    {\n      \"id\": \"uuid\",\n      \"level\": \"INFO\",\n      \"message\": \"Device started up successfully.\",\n      \"context\": {},\n      \"timestamp\": \"2026-05-22T08:00:00Z\",\n      \"created_at\": \"2026-05-22T08:00:00Z\"\n    }\n  ]\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-6d30041e-e587-48e3-93bd-d9709924b637"
+              "body": "{\n  \"count\": 2,\n  \"page\": 1,\n  \"page_size\": 50,\n  \"results\": [\n    {\n      \"id\": \"uuid\",\n      \"level\": \"ERROR\",\n      \"message\": \"Network registration failed.\",\n      \"context\": {\n        \"category\": \"network\",\n        \"categories\": [\"network\", \"sim\"],\n        \"operator\": \"MTN\"\n      },\n      \"timestamp\": \"2026-05-22T08:00:00Z\",\n      \"created_at\": \"2026-05-22T08:00:00Z\"\n    }\n  ]\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-d2b880f6-1a5f-439a-968c-ebfce1fc224d"
+          ]
         },
         {
           "name": "Submit Device Log",
-          "id": "977d148e-914f-482b-8a8d-0d7b55c12987",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "POST",
             "header": [
@@ -1525,11 +1392,14 @@
               "raw": "{\n  \"level\": \"INFO\",\n  \"message\": \"Network scan completed.\",\n  \"context\": {\"operator\": \"MTN\", \"type\": \"4G\"},\n  \"timestamp\": \"2026-05-22T08:15:00Z\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/{{deviceId}}/logs/",
+              "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/logs/",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
+                "v1",
+                "devices",
                 "{{deviceId}}",
                 "logs",
                 ""
@@ -1539,7 +1409,6 @@
           },
           "response": [
             {
-              "id": "5f7e35f2-c248-4b27-ab0c-d62f626a67c4",
               "name": "Example Success",
               "originalRequest": {
                 "method": "POST",
@@ -1560,11 +1429,14 @@
                   "raw": "{\n  \"level\": \"INFO\",\n  \"message\": \"Network scan completed.\",\n  \"context\": {\"operator\": \"MTN\", \"type\": \"4G\"}\n}"
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/{{deviceId}}/logs/",
+                  "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/logs/",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
+                    "api",
+                    "v1",
+                    "devices",
                     "{{deviceId}}",
                     "logs",
                     ""
@@ -1580,24 +1452,12 @@
                   "value": "application/json"
                 }
               ],
-              "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"id\": \"uuid\",\n  \"level\": \"INFO\",\n  \"message\": \"Network scan completed.\",\n  \"context\": {\"operator\": \"MTN\", \"type\": \"4G\"},\n  \"timestamp\": \"2026-05-22T08:15:00Z\",\n  \"created_at\": \"2026-05-22T08:15:00Z\"\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-5f7e35f2-c248-4b27-ab0c-d62f626a67c4"
+              "body": "{\n  \"id\": \"uuid\",\n  \"level\": \"INFO\",\n  \"message\": \"Network scan completed.\",\n  \"context\": {\"operator\": \"MTN\", \"type\": \"4G\"},\n  \"timestamp\": \"2026-05-22T08:15:00Z\",\n  \"created_at\": \"2026-05-22T08:15:00Z\"\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-977d148e-914f-482b-8a8d-0d7b55c12987"
+          ]
         },
         {
           "name": "Get Device Test History",
-          "id": "b91546f4-6875-4d57-9d4c-715293c95c12",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "GET",
             "header": [
@@ -1608,11 +1468,14 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/{{deviceId}}/tests/?page=1&page_size=20",
+              "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/tests/?page=1&page_size=20",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
+                "v1",
+                "devices",
                 "{{deviceId}}",
                 "tests",
                 ""
@@ -1632,7 +1495,6 @@
           },
           "response": [
             {
-              "id": "17caa170-f993-47cf-a646-ecea34e8de85",
               "name": "Example Success",
               "originalRequest": {
                 "method": "GET",
@@ -1644,11 +1506,14 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{baseUrl}}/{{deviceId}}/tests/?page=1&page_size=20",
+                  "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/tests/?page=1&page_size=20",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
+                    "api",
+                    "v1",
+                    "devices",
                     "{{deviceId}}",
                     "tests",
                     ""
@@ -1674,24 +1539,12 @@
                   "value": "application/json"
                 }
               ],
-              "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"count\": 5,\n  \"page\": 1,\n  \"page_size\": 20,\n  \"results\": []\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-17caa170-f993-47cf-a646-ecea34e8de85"
+              "body": "{\n  \"count\": 5,\n  \"page\": 1,\n  \"page_size\": 20,\n  \"results\": []\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-b91546f4-6875-4d57-9d4c-715293c95c12"
+          ]
         },
         {
           "name": "Get Device Test Summary",
-          "id": "712ed790-3452-4c51-87c0-5cd629444d97",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "GET",
             "header": [
@@ -1702,11 +1555,14 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/{{deviceId}}/tests/summary/",
+              "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/tests/summary/",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
+                "v1",
+                "devices",
                 "{{deviceId}}",
                 "tests",
                 "summary",
@@ -1717,7 +1573,6 @@
           },
           "response": [
             {
-              "id": "0bfb5a1a-3316-442d-8210-bb24e1310cac",
               "name": "Example Success",
               "originalRequest": {
                 "method": "GET",
@@ -1729,11 +1584,14 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{baseUrl}}/{{deviceId}}/tests/summary/",
+                  "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/tests/summary/",
                   "host": [
                     "{{baseUrl}}"
                   ],
                   "path": [
+                    "api",
+                    "v1",
+                    "devices",
                     "{{deviceId}}",
                     "tests",
                     "summary",
@@ -1750,23 +1608,396 @@
                   "value": "application/json"
                 }
               ],
+              "body": "{\n  \"total_tests\": 0,\n  \"successful_tests\": 0,\n  \"failed_tests\": 0,\n  \"avg_network_speed_mbps\": null,\n  \"success_rate\": 0.0\n}"
+            }
+          ]
+        },
+        {
+          "name": "Export Devices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/export/?format=json&status=ONLINE&search=lagos&ordering=-created_at",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "export",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "json",
+                  "description": "json or csv"
+                },
+                {
+                  "key": "status",
+                  "value": "ONLINE"
+                },
+                {
+                  "key": "search",
+                  "value": "lagos"
+                },
+                {
+                  "key": "ordering",
+                  "value": "-created_at"
+                }
+              ]
+            },
+            "description": "Export filtered device records as JSON (default) or CSV."
+          },
+          "response": [
+            {
+              "name": "Example JSON Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"total_tests\": 0,\n  \"successful_tests\": 0,\n  \"failed_tests\": 0,\n  \"avg_network_speed_mbps\": null,\n  \"success_rate\": 0.0\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-0bfb5a1a-3316-442d-8210-bb24e1310cac"
+              "body": "{\n  \"count\": 1,\n  \"results\": [\n    {\n      \"id\": \"12ec4d4e-1111-2222-3333-444444444444\",\n      \"device_id\": \"DEV-001\",\n      \"device_name\": \"Test Device Lagos\",\n      \"status\": \"ONLINE\",\n      \"location\": \"Lagos Island, Lagos\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Run Device Diagnostics",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/diagnostics/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}",
+                "diagnostics",
+                ""
+              ]
+            },
+            "description": "Run health diagnostics checks for a device."
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"device_id\": \"DEV-001\",\n  \"status\": \"warning\",\n  \"issues\": [\"low_battery\", \"recent_error_logs\"],\n  \"heartbeat_age_seconds\": 82,\n  \"battery_level\": 12,\n  \"signal_strength\": -90,\n  \"error_logs_last_24h\": 3,\n  \"checked_at\": \"2026-05-27T13:03:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Export Device Test History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/tests/export/?format=json&page=1&page_size=200",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}",
+                "tests",
+                "export",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "json",
+                  "description": "json or csv"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "page_size",
+                  "value": "200"
+                }
+              ]
+            },
+            "description": "Export test history for a device as JSON or CSV."
+          },
+          "response": [
+            {
+              "name": "Example JSON Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"count\": 2,\n  \"page\": 1,\n  \"page_size\": 200,\n  \"results\": [\n    {\n      \"type\": \"download\",\n      \"target\": \"https://example.com\",\n      \"duration\": 2.1,\n      \"status\": \"success\",\n      \"latency_ms\": 113,\n      \"timestamp\": \"2026-05-27T12:40:00Z\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Remote Control Session",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/remote-control/session/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}",
+                "remote-control",
+                "session",
+                ""
+              ]
+            },
+            "description": "Get active remote-control session for a device."
+          },
+          "response": [
+            {
+              "name": "Example Active Session",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"active\": true,\n  \"session\": {\n    \"session_id\": \"d3a5d5b4-5ff1-42dd-a5de-56cf4e725e9f\",\n    \"device_id\": \"DEV-001\",\n    \"started_by\": \"42\",\n    \"started_at\": \"2026-05-27T12:35:00Z\",\n    \"expires_at\": \"2026-05-27T13:05:00Z\",\n    \"status\": \"active\",\n    \"reason\": \"Investigating app freeze\",\n    \"channel\": \"remote-control:DEV-001:d3a5d5b4-5ff1-42dd-a5de-56cf4e725e9f\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Start Remote Control Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const body = pm.response.json();",
+                  "    pm.collectionVariables.set('remoteSessionId', body.session ? body.session.session_id : '');",
+                  "    console.log('remoteSessionId saved.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
             }
           ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-712ed790-3452-4c51-87c0-5cd629444d97"
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expires_in_minutes\": 30,\n  \"reason\": \"Need operator-side diagnostics\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/remote-control/session/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}",
+                "remote-control",
+                "session",
+                ""
+              ]
+            },
+            "description": "Start remote-control session for a device."
+          },
+          "response": [
+            {
+              "name": "Example Created",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"active\": true,\n  \"session\": {\n    \"session_id\": \"d3a5d5b4-5ff1-42dd-a5de-56cf4e725e9f\",\n    \"device_id\": \"DEV-001\",\n    \"started_by\": \"42\",\n    \"started_at\": \"2026-05-27T12:35:00Z\",\n    \"expires_at\": \"2026-05-27T13:05:00Z\",\n    \"status\": \"active\",\n    \"reason\": \"Need operator-side diagnostics\",\n    \"channel\": \"remote-control:DEV-001:d3a5d5b4-5ff1-42dd-a5de-56cf4e725e9f\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Send Remote Command",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"open_app\",\n  \"args\": {\n    \"package_name\": \"com.vess.agent\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/remote-control/session/{{remoteSessionId}}/command/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}",
+                "remote-control",
+                "session",
+                "{{remoteSessionId}}",
+                "command",
+                ""
+              ]
+            },
+            "description": "Queue a command for the active remote-control session."
+          },
+          "response": [
+            {
+              "name": "Example Accepted",
+              "status": "Accepted",
+              "code": 202,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"queued\": true,\n  \"session_id\": \"d3a5d5b4-5ff1-42dd-a5de-56cf4e725e9f\",\n  \"command\": {\n    \"command_id\": \"74e7d26b-7173-4d34-ba58-3f6a2d0f8c66\",\n    \"command\": \"open_app\",\n    \"args\": {\n      \"package_name\": \"com.vess.agent\"\n    },\n    \"issued_at\": \"2026-05-27T12:36:00Z\",\n    \"issued_by\": \"42\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "End Remote Control Session",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/remote-control/session/?session_id={{remoteSessionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}",
+                "remote-control",
+                "session",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "session_id",
+                  "value": "{{remoteSessionId}}"
+                }
+              ]
+            },
+            "description": "Terminate the current remote-control session."
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"ended\": true,\n  \"session\": {\n    \"session_id\": \"d3a5d5b4-5ff1-42dd-a5de-56cf4e725e9f\",\n    \"device_id\": \"DEV-001\"\n  }\n}"
+            }
+          ]
         }
-      ],
-      "id": "c6a9bdfb-0652-436d-99f6-f59486d04a69",
-      "createdAt": "2026-05-22T23:51:49.000Z",
-      "updatedAt": "2026-05-22T23:51:49.000Z",
-      "uid": "52839743-c6a9bdfb-0652-436d-99f6-f59486d04a69"
+      ]
     },
     {
       "name": "Registration Requests",
@@ -1792,15 +2023,10 @@
                   "    }",
                   "}"
                 ],
-                "type": "text/javascript",
-                "id": "820f9adb-ea24-40f6-b5c9-7f93709ffd72"
+                "type": "text/javascript"
               }
             }
           ],
-          "id": "12d37bef-5316-4510-a873-f8ecd7a13383",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "auth": {
               "type": "bearer",
@@ -1840,7 +2066,6 @@
           },
           "response": [
             {
-              "id": "8d735739-7ddd-4fbd-874a-cb4cbce4e33b",
               "name": "Example Success",
               "originalRequest": {
                 "auth": {
@@ -1889,23 +2114,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"phone_number\": \"+2348012345678\",\n  \"reference\": \"pilot-device-1\",\n  \"requested_by_user_id\": \"42\",\n  \"organization_id\": \"org_001\",\n  \"status\": \"pending\",\n  \"link_expires_at\": \"2026-05-17T10:22:00Z\",\n  \"created_at\": \"2026-05-16T10:22:00Z\",\n  \"device_id\": null,\n  \"sync_url\": \"{{baseUrl}}/api/v1/registration/sync/<token>/\"\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-8d735739-7ddd-4fbd-874a-cb4cbce4e33b"
+              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"phone_number\": \"+2348012345678\",\n  \"reference\": \"pilot-device-1\",\n  \"requested_by_user_id\": \"42\",\n  \"organization_id\": \"org_001\",\n  \"status\": \"pending\",\n  \"link_expires_at\": \"2026-05-17T10:22:00Z\",\n  \"created_at\": \"2026-05-16T10:22:00Z\",\n  \"device_id\": null,\n  \"sync_url\": \"{{baseUrl}}/api/v1/registration/sync/<token>/\"\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-12d37bef-5316-4510-a873-f8ecd7a13383"
+          ]
         },
         {
           "name": "Create Bulk Registration Requests",
-          "id": "a65129e4-2751-4bf1-b4a3-3b75a1e7c290",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "auth": {
               "type": "bearer",
@@ -1946,7 +2160,6 @@
           },
           "response": [
             {
-              "id": "a92538d4-d552-4fed-a916-9a206009104d",
               "name": "Example Success",
               "originalRequest": {
                 "auth": {
@@ -1996,23 +2209,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"count\": 2,\n  \"results\": [\n    {\n      \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n      \"phone_number\": \"+2348012345678\",\n      \"status\": \"pending\",\n      \"sync_url\": \"{{baseUrl}}/api/v1/registration/sync/<token1>/\"\n    },\n    {\n      \"registration_id\": \"68f2e4aa-aaaa-bbbb-cccc-123456789013\",\n      \"phone_number\": \"+2348098765432\",\n      \"status\": \"pending\",\n      \"sync_url\": \"{{baseUrl}}/api/v1/registration/sync/<token2>/\"\n    }\n  ]\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-a92538d4-d552-4fed-a916-9a206009104d"
+              "body": "{\n  \"count\": 2,\n  \"results\": [\n    {\n      \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n      \"phone_number\": \"+2348012345678\",\n      \"status\": \"pending\",\n      \"sync_url\": \"{{baseUrl}}/api/v1/registration/sync/<token1>/\"\n    },\n    {\n      \"registration_id\": \"68f2e4aa-aaaa-bbbb-cccc-123456789013\",\n      \"phone_number\": \"+2348098765432\",\n      \"status\": \"pending\",\n      \"sync_url\": \"{{baseUrl}}/api/v1/registration/sync/<token2>/\"\n    }\n  ]\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-a65129e4-2751-4bf1-b4a3-3b75a1e7c290"
+          ]
         },
         {
           "name": "Get Registration Request",
-          "id": "b02f8d5b-510d-42b1-a825-96e8e3e57f6f",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "auth": {
               "type": "bearer",
@@ -2044,7 +2246,6 @@
           },
           "response": [
             {
-              "id": "3c82668c-e7b2-409c-aa47-380b7e4012ca",
               "name": "Example Success",
               "originalRequest": {
                 "auth": {
@@ -2085,23 +2286,12 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"phone_number\": \"+2348012345678\",\n  \"reference\": \"pilot-device-1\",\n  \"requested_by_user_id\": \"42\",\n  \"organization_id\": \"org_001\",\n  \"status\": \"pending\",\n  \"link_expires_at\": \"2026-05-17T10:22:00Z\",\n  \"created_at\": \"2026-05-16T10:22:00Z\",\n  \"device_id\": null\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-3c82668c-e7b2-409c-aa47-380b7e4012ca"
+              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"phone_number\": \"+2348012345678\",\n  \"reference\": \"pilot-device-1\",\n  \"requested_by_user_id\": \"42\",\n  \"organization_id\": \"org_001\",\n  \"status\": \"pending\",\n  \"link_expires_at\": \"2026-05-17T10:22:00Z\",\n  \"created_at\": \"2026-05-16T10:22:00Z\",\n  \"device_id\": null\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-b02f8d5b-510d-42b1-a825-96e8e3e57f6f"
+          ]
         },
         {
           "name": "Revoke Registration Request",
-          "id": "92bcb3e9-4469-458d-b733-78e10a5d048f",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "auth": {
               "type": "bearer",
@@ -2138,7 +2328,6 @@
           },
           "response": [
             {
-              "id": "564d8083-da85-45d1-b79d-d63b71bb667a",
               "name": "Example Success",
               "originalRequest": {
                 "auth": {
@@ -2184,16 +2373,9 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"status\": \"expired\",\n  \"revoked\": true\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-564d8083-da85-45d1-b79d-d63b71bb667a"
+              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"status\": \"expired\",\n  \"revoked\": true\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-92bcb3e9-4469-458d-b733-78e10a5d048f"
+          ]
         },
         {
           "name": "Regenerate Sync Link",
@@ -2212,15 +2394,10 @@
                   "    }",
                   "}"
                 ],
-                "type": "text/javascript",
-                "id": "b8f31a6e-aeac-420e-9504-1852dc7a8bc1"
+                "type": "text/javascript"
               }
             }
           ],
-          "id": "372d437c-c7a6-4d46-acb5-be03197609e6",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "auth": {
               "type": "bearer",
@@ -2257,7 +2434,6 @@
           },
           "response": [
             {
-              "id": "a0b894ec-6145-4fb1-8b4b-cc137e807e2d",
               "name": "Example Success",
               "originalRequest": {
                 "auth": {
@@ -2303,32 +2479,17 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"phone_number\": \"+2348012345678\",\n  \"status\": \"pending\",\n  \"sync_url\": \"{{baseUrl}}/api/v1/registration/sync/<new-token>/\",\n  \"regenerated\": true\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-a0b894ec-6145-4fb1-8b4b-cc137e807e2d"
+              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"phone_number\": \"+2348012345678\",\n  \"status\": \"pending\",\n  \"sync_url\": \"{{baseUrl}}/api/v1/registration/sync/<new-token>/\",\n  \"regenerated\": true\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-372d437c-c7a6-4d46-acb5-be03197609e6"
+          ]
         }
-      ],
-      "id": "926978db-8e0d-411f-979e-a29a9f5427d1",
-      "createdAt": "2026-05-22T23:51:49.000Z",
-      "updatedAt": "2026-05-22T23:51:49.000Z",
-      "uid": "52839743-926978db-8e0d-411f-979e-a29a9f5427d1"
+      ]
     },
     {
       "name": "Sync Link (Device-side)",
       "item": [
         {
           "name": "Validate Sync URL",
-          "id": "9f651adf-51a6-425f-9a20-4ff5ec453e64",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "GET",
             "header": [],
@@ -2350,7 +2511,6 @@
           },
           "response": [
             {
-              "id": "ce6c66b6-51ca-41ef-845f-516f768af543",
               "name": "Example Success",
               "originalRequest": {
                 "method": "GET",
@@ -2381,16 +2541,9 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"phone_number\": \"+2348012345678\",\n  \"reference\": \"pilot-device-1\",\n  \"organization_id\": \"org_001\",\n  \"status\": \"pending\",\n  \"link_expires_at\": \"2026-05-17T10:22:00Z\"\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-ce6c66b6-51ca-41ef-845f-516f768af543"
+              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"phone_number\": \"+2348012345678\",\n  \"reference\": \"pilot-device-1\",\n  \"organization_id\": \"org_001\",\n  \"status\": \"pending\",\n  \"link_expires_at\": \"2026-05-17T10:22:00Z\"\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-9f651adf-51a6-425f-9a20-4ff5ec453e64"
+          ]
         },
         {
           "name": "Complete Sync (Approve Registration)",
@@ -2404,18 +2557,13 @@
                   "    pm.collectionVariables.set('deviceId', body.device_id);",
                   "    pm.collectionVariables.set('apiKey', body.api_key);",
                   "    console.log('Device approved via sync. device_id:', body.device_id);",
-                  "    console.log('API Key (save this — shown only once):', body.api_key);",
+                  "    console.log('API Key (save this \u2014 shown only once):', body.api_key);",
                   "}"
                 ],
-                "type": "text/javascript",
-                "id": "4b181c7e-dfa5-4b5b-aca4-8defb227ab79"
+                "type": "text/javascript"
               }
             }
           ],
-          "id": "90962d8f-4dfd-4a24-93f5-f40debf66f6b",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
           "request": {
             "method": "POST",
             "header": [
@@ -2446,7 +2594,6 @@
           },
           "response": [
             {
-              "id": "3358dea1-c597-4197-a380-a4306fc8daeb",
               "name": "Example Success",
               "originalRequest": {
                 "method": "POST",
@@ -2486,53 +2633,11 @@
                 }
               ],
               "cookie": [],
-              "responseTime": null,
-              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"device_id\": \"DEV-001\",\n  \"approved\": true,\n  \"approved_at\": \"2026-05-16T10:30:00Z\",\n  \"api_key\": \"<one-time-device-api-key>\"\n}",
-              "createdAt": "2026-05-22T23:51:49.000Z",
-              "updatedAt": "2026-05-22T23:51:49.000Z",
-              "uid": "52839743-3358dea1-c597-4197-a380-a4306fc8daeb"
+              "body": "{\n  \"registration_id\": \"cd9f6ed4-aaaa-bbbb-cccc-123456789012\",\n  \"device_id\": \"DEV-001\",\n  \"approved\": true,\n  \"approved_at\": \"2026-05-16T10:30:00Z\",\n  \"api_key\": \"<one-time-device-api-key>\"\n}"
             }
-          ],
-          "createdAt": "2026-05-22T23:51:49.000Z",
-          "updatedAt": "2026-05-22T23:51:49.000Z",
-          "uid": "52839743-90962d8f-4dfd-4a24-93f5-f40debf66f6b"
+          ]
         }
-      ],
-      "id": "3af737aa-3eff-442d-8674-3bc04f0850e4",
-      "createdAt": "2026-05-22T23:51:49.000Z",
-      "updatedAt": "2026-05-22T23:51:49.000Z",
-      "uid": "52839743-3af737aa-3eff-442d-8674-3bc04f0850e4"
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://vess-dev-alb-385758613.us-east-1.elb.amazonaws.com/device"
-    },
-    {
-      "key": "accessToken",
-      "value": "",
-      "description": "JWT Bearer token from auth-service login. Used for all user-facing endpoints."
-    },
-    {
-      "key": "deviceId",
-      "value": "",
-      "description": "Auto-populated after device registration."
-    },
-    {
-      "key": "apiKey",
-      "value": "",
-      "description": "One-time API key returned on device registration. Used for heartbeat and location endpoints."
-    },
-    {
-      "key": "registrationRequestId",
-      "value": "",
-      "description": "Auto-populated after creating a registration request."
-    },
-    {
-      "key": "syncToken",
-      "value": "",
-      "description": "Sync link token extracted from sync_url after creating a registration request."
+      ]
     }
   ]
 }
