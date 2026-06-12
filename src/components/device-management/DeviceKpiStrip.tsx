@@ -41,7 +41,7 @@ export function DeviceKpiStrip({ summary, summaryPending }: DeviceKpiStripProps)
       <KpiMiniTile
         label="Total Devices"
         value={summaryPending ? '…' : String(total)}
-        valueClassName={valueClass(summaryPending)}
+        valueClassName={valueClass(Boolean(summaryPending))}
         icon={DeviceIconM}
         wellClassName="bg-vess-primary-50"
         iconClassName="size-[35px]"
@@ -49,7 +49,7 @@ export function DeviceKpiStrip({ summary, summaryPending }: DeviceKpiStripProps)
       <KpiMiniTile
         label="Online"
         value={summaryPending ? '…' : String(online)}
-        valueClassName={valueClass(summaryPending)}
+        valueClassName={valueClass(Boolean(summaryPending))}
         icon={DeviceKpiWifiIcon}
         wellClassName="bg-vess-green-50"
         iconClassName="size-[30px] text-vess-green-500"
@@ -57,7 +57,7 @@ export function DeviceKpiStrip({ summary, summaryPending }: DeviceKpiStripProps)
       <KpiMiniTile
         label="Offline"
         value={summaryPending ? '…' : String(offline)}
-        valueClassName={valueClass(summaryPending)}
+        valueClassName={valueClass(Boolean(summaryPending))}
         icon={DeviceKpiOfflineIcon}
         wellClassName="bg-vess-red-50"
         iconClassName="size-[30px] text-vess-red-500"
@@ -65,7 +65,7 @@ export function DeviceKpiStrip({ summary, summaryPending }: DeviceKpiStripProps)
       <KpiMiniTile
         label="Warning"
         value={summaryPending ? '…' : warningDisplay}
-        valueClassName={valueClass(summaryPending)}
+        valueClassName={valueClass(Boolean(summaryPending))}
         icon={DeviceKpiBatteryIcon}
         wellClassName="bg-vess-secondary-50"
         iconClassName="size-[30px] text-vess-secondary-500"
