@@ -2,7 +2,6 @@ import {
   batteryLevelFromDevice,
   hardwareFromDevice,
   isApiDeviceDetail,
-  msisdnRawFromDevice,
   networkTypeFromDevice,
   signalStrengthFromDevice,
   testSummaryFromDevice,
