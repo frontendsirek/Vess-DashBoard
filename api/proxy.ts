@@ -50,7 +50,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Read raw body for non-GET/HEAD methods
   const hasBody = !['GET', 'HEAD'].includes(req.method || 'GET')
-  const body = hasBody ? await getRawBody(req) : undefined
+  const rawBody = hasBody ? await getRawBody(req) : undefined
+  const body = rawBody ? new Uint8Array(rawBody) : undefined
 
   try {
     const upstream = await fetch(upstreamUrl, {
