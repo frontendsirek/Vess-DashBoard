@@ -16,13 +16,13 @@ export const apiClient = axios.create({
 })
 
 const UNAUTHENTICATED_AUTH_PATHS = [
-  '/api/v1/auth/register/',
-  '/api/v1/auth/verify-otp/',
-  '/api/v1/auth/login/',
-  '/api/v1/auth/google/',
-  '/api/v1/auth/refresh/',
-  '/api/v1/auth/password-reset/',
-  '/api/v1/auth/password-reset/confirm/',
+  '/v1/auth/register/',
+  '/v1/auth/verify-otp/',
+  '/v1/auth/login/',
+  '/v1/auth/google/',
+  '/v1/auth/refresh/',
+  '/v1/auth/password-reset/',
+  '/v1/auth/password-reset/confirm/',
 ]
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean }
@@ -48,7 +48,7 @@ function shouldAttachAccessToken(config: InternalAxiosRequestConfig): boolean {
 }
 
 function isAuthEndpoint(config: InternalAxiosRequestConfig): boolean {
-  return (config.url ?? '').includes('/api/v1/auth/')
+  return (config.url ?? '').includes('/v1/auth/')
 }
 
 function processPendingQueue(token: string | null, error: unknown) {
@@ -74,7 +74,7 @@ function waitForRefreshToken(): Promise<string> {
 
 async function fetchRefreshTokens(refreshToken: string): Promise<{ access: string; refresh: string }> {
   const { data } = await axios.post(
-    `${baseURL}/api/v1/auth/refresh/`,
+    `${baseURL}/v1/auth/refresh/`,
     { refresh: refreshToken },
     { headers: { 'Content-Type': 'application/json' } },
   )
