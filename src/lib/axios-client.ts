@@ -2,10 +2,10 @@ import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestCo
 import { isAuthEnvelopeError, parseTokenPairFromAuthEnvelope } from '@/lib/api-auth-errors'
 import { TOKEN_KEYS, useAuthStore } from '@/stores/auth-store'
 
-/** API base URL — always proxied through /api.
- *  • Dev  → Vite dev server proxies /api to the backend (see vite.config.ts)
- *  • Prod → Vercel serverless function proxies /api to the backend */
-const baseURL = '/api'
+/** API base URL — empty string so paths hit same origin.
+ *  Vercel rewrites route /auth/*, /device/*, /test/* to the proxy function.
+ *  Vite dev server proxies those same paths to the backend. */
+const baseURL = ''
 
 export const apiClient = axios.create({
   baseURL,
@@ -16,13 +16,13 @@ export const apiClient = axios.create({
 })
 
 const UNAUTHENTICATED_AUTH_PATHS = [
-  '/v1/auth/register/',
-  '/v1/auth/verify-otp/',
-  '/v1/auth/login/',
-  '/v1/auth/google/',
-  '/v1/auth/refresh/',
-  '/v1/auth/password-reset/',
-  '/v1/auth/password-reset/confirm/',
+  '/auth/api/v1/auth/register/',
+  '/auth/api/v1/auth/verify-otp/',
+  '/auth/api/v1/auth/login/',
+  '/auth/api/v1/auth/google/',
+  '/auth/api/v1/auth/refresh/',
+  '/auth/api/v1/auth/password-reset/',
+  '/auth/api/v1/auth/password-reset/confirm/',
 ]
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean }
@@ -48,7 +48,7 @@ function shouldAttachAccessToken(config: InternalAxiosRequestConfig): boolean {
 }
 
 function isAuthEndpoint(config: InternalAxiosRequestConfig): boolean {
-  return (config.url ?? '').includes('/v1/auth/')
+  return (config.url ?? '').includes('/auth/api/v1/auth/')
 }
 
 function processPendingQueue(token: string | null, error: unknown) {
@@ -74,7 +74,7 @@ function waitForRefreshToken(): Promise<string> {
 
 async function fetchRefreshTokens(refreshToken: string): Promise<{ access: string; refresh: string }> {
   const { data } = await axios.post(
-    `${baseURL}/v1/auth/refresh/`,
+    `${baseURL}/auth/api/v1/auth/refresh/`,
     { refresh: refreshToken },
     { headers: { 'Content-Type': 'application/json' } },
   )

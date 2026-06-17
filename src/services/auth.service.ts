@@ -15,8 +15,8 @@ import type {
   VerifyOtpPayload,
 } from '@/types/user'
 
-const AUTH_PREFIX = '/v1/auth'
-const USERS_PREFIX = '/v1/users'
+const AUTH_PREFIX = '/auth/api/v1/auth'
+const USERS_PREFIX = '/auth/api/v1/users'
 
 export const authService = {
   /* ── Authentication ── */

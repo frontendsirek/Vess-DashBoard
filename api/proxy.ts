@@ -1,13 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
-// Disable default body parsing so we can forward raw bodies (file uploads, etc.)
 export const config = {
   api: {
     bodyParser: false,
   },
 }
 
-/** Collect the raw request body as a Buffer. */
 function getRawBody(req: VercelRequest): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = []
@@ -17,7 +15,6 @@ function getRawBody(req: VercelRequest): Promise<Buffer> {
   })
 }
 
-/** Headers we forward from the client request to the upstream API. */
 const FORWARDED_REQUEST_HEADERS = [
   'authorization',
   'content-type',
@@ -26,7 +23,6 @@ const FORWARDED_REQUEST_HEADERS = [
   'accept',
 ]
 
-/** Response headers we should NOT relay back to the client. */
 const SKIPPED_RESPONSE_HEADERS = new Set([
   'transfer-encoding',
   'connection',
@@ -39,38 +35,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: 'API_BASE_URL is not configured' })
   }
 
-  // Use req.url to preserve the original path (including trailing slashes).
-  // req.url is relative, e.g. "/api/v1/auth/login/?foo=bar"
-  const originalUrl = req.url || ''
-  // Strip the leading "/api" prefix to get the upstream path + query
-  const stripped = originalUrl.replace(/^\/api/, '')
-
-  // Map frontend paths to ALB service prefixes:
-  //   /api/v1/auth/*          → /auth/api/v1/auth/*
-  //   /api/v1/users/*         → /auth/api/v1/users/*
-  //   /api/v1/devices/*       → /device/api/v1/devices/*
-  //   /api/v1/registration/*  → /device/api/v1/registration/*
-  //   /test/*                 → /test/*  (no change)
-  const serviceRoutes: [RegExp, string][] = [
-    [/^\/v1\/auth(\/|$|\?)/, '/auth/api/v1/auth'],
-    [/^\/v1\/users(\/|$|\?)/, '/auth/api/v1/users'],
-    [/^\/v1\/devices(\/|$|\?)/, '/device/api/v1/devices'],
-    [/^\/v1\/registration(\/|$|\?)/, '/device/api/v1/registration'],
-  ]
-
-  let upstreamPath = stripped
-  for (const [pattern, prefix] of serviceRoutes) {
-    if (pattern.test(stripped)) {
-      // Replace "/v1/{resource}" with "/{service}/api/v1/{resource}"
-      const resource = stripped.match(/^\/v1\/\w+/)?.[0] ?? ''
-      upstreamPath = stripped.replace(resource, prefix)
-      break
-    }
-  }
-
+  // The "path" query param is set by vercel.json rewrites
+  // e.g. /auth/api/v1/auth/login/ → ?path=/auth/api/v1/auth/login/
+  const pathParam = req.query.path
+  const upstreamPath = Array.isArray(pathParam) ? pathParam.join('/') : pathParam || '/'
   const upstreamUrl = `${API_BASE_URL.replace(/\/+$/, '')}${upstreamPath}`
 
-  // Build request headers
+  // Forward relevant headers
   const headers: Record<string, string> = {}
   for (const name of FORWARDED_REQUEST_HEADERS) {
     const val = req.headers[name]
@@ -88,7 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body,
     })
 
-    // Relay upstream response headers
+    // Relay response headers
     upstream.headers.forEach((value, key) => {
       if (!SKIPPED_RESPONSE_HEADERS.has(key.toLowerCase())) {
         res.setHeader(key, value)

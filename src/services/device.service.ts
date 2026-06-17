@@ -31,8 +31,8 @@ import type {
   SyncCompleteResponse,
 } from '@/types/register-device'
 
-const DEVICES_PREFIX = '/v1/devices'
-const REGISTRATION_PREFIX = '/v1/registration'
+const DEVICES_PREFIX = '/device/api/v1/devices'
+const REGISTRATION_PREFIX = '/device/api/v1/registration'
 
 export const deviceService = {
   /* ── Health ── */
