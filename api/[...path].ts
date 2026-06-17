@@ -39,19 +39,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: 'API_BASE_URL is not configured' })
   }
 
-  // Build the upstream URL from the catch-all path segments
-  const { path: segments } = req.query
-  const targetPath = Array.isArray(segments) ? segments.join('/') : segments || ''
-  const url = new URL(`${API_BASE_URL.replace(/\/+$/, '')}/${targetPath}`)
-
-  // Forward query-string parameters (skip the internal "path" param)
-  for (const [key, value] of Object.entries(req.query)) {
-    if (key === 'path') continue
-    const values = Array.isArray(value) ? value : [value]
-    for (const v of values) {
-      if (v != null) url.searchParams.append(key, v)
-    }
-  }
+  // Use req.url to preserve the original path (including trailing slashes).
+  // req.url is relative, e.g. "/api/auth/api/v1/auth/login/?foo=bar"
+  const originalUrl = req.url || ''
+  // Strip the leading "/api" prefix to get the upstream path + query
+  const stripped = originalUrl.replace(/^\/api/, '')
+  const upstreamUrl = `${API_BASE_URL.replace(/\/+$/, '')}${stripped}`
 
   // Build request headers
   const headers: Record<string, string> = {}
@@ -65,7 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const body = hasBody ? await getRawBody(req) : undefined
 
   try {
-    const upstream = await fetch(url.toString(), {
+    const upstream = await fetch(upstreamUrl, {
       method: req.method || 'GET',
       headers,
       body,
