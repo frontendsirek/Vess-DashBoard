@@ -40,11 +40,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // Use req.url to preserve the original path (including trailing slashes).
-  // req.url is relative, e.g. "/api/auth/api/v1/auth/login/?foo=bar"
+  // req.url is relative, e.g. "/api/v1/auth/login/?foo=bar"
   const originalUrl = req.url || ''
   // Strip the leading "/api" prefix to get the upstream path + query
   const stripped = originalUrl.replace(/^\/api/, '')
-  const upstreamUrl = `${API_BASE_URL.replace(/\/+$/, '')}${stripped}`
+
+  // Map frontend paths to ALB service prefixes:
+  //   /api/v1/auth/*          → /auth/api/v1/auth/*
+  //   /api/v1/users/*         → /auth/api/v1/users/*
+  //   /api/v1/devices/*       → /device/api/v1/devices/*
+  //   /api/v1/registration/*  → /device/api/v1/registration/*
+  //   /test/*                 → /test/*  (no change)
+  const serviceRoutes: [RegExp, string][] = [
+    [/^\/v1\/auth(\/|$|\?)/, '/auth/api/v1/auth'],
+    [/^\/v1\/users(\/|$|\?)/, '/auth/api/v1/users'],
+    [/^\/v1\/devices(\/|$|\?)/, '/device/api/v1/devices'],
+    [/^\/v1\/registration(\/|$|\?)/, '/device/api/v1/registration'],
+  ]
+
+  let upstreamPath = stripped
+  for (const [pattern, prefix] of serviceRoutes) {
+    if (pattern.test(stripped)) {
+      // Replace "/v1/{resource}" with "/{service}/api/v1/{resource}"
+      const resource = stripped.match(/^\/v1\/\w+/)?.[0] ?? ''
+      upstreamPath = stripped.replace(resource, prefix)
+      break
+    }
+  }
+
+  const upstreamUrl = `${API_BASE_URL.replace(/\/+$/, '')}${upstreamPath}`
 
   // Build request headers
   const headers: Record<string, string> = {}

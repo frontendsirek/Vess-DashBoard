@@ -26,7 +26,28 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: env.API_PROXY_TARGET || 'http://localhost:8000',
           changeOrigin: true,
-          rewrite: (p) => p.replace(/^\/api/, ''),
+          rewrite: (p) => {
+            // Strip /api prefix, then map to ALB service paths:
+            //   /api/v1/auth/*         → /auth/api/v1/auth/*
+            //   /api/v1/users/*        → /auth/api/v1/users/*
+            //   /api/v1/devices/*      → /device/api/v1/devices/*
+            //   /api/v1/registration/* → /device/api/v1/registration/*
+            //   /api/test/*            → /test/*
+            const stripped = p.replace(/^\/api/, '')
+            const routes: [RegExp, string][] = [
+              [/^\/v1\/auth(\/|$)/, '/auth/api/v1/auth'],
+              [/^\/v1\/users(\/|$)/, '/auth/api/v1/users'],
+              [/^\/v1\/devices(\/|$)/, '/device/api/v1/devices'],
+              [/^\/v1\/registration(\/|$)/, '/device/api/v1/registration'],
+            ]
+            for (const [pattern, prefix] of routes) {
+              if (pattern.test(stripped)) {
+                const resource = stripped.match(/^\/v1\/\w+/)?.[0] ?? ''
+                return stripped.replace(resource, prefix)
+              }
+            }
+            return stripped
+          },
         },
       },
     },
