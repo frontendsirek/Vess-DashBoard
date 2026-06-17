@@ -2,8 +2,12 @@ import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestCo
 import { isAuthEnvelopeError, parseTokenPairFromAuthEnvelope } from '@/lib/api-auth-errors'
 import { TOKEN_KEYS, useAuthStore } from '@/stores/auth-store'
 
-/** API origin (same in dev and prod). Set `VITE_API_BASE_URL` in `.env` — no trailing slash. */
-const baseURL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
+/** API base URL.
+ *  • Dev  → set VITE_API_BASE_URL in .env (hits backend directly)
+ *  • Prod → leave it unset; requests go through the /api Vercel proxy */
+const baseURL = import.meta.env.VITE_API_BASE_URL
+  ? (import.meta.env.VITE_API_BASE_URL as string).replace(/\/+$/, '')
+  : '/api'
 
 export const apiClient = axios.create({
   baseURL,
