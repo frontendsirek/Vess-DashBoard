@@ -62,9 +62,12 @@ export type DeviceConfigurationGeolocationControls = {
 
 /** Must render under `<Form {...useForm()}>` (`FormProvider`). */
 export function DeviceConfigurationForm({
+  mode = 'register',
   detectedLocationPreview,
   geolocationControls,
 }: {
+  /** Whether this form is used for registration or editing. Controls IMEI required state. */
+  mode?: 'register' | 'edit'
   /**
    * Detected-location card contents: server-backed (edit) until the browser succeeds,
    * then parents usually replace this with formatted GPS coordinates.
@@ -258,6 +261,30 @@ export function DeviceConfigurationForm({
           )}
         />
       </div>
+
+      <FormField
+        control={control}
+        name="imei"
+        render={({ field }) => (
+          <FormItem>
+            <DeviceConfigurationFieldLabel required={mode === 'register'}>
+              IMEI
+            </DeviceConfigurationFieldLabel>
+            <FormControl>
+              <input
+                {...field}
+                type="text"
+                inputMode="numeric"
+                maxLength={15}
+                className={deviceConfigurationInputClass}
+                placeholder="e.g. 353456789012345"
+                autoComplete="off"
+              />
+            </FormControl>
+            <FormMessage className="text-[13px] font-normal text-vess-red-800" />
+          </FormItem>
+        )}
+      />
 
       <FormField
         control={control}

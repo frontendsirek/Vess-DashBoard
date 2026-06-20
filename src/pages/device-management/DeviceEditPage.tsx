@@ -163,6 +163,7 @@ function DeviceEditConfiguredForm({
             </div>
 
             <DeviceConfigurationForm
+              mode="edit"
               detectedLocationPreview={detectedLocationPreview}
               geolocationControls={geolocationControls}
             />

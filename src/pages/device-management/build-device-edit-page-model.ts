@@ -68,6 +68,7 @@ export function buildDeviceEditDefaultsFromApi(
       : '',
     deviceGroup,
     msisdn,
+    imei: (api as any).imei?.trim() ?? '',
     tags: tagsJoined,
     lowBatteryPercent:
       typeof batteryThreshold === 'number' && Number.isFinite(batteryThreshold) ?

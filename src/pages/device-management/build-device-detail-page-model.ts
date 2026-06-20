@@ -103,7 +103,7 @@ export type DeviceManagementDetailPageModel = {
     memoryPercent: number
     signalCaption: string
   }
-  network: { operator: string; networkType: string; msisdnDisplay: string }
+  network: { operator: string; networkType: string; msisdnDisplay: string; imeiDisplay: string }
   location: { coordinates: string; address: string; mapEmbedSrc: string | null }
   tests24h: {
     totalDisplay: string
@@ -259,6 +259,7 @@ export function buildDeviceManagementDetailPageModel(api: ApiDeviceDetail): Devi
       operator: readableString(operatorReadable),
       networkType: netTypeMeta,
       msisdnDisplay: msisdnBlock,
+      imeiDisplay: readableString((api as any).imei),
     },
     location: {
       coordinates: coordinatesReadable,

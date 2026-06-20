@@ -246,6 +246,9 @@ export default function DeviceDetailPage() {
                   </div>
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start">
                     <DetailField label="MSISDN" value={model.network.msisdnDisplay} />
+                    <DetailField label="IMEI" value={model.network.imeiDisplay} />
+                  </div>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start">
                     <div className="flex flex-col gap-2">
                       <span className="text-[18px] font-light leading-[21.6px] text-vess-grey-950">Status</span>
                       <DeviceStatusBadge status={model.managementStatus} />

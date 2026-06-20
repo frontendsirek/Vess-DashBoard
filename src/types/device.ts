@@ -181,6 +181,7 @@ export type DashboardDeviceConfigurationPayload = {
   latitude: number
   longitude: number
   msisdn?: string
+  imei?: string
   device_group?: string
   tags?: string[]
   alert_battery_threshold?: number

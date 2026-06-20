@@ -46,6 +46,7 @@ function mapDashboardConfigFieldsFromForm(
 ): Pick<
   DashboardDeviceConfigurationPayload,
   | 'msisdn'
+  | 'imei'
   | 'device_group'
   | 'tags'
   | 'alert_battery_threshold'
@@ -54,9 +55,11 @@ function mapDashboardConfigFieldsFromForm(
   const deviceGroup = values.deviceGroup.trim()
   const tags = parseTagsFromForm(values.tags)
   const msisdn = normalizeMsisdnForApi(values.msisdn)
+  const imei = values.imei.trim()
 
   return {
     ...(msisdn ? { msisdn } : {}),
+    ...(imei.length > 0 ? { imei } : {}),
     ...(deviceGroup.length > 0 ? { device_group: deviceGroup } : {}),
     ...(tags.length > 0 ? { tags } : {}),
     alert_battery_threshold: values.lowBatteryPercent,
@@ -105,6 +108,7 @@ export function deviceEditDefaultsToFormValues(defaults: DeviceEditDefaults): De
     locationManual: defaults.locationManual,
     deviceGroup: defaults.deviceGroup,
     msisdn: defaults.msisdn ?? '',
+    imei: defaults.imei ?? '',
     tags: defaults.tags,
     lowBatteryPercent: defaults.lowBatteryPercent,
     offlineMinutes: defaults.offlineMinutes,

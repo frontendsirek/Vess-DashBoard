@@ -14,7 +14,7 @@ import { resolveApiSuccessMessage } from '@/lib/format-api-success-message'
 import { mapRegisterFormToPayload } from '@/lib/map-device-configuration-form'
 import {
   deviceConfigurationFormDefaultValues,
-  deviceConfigurationFormSchema,
+  registerDeviceConfigurationFormSchema,
   type DeviceConfigurationFormValues,
 } from '@/schemas/device/device-configuration-form.schema'
 import { deviceService } from '@/services/device.service'
@@ -26,7 +26,7 @@ export default function RegisterDevicePage() {
   const geo = useBrowserGeolocation()
 
   const form = useForm<DeviceConfigurationFormValues>({
-    resolver: zodResolver(deviceConfigurationFormSchema),
+    resolver: zodResolver(registerDeviceConfigurationFormSchema),
     defaultValues: deviceConfigurationFormDefaultValues,
     mode: 'onSubmit',
   })
@@ -113,6 +113,7 @@ export default function RegisterDevicePage() {
             </div>
 
             <DeviceConfigurationForm
+              mode="register"
               detectedLocationPreview={detectedLocationPreview}
               geolocationControls={geolocationControls}
             />
