@@ -25,15 +25,15 @@ import type { TestDetailFromWizardState } from '@/types/create-test'
 function statusBadgeClass(status: TestStatus) {
   switch (status) {
     case 'Draft':
-      return 'bg-vess-grey-100 text-vess-grey-800 min-w-[102px] px-3 py-1 text-[15px] font-normal leading-[18px]'
+      return 'bg-vess-grey-100 text-vess-grey-800 min-w-[102px] px-3 py-1 text-[13px] font-normal leading-[18px]'
     case 'Ready':
-      return 'bg-vess-green-50 text-vess-green-800 min-w-[102px] px-3 py-1 text-[15px] font-normal leading-[18px]'
+      return 'bg-vess-green-50 text-vess-green-800 min-w-[102px] px-3 py-1 text-[13px] font-normal leading-[18px]'
     case 'Running':
-      return 'bg-vess-primary-50 text-vess-primary-500 min-w-[102px] px-3 py-1 text-[15px] font-normal leading-[18px]'
+      return 'bg-vess-primary-50 text-vess-primary-500 min-w-[102px] px-3 py-1 text-[13px] font-normal leading-[18px]'
     case 'Cancel requested':
-      return 'bg-vess-secondary-50 text-vess-secondary-500 min-w-[102px] px-3 py-1 text-[15px] font-normal leading-[18px]'
+      return 'bg-vess-secondary-50 text-vess-secondary-500 min-w-[102px] px-3 py-1 text-[13px] font-normal leading-[18px]'
     case 'Canceled':
-      return 'bg-vess-red-50 text-vess-red-800 min-w-[102px] px-3 py-1 text-[15px] font-normal leading-[18px]'
+      return 'bg-vess-red-50 text-vess-red-800 min-w-[102px] px-3 py-1 text-[13px] font-normal leading-[18px]'
     default:
       return ''
   }
@@ -108,9 +108,9 @@ export default function TestDetailPage() {
               className="flex w-fit items-center gap-4 text-vess-grey-950 transition-opacity hover:opacity-80"
             >
               <ArrowBackIcon className="size-6" />
-              <span className="text-[18px] font-light leading-[21.6px]">Back</span>
+              <span className="text-[16px] font-light leading-[21.6px]">Back</span>
             </button>
-            <p className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[15px] text-vess-grey-800">
+            <p className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[13px] text-vess-grey-800">
               Sign in to view this test from the API.
             </p>
           </div>
@@ -122,23 +122,23 @@ export default function TestDetailPage() {
               className="flex w-fit items-center gap-4 text-vess-grey-950 transition-opacity hover:opacity-80"
             >
               <ArrowBackIcon className="size-6" />
-              <span className="text-[18px] font-light leading-[21.6px]">Back</span>
+              <span className="text-[16px] font-light leading-[21.6px]">Back</span>
             </button>
 
             {detailQuery.isPending ?
-              <div className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-8 text-center text-[15px] text-vess-grey-600">
+              <div className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-8 text-center text-[13px] text-vess-grey-600">
                 Loading test…
               </div>
             : null}
 
             {!detailQuery.isPending && detailQuery.isError ?
               <div className="flex flex-col gap-4">
-                <p className="rounded-xl border border-vess-red-200 bg-vess-red-50 px-4 py-3 text-[15px] text-vess-red-800">
+                <p className="rounded-xl border border-vess-red-200 bg-vess-red-50 px-4 py-3 text-[13px] text-vess-red-800">
                   {errorMessage}
                 </p>
                 <button
                   type="button"
-                  className="w-fit rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-2 text-[15px] font-medium text-vess-grey-950"
+                  className="w-fit rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-2 text-[13px] font-medium text-vess-grey-950"
                   onClick={() => void detailQuery.refetch()}
                 >
                   Try again
@@ -184,11 +184,11 @@ function TestDetailContent({
         className="flex w-fit items-center gap-4 text-vess-grey-950 transition-opacity hover:opacity-80"
       >
         <ArrowBackIcon className="size-6" />
-        <span className="text-[18px] font-light leading-[21.6px]">Back</span>
+        <span className="text-[16px] font-light leading-[21.6px]">Back</span>
       </button>
 
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <h1 className="text-[25px] font-semibold leading-[30px] text-vess-grey-950">{detail.name}</h1>
+        <h1 className="text-[23px] font-semibold leading-[30px] text-vess-grey-950">{detail.name}</h1>
         <div className="flex flex-wrap gap-5">
           <button
             type="button"
@@ -196,7 +196,7 @@ function TestDetailContent({
             onClick={() =>
               navigate(`/test-management/${encodeURIComponent(testId)}/edit/configure`)
             }
-            className="inline-flex items-center justify-center gap-3 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-950 transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-3 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[13px] font-medium leading-[18px] text-vess-grey-950 transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
           >
             <EditOutlineIcon className="size-6 text-vess-grey-950" />
             Edit
@@ -205,7 +205,7 @@ function TestDetailContent({
             type="button"
             disabled={!canDelete || deleteMutation.isPending}
             onClick={() => deleteMutation.mutate()}
-            className="inline-flex items-center justify-center gap-3 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-950 transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-3 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[13px] font-medium leading-[18px] text-vess-grey-950 transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
           >
             <DeleteOutlineIcon className="size-6 text-vess-grey-950" />
             {deleteMutation.isPending ? 'Deleting…' : 'Delete'}
@@ -215,19 +215,19 @@ function TestDetailContent({
 
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-vess-grey-200 bg-vess-grey-50 px-4 py-5">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="text-[18px] font-light leading-[21.6px] text-vess-grey-950">Status</span>
+          <span className="text-[16px] font-light leading-[21.6px] text-vess-grey-950">Status</span>
           <span
             className={cn('inline-flex items-center justify-center rounded-full', statusBadgeClass(detail.status))}
           >
             {detail.status}
           </span>
           {detail.status === 'Running' && detail.progressPercent !== undefined ?
-            <span className="text-[18px] font-light leading-[21.6px] text-vess-grey-950">
+            <span className="text-[16px] font-light leading-[21.6px] text-vess-grey-950">
               ({detail.progressPercent}% complete)
             </span>
           : null}
         </div>
-        <div className="flex flex-wrap items-center gap-3 text-[18px] text-vess-grey-950">
+        <div className="flex flex-wrap items-center gap-3 text-[16px] text-vess-grey-950">
           <span className="font-light leading-[21.6px]">Last Execution</span>
           <span className="font-medium leading-[21.6px]">{detail.lastExecutionLabel}</span>
         </div>
@@ -251,7 +251,7 @@ function TestDetailContent({
       <section className="flex flex-col gap-6 rounded-2xl border border-vess-grey-200 bg-vess-grey-50 px-4 py-5">
         <div className="flex items-center gap-3">
           <ConfigurationSectionIcon className="size-6 text-vess-grey-950" />
-          <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">Configuration</h2>
+          <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">Configuration</h2>
         </div>
         <div className="flex flex-col gap-6">
           {detail.configRowPairs.map((row, rowIdx) => (
@@ -266,11 +266,11 @@ function TestDetailContent({
       <section className="flex flex-col gap-6 rounded-2xl border border-vess-grey-200 bg-vess-grey-50 px-4 py-5">
         <div className="flex items-center gap-3">
           <RecentActivityIcon className="size-6 text-vess-grey-950" />
-          <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">Recent Executions</h2>
+          <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">Recent Executions</h2>
         </div>
         <div className="h-px w-full bg-vess-grey-200" />
         {detail.executions.length === 0 ?
-          <p className="text-[18px] text-center font-light leading-[21.6px] text-vess-grey-950">
+          <p className="text-[16px] text-center font-light leading-[21.6px] text-vess-grey-950">
             {detail.executionsEmptyMessage ?? 'No executions yet'}
           </p>
         : <ExecutionsList executions={detail.executions} />}
@@ -290,8 +290,8 @@ function ExecutionsList({ executions }: { executions: TestDetailRecord['executio
               <ExecutionSuccessIcon className="size-5 shrink-0" />
             : <ExecutionFailIcon className="size-5 shrink-0" />}
             <div className="flex flex-col gap-1">
-              <p className="text-[15px] font-medium leading-[18px] text-vess-grey-950">{ex.timestamp}</p>
-              <p className="text-[13px] font-normal leading-[15.6px] text-vess-grey-500">{ex.detail}</p>
+              <p className="text-[13px] font-medium leading-[18px] text-vess-grey-950">{ex.timestamp}</p>
+              <p className="text-[11px] font-normal leading-[15.6px] text-vess-grey-500">{ex.detail}</p>
             </div>
           </div>
         </li>
@@ -311,7 +311,7 @@ function ConfigCell({
     <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-24 gap-y-2">
       <span
         className={cn(
-          'shrink-0 text-[18px] font-light leading-[21.6px] text-vess-grey-950',
+          'shrink-0 text-[16px] font-light leading-[21.6px] text-vess-grey-950',
           labelWidthClass,
         )}
       >
@@ -319,7 +319,7 @@ function ConfigCell({
       </span>
       <span
         className={cn(
-          'text-[18px] font-medium leading-[21.6px]',
+          'text-[16px] font-medium leading-[21.6px]',
           cell.hideValue ? 'text-transparent' : 'text-vess-grey-950',
         )}
       >
@@ -332,8 +332,8 @@ function ConfigCell({
 function Kpi({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-4 rounded-lg border border-vess-grey-200 bg-vess-grey-50 px-4 py-5">
-      <p className="text-[15px] font-light leading-[18px] text-vess-grey-950">{label}</p>
-      <p className="text-[25px] font-semibold leading-[30px] text-vess-grey-950">{value}</p>
+      <p className="text-[13px] font-light leading-[18px] text-vess-grey-950">{label}</p>
+      <p className="text-[23px] font-semibold leading-[30px] text-vess-grey-950">{value}</p>
     </div>
   )
 }

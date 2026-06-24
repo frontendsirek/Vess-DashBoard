@@ -86,11 +86,11 @@ export function DeviceTable({ devices, onView }: DeviceTableProps) {
                     <div className="flex min-w-0 flex-col gap-1.5">
                       <span>{device.name}</span>
                       <div className="flex flex-wrap gap-1.5">
-                        <span className="rounded-lg bg-vess-grey-100 px-1.5 py-1 text-[13px] font-normal leading-[15.6px] text-vess-grey-500">
+                        <span className="rounded-lg bg-vess-grey-100 px-1.5 py-1 text-[11px] font-normal leading-[15.6px] text-vess-grey-500">
                           {device.badgePrimary}
                         </span>
                         {device.badgeSecondary && (
-                          <span className="rounded-lg bg-vess-grey-100 px-1.5 py-1 text-[13px] font-normal leading-[15.6px] text-vess-grey-500">
+                          <span className="rounded-lg bg-vess-grey-100 px-1.5 py-1 text-[11px] font-normal leading-[15.6px] text-vess-grey-500">
                             {device.badgeSecondary}
                           </span>
                         )}
@@ -110,7 +110,7 @@ export function DeviceTable({ devices, onView }: DeviceTableProps) {
                       {device.batteryPercent}%
                     </span>
                     {lowBattery && (
-                      <span className="rounded-md bg-vess-red-50 px-2 py-0.5 text-[12px] font-medium text-vess-red-500">
+                      <span className="rounded-md bg-vess-red-50 px-2 py-0.5 text-[11px] font-medium text-vess-red-500">
                         Low
                       </span>
                     )}
@@ -125,7 +125,7 @@ export function DeviceTable({ devices, onView }: DeviceTableProps) {
                   <button
                     type="button"
                     onClick={() => onView?.(device)}
-                    className="inline-flex items-center gap-2.5 rounded border border-vess-grey-100 bg-vess-grey-50 px-1.5 py-1.5 text-[15px] font-normal leading-[18px] text-vess-grey-950 transition-colors hover:border-vess-primary-300 hover:text-vess-primary-500"
+                    className="inline-flex items-center gap-2.5 rounded border border-vess-grey-100 bg-vess-grey-50 px-1.5 py-1.5 text-[13px] font-normal leading-[18px] text-vess-grey-950 transition-colors hover:border-vess-primary-300 hover:text-vess-primary-500"
                   >
                     <EyeIcon className="size-4 shrink-0" />
                     View

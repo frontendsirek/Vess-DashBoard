@@ -155,7 +155,7 @@ export default function TestManagementPage() {
         <TestManagementHeader onNewTest={() => setCreateModalOpen(true)} />
 
         {dashboardErrorBanner && (
-          <p className="rounded-xl border border-vess-red-200 bg-vess-red-50 px-4 py-3 text-[15px] text-vess-red-800">
+          <p className="rounded-xl border border-vess-red-200 bg-vess-red-50 px-4 py-3 text-[13px] text-vess-red-800">
             {dashboardErrorMessage}
           </p>
         )}
@@ -175,7 +175,7 @@ export default function TestManagementPage() {
 
         <section className="flex flex-col gap-6 rounded-2xl bg-vess-grey-50 p-4">
           <header className="flex flex-col gap-6">
-            <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">
+            <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">
               Test Management List
             </h2>
             <TestFilterBar
@@ -191,19 +191,19 @@ export default function TestManagementPage() {
           </header>
 
           {!accessToken && (
-            <p className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[15px] text-vess-grey-800">
+            <p className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[13px] text-vess-grey-800">
               Sign in to load tests from the API.
             </p>
           )}
 
           {listError && (
-            <p className="rounded-xl border border-vess-red-200 bg-vess-red-50 px-4 py-3 text-[15px] text-vess-red-800">
+            <p className="rounded-xl border border-vess-red-200 bg-vess-red-50 px-4 py-3 text-[13px] text-vess-red-800">
               {errorMessage}
             </p>
           )}
 
           {listPending ? (
-            <div className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-8 text-center text-[15px] text-vess-grey-600">
+            <div className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-8 text-center text-[13px] text-vess-grey-600">
               Loading tests…
             </div>
           ) : (
@@ -212,7 +212,7 @@ export default function TestManagementPage() {
                 <TestTable tests={rowsOnPage} onView={handleViewTest} />
               : <TestCardGrid tests={rowsOnPage} onView={handleViewTest} />}
               {!listPending && !listError && accessToken && displayedTests.length === 0 ?
-                <p className="py-2 text-center text-[14px] text-vess-grey-500">No tests match your filters.</p>
+                <p className="py-2 text-center text-[12px] text-vess-grey-500">No tests match your filters.</p>
               : null}
             </>
           )}

@@ -104,10 +104,10 @@ export default function RegisterDevicePage() {
                 className="flex w-fit items-center gap-4 text-vess-grey-950 transition-opacity hover:opacity-80"
               >
                 <ArrowBackIcon className="size-6" />
-                <span className="text-[18px] font-light leading-[21.6px]">Back</span>
+                <span className="text-[16px] font-light leading-[21.6px]">Back</span>
               </button>
 
-              <h1 className="text-[25px] font-semibold leading-[30px] text-vess-grey-950">
+              <h1 className="text-[23px] font-semibold leading-[30px] text-vess-grey-950">
                 Register New Device
               </h1>
             </div>
@@ -119,7 +119,7 @@ export default function RegisterDevicePage() {
 
             {registerMutation.isError && registerMutation.error ?
               <p
-                className="text-[15px] font-normal leading-[18px] text-vess-red-500"
+                className="text-[13px] font-normal leading-[18px] text-vess-red-500"
                 role="alert"
               >
                 {formatApiMutationError(registerMutation.error)}
@@ -130,14 +130,14 @@ export default function RegisterDevicePage() {
               <button
                 type="button"
                 onClick={goHub}
-                className="inline-flex h-full min-w-[116px] items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-950 transition-colors hover:bg-vess-grey-100"
+                className="inline-flex h-full min-w-[116px] items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[13px] font-medium leading-[18px] text-vess-grey-950 transition-colors hover:bg-vess-grey-100"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={registerMutation.isPending}
-                className="inline-flex h-full items-center justify-center rounded-lg bg-vess-primary-500 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                className="inline-flex h-full items-center justify-center rounded-lg bg-vess-primary-500 px-6 text-[13px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {registerMutation.isPending ? 'Registering…' : 'Complete registration'}
               </button>

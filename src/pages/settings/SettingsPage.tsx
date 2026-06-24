@@ -31,16 +31,16 @@ export default function SettingsPage() {
       <div className="flex flex-col gap-6 px-5 py-6">
         <header className="flex items-start justify-between">
           <div className="flex flex-col gap-1">
-            <h2 className="text-[24px] font-semibold leading-[30px] text-vess-grey-950">
+            <h2 className="text-[22px] font-semibold leading-[30px] text-vess-grey-950">
               Settings
             </h2>
-            <p className="text-[13px] font-light text-vess-grey-800">
+            <p className="text-[11px] font-light text-vess-grey-800">
               Configure notifications, thresholds, and system preferences
             </p>
           </div>
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-xl bg-vess-primary-500 px-4 py-2.5 text-[14px] font-medium text-vess-grey-50 transition-colors hover:bg-vess-primary-400"
+            className="inline-flex items-center gap-2 rounded-xl bg-vess-primary-500 px-4 py-2.5 text-[12px] font-medium text-vess-grey-50 transition-colors hover:bg-vess-primary-400"
           >
             Save changes
           </button>
@@ -57,7 +57,7 @@ export default function SettingsPage() {
                   type="button"
                   onClick={() => setActive(s.id)}
                   className={cn(
-                    'flex items-center gap-3 rounded-xl px-4 py-3 text-left text-[14px] font-medium transition-colors',
+                    'flex items-center gap-3 rounded-xl px-4 py-3 text-left text-[12px] font-medium transition-colors',
                     isActive
                       ? 'bg-vess-grey-100 text-vess-grey-950'
                       : 'text-vess-grey-800 hover:bg-vess-grey-100/60',
@@ -96,17 +96,17 @@ function NotificationsSettings() {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h3 className="text-[18px] font-semibold leading-6 text-vess-grey-950">
+        <h3 className="text-[16px] font-semibold leading-6 text-vess-grey-950">
           Notification Preferences
         </h3>
-        <p className="mt-1 text-[13px] text-vess-grey-500">
+        <p className="mt-1 text-[11px] text-vess-grey-500">
           Choose how you want to be notified for each event type
         </p>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-[14px]">
-          <thead className="text-[13px] text-vess-grey-800">
+        <table className="w-full text-left text-[12px]">
+          <thead className="text-[11px] text-vess-grey-800">
             <tr className="border-b border-vess-grey-200">
               <th className="py-3 font-medium">Event</th>
               <th className="py-3 text-center font-medium">Email</th>
@@ -140,7 +140,7 @@ function NotificationRow({
     <tr className="border-b border-vess-grey-200/70">
       <td className="py-4">
         <p className="font-medium text-vess-grey-950">{pref.label}</p>
-        <p className="mt-0.5 text-[12px] text-vess-grey-500">{pref.description}</p>
+        <p className="mt-0.5 text-[11px] text-vess-grey-500">{pref.description}</p>
       </td>
       {(['email', 'sms', 'push'] as const).map((ch) => (
         <td key={ch} className="py-4 text-center">
@@ -179,10 +179,10 @@ function ThresholdsSettings() {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h3 className="text-[18px] font-semibold leading-6 text-vess-grey-950">
+        <h3 className="text-[16px] font-semibold leading-6 text-vess-grey-950">
           Alert Thresholds
         </h3>
-        <p className="mt-1 text-[13px] text-vess-grey-500">
+        <p className="mt-1 text-[11px] text-vess-grey-500">
           Configure when alerts should be triggered based on device metrics
         </p>
       </div>
@@ -211,10 +211,10 @@ function ThresholdCard({
     <article className="flex flex-col gap-3 rounded-xl border border-vess-grey-200 bg-vess-grey-50 p-5">
       <div className="flex items-start justify-between">
         <div>
-          <h4 className="text-[15px] font-semibold text-vess-grey-950">
+          <h4 className="text-[13px] font-semibold text-vess-grey-950">
             {threshold.label}
           </h4>
-          <p className="mt-0.5 text-[13px] text-vess-grey-500">{threshold.description}</p>
+          <p className="mt-0.5 text-[11px] text-vess-grey-500">{threshold.description}</p>
         </div>
         <div className="flex items-center gap-2 rounded-lg border border-vess-grey-200 bg-vess-grey-50 px-3 py-1.5">
           <input
@@ -223,9 +223,9 @@ function ThresholdCard({
             min={threshold.min}
             max={threshold.max}
             onChange={(e) => onChange(Number(e.target.value))}
-            className="w-16 bg-transparent text-right text-[14px] font-medium text-vess-grey-950 outline-none"
+            className="w-16 bg-transparent text-right text-[12px] font-medium text-vess-grey-950 outline-none"
           />
-          <span className="text-[13px] text-vess-grey-500">{threshold.unit}</span>
+          <span className="text-[11px] text-vess-grey-500">{threshold.unit}</span>
         </div>
       </div>
       <div className="flex items-center gap-3">
@@ -237,7 +237,7 @@ function ThresholdCard({
           onChange={(e) => onChange(Number(e.target.value))}
           className="h-2 w-full cursor-pointer appearance-none rounded-full bg-vess-grey-200 accent-vess-primary-500"
         />
-        <span className="shrink-0 text-[12px] text-vess-grey-500">
+        <span className="shrink-0 text-[11px] text-vess-grey-500">
           {threshold.min}–{threshold.max} {threshold.unit}
         </span>
       </div>
@@ -253,15 +253,15 @@ function SecuritySettings() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="text-[18px] font-semibold leading-6 text-vess-grey-950">Security</h3>
-        <p className="mt-1 text-[13px] text-vess-grey-500">
+        <h3 className="text-[16px] font-semibold leading-6 text-vess-grey-950">Security</h3>
+        <p className="mt-1 text-[11px] text-vess-grey-500">
           Manage your password and security preferences
         </p>
       </div>
 
       <div className="rounded-xl border border-vess-grey-200 bg-vess-grey-50 p-5">
-        <h4 className="text-[15px] font-semibold text-vess-grey-950">Change Password</h4>
-        <p className="mt-1 text-[13px] text-vess-grey-500">
+        <h4 className="text-[13px] font-semibold text-vess-grey-950">Change Password</h4>
+        <p className="mt-1 text-[11px] text-vess-grey-500">
           Update your password to keep your account secure
         </p>
 
@@ -283,7 +283,7 @@ function SecuritySettings() {
           />
           <button
             type="button"
-            className="w-fit rounded-xl bg-vess-primary-500 px-6 py-2.5 text-[14px] font-medium text-vess-grey-50 transition-colors hover:bg-vess-primary-400"
+            className="w-fit rounded-xl bg-vess-primary-500 px-6 py-2.5 text-[12px] font-medium text-vess-grey-50 transition-colors hover:bg-vess-primary-400"
           >
             Update Password
           </button>
@@ -291,24 +291,24 @@ function SecuritySettings() {
       </div>
 
       <div className="rounded-xl border border-vess-grey-200 bg-vess-grey-50 p-5">
-        <h4 className="text-[15px] font-semibold text-vess-grey-950">
+        <h4 className="text-[13px] font-semibold text-vess-grey-950">
           Two-Factor Authentication
         </h4>
-        <p className="mt-1 text-[13px] text-vess-grey-500">
+        <p className="mt-1 text-[11px] text-vess-grey-500">
           Add an extra layer of security to your account
         </p>
         <div className="mt-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="rounded-md bg-vess-green-50 px-2 py-0.5 text-[12px] font-medium text-vess-green-800">
+            <span className="rounded-md bg-vess-green-50 px-2 py-0.5 text-[11px] font-medium text-vess-green-800">
               Enabled
             </span>
-            <span className="text-[13px] text-vess-grey-800">
+            <span className="text-[11px] text-vess-grey-800">
               Authenticator app configured
             </span>
           </div>
           <button
             type="button"
-            className="rounded-lg border border-vess-grey-200 px-3 py-1.5 text-[13px] font-medium text-vess-grey-800 transition-colors hover:bg-vess-grey-100"
+            className="rounded-lg border border-vess-grey-200 px-3 py-1.5 text-[11px] font-medium text-vess-grey-800 transition-colors hover:bg-vess-grey-100"
           >
             Reconfigure
           </button>
@@ -316,8 +316,8 @@ function SecuritySettings() {
       </div>
 
       <div className="rounded-xl border border-vess-grey-200 bg-vess-grey-50 p-5">
-        <h4 className="text-[15px] font-semibold text-vess-grey-950">Active Sessions</h4>
-        <p className="mt-1 text-[13px] text-vess-grey-500">
+        <h4 className="text-[13px] font-semibold text-vess-grey-950">Active Sessions</h4>
+        <p className="mt-1 text-[11px] text-vess-grey-500">
           Manage devices where you&apos;re currently signed in
         </p>
         <div className="mt-4 flex flex-col gap-3">
@@ -340,7 +340,7 @@ function SecuritySettings() {
         </div>
         <button
           type="button"
-          className="mt-4 text-[13px] font-medium text-vess-red-500 transition-opacity hover:opacity-80"
+          className="mt-4 text-[11px] font-medium text-vess-red-500 transition-opacity hover:opacity-80"
         >
           Sign out all other sessions
         </button>
@@ -360,12 +360,12 @@ function PasswordField({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[13px] font-medium text-vess-grey-800">{label}</label>
+      <label className="text-[11px] font-medium text-vess-grey-800">{label}</label>
       <input
         type="password"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-xl border border-vess-grey-200 bg-vess-grey-50 px-4 py-2.5 text-[14px] text-vess-grey-950 outline-none transition-colors focus:border-vess-primary-500"
+        className="rounded-xl border border-vess-grey-200 bg-vess-grey-50 px-4 py-2.5 text-[12px] text-vess-grey-950 outline-none transition-colors focus:border-vess-primary-500"
       />
     </div>
   )
@@ -386,21 +386,21 @@ function SessionRow({
     <div className="flex items-center justify-between rounded-lg border border-vess-grey-200/60 bg-vess-grey-50 px-4 py-3">
       <div className="flex flex-col gap-0.5">
         <div className="flex items-center gap-2">
-          <p className="text-[14px] font-medium text-vess-grey-950">{device}</p>
+          <p className="text-[12px] font-medium text-vess-grey-950">{device}</p>
           {current && (
-            <span className="rounded-md bg-vess-green-50 px-2 py-0.5 text-[11px] font-medium text-vess-green-800">
+            <span className="rounded-md bg-vess-green-50 px-2 py-0.5 text-[10px] font-medium text-vess-green-800">
               Current
             </span>
           )}
         </div>
-        <p className="text-[12px] text-vess-grey-500">
+        <p className="text-[11px] text-vess-grey-500">
           {location} · {lastActive}
         </p>
       </div>
       {!current && (
         <button
           type="button"
-          className="text-[13px] font-medium text-vess-red-500 transition-opacity hover:opacity-80"
+          className="text-[11px] font-medium text-vess-red-500 transition-opacity hover:opacity-80"
         >
           Revoke
         </button>
@@ -413,12 +413,12 @@ function UserManagement() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
-        <h3 className="text-[18px] font-semibold leading-6 text-vess-grey-950">
+        <h3 className="text-[16px] font-semibold leading-6 text-vess-grey-950">
           User Management
         </h3>
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 rounded-xl bg-vess-primary-500 px-4 py-2 text-[13px] font-medium text-vess-grey-50 transition-colors hover:bg-vess-primary-400"
+          className="inline-flex items-center gap-1.5 rounded-xl bg-vess-primary-500 px-4 py-2 text-[11px] font-medium text-vess-grey-50 transition-colors hover:bg-vess-primary-400"
         >
           + Invite users
         </button>
@@ -428,7 +428,7 @@ function UserManagement() {
         <div className="flex flex-1 items-center gap-2 rounded-xl border border-vess-grey-200 bg-vess-grey-50 px-3 py-2">
           <input
             placeholder="Search users..."
-            className="flex-1 bg-transparent text-[14px] outline-none placeholder:text-vess-grey-500"
+            className="flex-1 bg-transparent text-[12px] outline-none placeholder:text-vess-grey-500"
           />
         </div>
         <FilterSelect label="Role" />
@@ -436,8 +436,8 @@ function UserManagement() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-[14px]">
-          <thead className="text-[13px] text-vess-grey-800">
+        <table className="w-full text-left text-[12px]">
+          <thead className="text-[11px] text-vess-grey-800">
             <tr className="border-b border-vess-grey-200">
               <th className="py-3 font-medium">User</th>
               <th className="py-3 font-medium">Role</th>
@@ -463,20 +463,20 @@ function UserRow({ user }: { user: TeamMember }) {
     <tr className="border-b border-vess-grey-200/70">
       <td className="py-4">
         <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-full bg-vess-primary-500 text-[12px] font-medium text-vess-grey-50">
+          <div className="flex size-9 items-center justify-center rounded-full bg-vess-primary-500 text-[11px] font-medium text-vess-grey-50">
             {user.initials}
           </div>
           <div>
             <p className="font-medium text-vess-grey-950">{user.name}</p>
-            <p className="text-[12px] text-vess-grey-500">{user.email}</p>
+            <p className="text-[11px] text-vess-grey-500">{user.email}</p>
           </div>
         </div>
       </td>
-      <td className="py-4 text-[13px] tracking-[0.4px] text-vess-grey-800">{user.role}</td>
+      <td className="py-4 text-[11px] tracking-[0.4px] text-vess-grey-800">{user.role}</td>
       <td className="py-4">
         <span
           className={cn(
-            'rounded-md px-2 py-0.5 text-[12px] font-medium',
+            'rounded-md px-2 py-0.5 text-[11px] font-medium',
             isActive
               ? 'bg-vess-green-50 text-vess-green-800'
               : 'bg-vess-red-50 text-vess-red-500',
@@ -503,7 +503,7 @@ function FilterSelect({ label }: { label: string }) {
   return (
     <button
       type="button"
-      className="inline-flex items-center gap-2 rounded-xl border border-vess-grey-200 bg-vess-grey-50 px-3 py-2 text-[13px] font-medium text-vess-grey-800"
+      className="inline-flex items-center gap-2 rounded-xl border border-vess-grey-200 bg-vess-grey-50 px-3 py-2 text-[11px] font-medium text-vess-grey-800"
     >
       {label}
       <span aria-hidden>▾</span>

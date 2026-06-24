@@ -22,7 +22,7 @@ export function SuccessRateChart() {
   return (
     <section className="flex w-full flex-col gap-8 rounded-2xl bg-vess-grey-50 p-4">
       <header className="flex items-center justify-between">
-        <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">
+        <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">
           Success Rate
         </h2>
         <PeriodSelector
@@ -113,7 +113,7 @@ function SuccessRateTooltip({
   const call = payload.find((entry) => entry.dataKey === 'call')?.value ?? '—'
   return (
     <div className="flex flex-col gap-1 rounded-lg bg-vess-grey-950 p-3 text-vess-grey-50">
-      <p className="text-[13px] font-normal leading-[15.6px]">{label}</p>
+      <p className="text-[11px] font-normal leading-[15.6px]">{label}</p>
       <p className="text-[10px] font-light leading-3 tracking-[0.4px]">
         Voice quality (Mos) : {Number(call).toFixed(1)}
       </p>

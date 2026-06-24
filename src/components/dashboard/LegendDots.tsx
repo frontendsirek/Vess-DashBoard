@@ -28,7 +28,7 @@ export function LegendDots({ items, className }: LegendDotsProps) {
             className={cn('size-[10px] rounded-full', toneClasses[item.tone])}
             aria-hidden
           />
-          <span className="text-[13px] font-medium leading-[15.6px] text-vess-grey-950">
+          <span className="text-[11px] font-medium leading-[15.6px] text-vess-grey-950">
             {item.label}
           </span>
         </div>

@@ -37,11 +37,11 @@ export function KpiCard({
     <article className="flex flex-1 flex-col gap-5 rounded-2xl bg-vess-grey-50 p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="flex flex-col gap-3 text-vess-grey-950">
-          <p className="text-[15px] font-normal leading-[18px]">{label}</p>
+          <p className="text-[13px] font-normal leading-[18px]">{label}</p>
           <div className="flex items-end gap-1">
-            <span className="text-[31px] font-medium leading-[37.2px]">{value}</span>
+            <span className="text-[29px] font-medium leading-[37.2px]">{value}</span>
             {suffix && (
-              <span className="text-[13px] font-normal leading-[15.6px] text-vess-grey-400">
+              <span className="text-[11px] font-normal leading-[15.6px] text-vess-grey-400">
                 {suffix}
               </span>
             )}
@@ -59,7 +59,7 @@ export function KpiCard({
       {delta && (
         <div className="flex items-center gap-1">
           <DeltaPill value={delta.value} direction={delta.direction} tone={delta.tone} />
-          <p className="text-[13px] font-normal leading-[15.6px] text-vess-grey-400">
+          <p className="text-[11px] font-normal leading-[15.6px] text-vess-grey-400">
             {delta.caption ?? 'vs last hours'}
           </p>
         </div>

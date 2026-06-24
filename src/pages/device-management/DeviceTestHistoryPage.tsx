@@ -119,13 +119,13 @@ export default function DeviceTestHistoryPage() {
     return (
       <>
         <div className="flex flex-col gap-4 px-5 py-6">
-          <p className="text-center text-[15px] text-vess-grey-800">
+          <p className="text-center text-[13px] text-vess-grey-800">
             Sign in to load this device&apos;s test history.
           </p>
           <button
             type="button"
             onClick={() => navigate('/device-management')}
-            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
+            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[13px] font-medium text-vess-primary-500"
           >
             Back to devices
           </button>
@@ -138,7 +138,7 @@ export default function DeviceTestHistoryPage() {
     return (
       <>
         <div className="px-5 py-6">
-          <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
+          <p className="text-center text-[13px] text-vess-grey-600">Loading device…</p>
         </div>
       </>
     )
@@ -149,13 +149,13 @@ export default function DeviceTestHistoryPage() {
     return (
       <>
         <div className="flex flex-col gap-4 px-5 py-6">
-          <p className="text-center text-[15px] text-vess-red-800">
+          <p className="text-center text-[13px] text-vess-red-800">
             Could not load device. {errMsg}
           </p>
           <button
             type="button"
             onClick={() => navigate('/device-management')}
-            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
+            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[13px] font-medium text-vess-primary-500"
           >
             Back to devices
           </button>
@@ -174,19 +174,19 @@ export default function DeviceTestHistoryPage() {
             className="flex w-fit items-center gap-4 text-vess-grey-950 transition-opacity hover:opacity-80"
           >
             <ArrowBackIcon className="size-6" />
-            <span className="text-[18px] font-light leading-[21.6px]">Back</span>
+            <span className="text-[16px] font-light leading-[21.6px]">Back</span>
           </button>
 
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex min-w-0 flex-col gap-3">
-              <h1 className="text-[25px] font-semibold leading-[30px] text-vess-grey-950">Test History</h1>
-              <p className="text-[15px] font-light leading-[18px] text-vess-grey-950">{deviceDisplayName}</p>
+              <h1 className="text-[23px] font-semibold leading-[30px] text-vess-grey-950">Test History</h1>
+              <p className="text-[13px] font-light leading-[18px] text-vess-grey-950">{deviceDisplayName}</p>
             </div>
             <button
               type="button"
               disabled={exportTestHistoryMutation.isPending}
               onClick={() => exportTestHistoryMutation.mutate({ deviceId })}
-              className="inline-flex items-center justify-center gap-3 rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-3 rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[13px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <ExportDownloadIcon className="size-6 shrink-0 text-vess-primary-500" />
               {exportTestHistoryMutation.isPending ? 'Exporting…' : 'Export'}
@@ -217,7 +217,7 @@ export default function DeviceTestHistoryPage() {
               value={
                 <>
                   {summary.avgMbps}{' '}
-                  <span className="text-[18px] font-normal leading-[21.6px]">Mbps</span>
+                  <span className="text-[16px] font-normal leading-[21.6px]">Mbps</span>
                 </>
               }
               icon={SpeedometerIcon}
@@ -227,7 +227,7 @@ export default function DeviceTestHistoryPage() {
 
           <section className="flex flex-col gap-8 rounded-2xl bg-vess-grey-50 px-4 py-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">Test History List</h2>
+              <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">Test History List</h2>
             </div>
 
             <div className="flex flex-col gap-4">
@@ -239,7 +239,7 @@ export default function DeviceTestHistoryPage() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search tests....."
-                    className="min-w-0 flex-1 bg-transparent text-[15px] font-normal leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-400 focus:outline-none"
+                    className="min-w-0 flex-1 bg-transparent text-[13px] font-normal leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-400 focus:outline-none"
                   />
                 </label>
 
@@ -285,7 +285,7 @@ function FilterSelect({
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger
         aria-label={ariaLabel}
-        className="h-[50px] gap-3 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-950"
+        className="h-[50px] gap-3 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[13px] font-medium leading-[18px] text-vess-grey-950"
       >
         <SelectValue />
       </SelectTrigger>

@@ -28,7 +28,7 @@ export function PerformanceTrendsChart() {
   return (
     <section className="flex w-full flex-col gap-6 rounded-2xl border-2 border-vess-grey-100 bg-vess-grey-50 p-4">
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">Performance Trends</h2>
+        <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">Performance Trends</h2>
         <Select value={period} onValueChange={setPeriod}>
           <SelectTrigger className="h-11 w-fit max-w-[200px] shrink-0 rounded-xl border border-vess-grey-200 bg-vess-grey-50 px-3">
             <SelectValue />
@@ -136,10 +136,10 @@ function TrendsTooltip({ active, payload, label }: TooltipContentProps) {
 
   return (
     <div className="flex min-w-[180px] flex-col gap-2 rounded-lg bg-vess-grey-950 p-3 text-vess-grey-50">
-      <p className="text-[13px] font-normal leading-[15.6px]">{label}</p>
-      <p className="text-[13px] font-light leading-[15.6px]">Call Success: {Number(call).toFixed(1)}%</p>
-      <p className="text-[13px] font-light leading-[15.6px]">SMS Delivery: {Number(sms).toFixed(1)}%</p>
-      <p className="text-[13px] font-light leading-[15.6px]">Data Throughput: {Number(data).toFixed(1)}%</p>
+      <p className="text-[11px] font-normal leading-[15.6px]">{label}</p>
+      <p className="text-[11px] font-light leading-[15.6px]">Call Success: {Number(call).toFixed(1)}%</p>
+      <p className="text-[11px] font-light leading-[15.6px]">SMS Delivery: {Number(sms).toFixed(1)}%</p>
+      <p className="text-[11px] font-light leading-[15.6px]">Data Throughput: {Number(data).toFixed(1)}%</p>
     </div>
   )
 }

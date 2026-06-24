@@ -96,7 +96,7 @@ export default function OtpPage() {
         <button
           type="button"
           onClick={() => navigate('/auth/sign-in')}
-          className="flex items-center gap-4 text-[18px] font-light leading-[21.6px] text-vess-grey-50 transition-opacity hover:opacity-80"
+          className="flex items-center gap-4 text-[16px] font-light leading-[21.6px] text-vess-grey-50 transition-opacity hover:opacity-80"
         >
           <ArrowBackIcon />
           Back
@@ -108,14 +108,14 @@ export default function OtpPage() {
           noValidate
         >
           <header className="flex w-full flex-col items-start gap-3">
-            <h1 className="text-[28px] font-medium leading-tight text-vess-grey-50 sm:text-[39px] sm:leading-[46.8px]">
+            <h1 className="text-[26px] font-medium leading-tight text-vess-grey-50 sm:text-[37px] sm:leading-[46.8px]">
               Security Verification
             </h1>
-            <p className="text-[16px] font-light leading-[21.6px] text-vess-grey-400 sm:text-[18px]">
+            <p className="text-[14px] font-light leading-[21.6px] text-vess-grey-400 sm:text-[16px]">
               Enter the 6-digit code sent to your email: {pendingEmail}
             </p>
             {pendingOtpForTesting && (
-              <p className="mt-2 rounded-md border border-yellow-600/40 bg-yellow-900/30 px-3 py-2 text-[14px] font-mono text-yellow-300">
+              <p className="mt-2 rounded-md border border-yellow-600/40 bg-yellow-900/30 px-3 py-2 text-[12px] font-mono text-yellow-300">
                 🧪 Test OTP: <span className="font-bold tracking-widest">{pendingOtpForTesting}</span>
               </p>
             )}
@@ -130,7 +130,7 @@ export default function OtpPage() {
               )}
             />
             {errors.otp?.message ? (
-              <p className="text-[14px] text-red-400" role="alert">
+              <p className="text-[12px] text-red-400" role="alert">
                 {errors.otp.message}
               </p>
             ) : null}
@@ -141,16 +141,16 @@ export default function OtpPage() {
               <button
                 type="submit"
                 disabled={verifyOtpMutation.isPending || secondsLeft === 0}
-                className="flex h-[50px] w-full items-center justify-center rounded-lg bg-vess-secondary-500 px-16 text-[15px] font-semibold leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex h-[50px] w-full items-center justify-center rounded-lg bg-vess-secondary-500 px-16 text-[13px] font-semibold leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {verifyOtpMutation.isPending ? 'Verifying…' : 'Verify code'}
               </button>
-              <p className="whitespace-nowrap text-[15px] font-light leading-[18px] text-vess-grey-400">
+              <p className="whitespace-nowrap text-[13px] font-light leading-[18px] text-vess-grey-400">
                 Code expires in {formatTime(secondsLeft)}
               </p>
             </div>
 
-            <p className="whitespace-nowrap text-[15px] font-light leading-[18px] text-vess-grey-50">
+            <p className="whitespace-nowrap text-[13px] font-light leading-[18px] text-vess-grey-50">
               <span>Didn&apos;t receive it? </span>
               <button
                 type="button"

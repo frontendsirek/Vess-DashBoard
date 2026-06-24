@@ -17,7 +17,7 @@ export function NetworkOverviewCard() {
   return (
     <section className="flex w-full flex-col gap-8 rounded-2xl bg-vess-grey-50 p-4">
       <header className="flex items-center justify-between">
-        <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">
+        <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">
           Network Overview
         </h2>
         <PeriodSelector
@@ -40,13 +40,13 @@ function MetricTile({ metric }: { metric: NetworkOverviewMetric }) {
     <div className="flex flex-col items-center gap-1.5">
       <p
         className={cn(
-          'text-center text-[31px] font-medium leading-[37.2px]',
+          'text-center text-[29px] font-medium leading-[37.2px]',
           toneClasses[metric.tone],
         )}
       >
         {metric.value}
       </p>
-      <p className="text-[13px] font-normal leading-[15.6px] text-vess-grey-400">
+      <p className="text-[11px] font-normal leading-[15.6px] text-vess-grey-400">
         {metric.label}
       </p>
     </div>

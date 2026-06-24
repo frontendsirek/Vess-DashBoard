@@ -115,13 +115,13 @@ export default function DeviceLogsPage() {
     return (
       <>
         <div className="flex flex-col gap-4 px-5 py-6">
-          <p className="text-center text-[15px] text-vess-grey-800">
+          <p className="text-center text-[13px] text-vess-grey-800">
             Sign in to load this device&apos;s logs.
           </p>
           <button
             type="button"
             onClick={() => navigate('/device-management')}
-            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
+            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[13px] font-medium text-vess-primary-500"
           >
             Back to devices
           </button>
@@ -134,7 +134,7 @@ export default function DeviceLogsPage() {
     return (
       <>
         <div className="px-5 py-6">
-          <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
+          <p className="text-center text-[13px] text-vess-grey-600">Loading device…</p>
         </div>
       </>
     )
@@ -146,13 +146,13 @@ export default function DeviceLogsPage() {
     return (
       <>
         <div className="flex flex-col gap-4 px-5 py-6">
-          <p className="text-center text-[15px] text-vess-red-800">
+          <p className="text-center text-[13px] text-vess-red-800">
             Could not load device. {errMsg}
           </p>
           <button
             type="button"
             onClick={() => navigate('/device-management')}
-            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
+            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[13px] font-medium text-vess-primary-500"
           >
             Back to devices
           </button>
@@ -171,19 +171,19 @@ export default function DeviceLogsPage() {
             className="flex w-fit items-center gap-4 text-vess-grey-950 transition-opacity hover:opacity-80"
           >
             <ArrowBackIcon className="size-6" />
-            <span className="text-[18px] font-light leading-[21.6px]">Back</span>
+            <span className="text-[16px] font-light leading-[21.6px]">Back</span>
           </button>
 
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex min-w-0 flex-col gap-3">
-              <h1 className="text-[25px] font-semibold leading-[30px] text-vess-grey-950">Device Logs</h1>
-              <p className="text-[15px] font-light leading-[18px] text-vess-grey-950">{deviceDisplayName}</p>
+              <h1 className="text-[23px] font-semibold leading-[30px] text-vess-grey-950">Device Logs</h1>
+              <p className="text-[13px] font-light leading-[18px] text-vess-grey-950">{deviceDisplayName}</p>
             </div>
             <div className="flex flex-wrap items-center gap-4">
               <button
                 type="button"
                 onClick={handleRefresh}
-                className="inline-flex items-center justify-center gap-3 rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
+                className="inline-flex items-center justify-center gap-3 rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[13px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
               >
                 <RefreshBoldIcon className="size-6 shrink-0" />
                 Refresh
@@ -191,7 +191,7 @@ export default function DeviceLogsPage() {
               <button
                 type="button"
                 onClick={() => downloadLogsCsv(deviceDisplayName || 'device', filteredLogs)}
-                className="inline-flex items-center justify-center gap-3 rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
+                className="inline-flex items-center justify-center gap-3 rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[13px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
               >
                 <ExportDownloadIcon className="size-6 shrink-0" />
                 Export
@@ -209,7 +209,7 @@ export default function DeviceLogsPage() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search logs....."
-                    className="min-w-0 flex-1 bg-transparent text-[15px] font-normal leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-400 focus:outline-none"
+                    className="min-w-0 flex-1 bg-transparent text-[13px] font-normal leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-400 focus:outline-none"
                   />
                 </label>
                 <div className="flex items-center gap-5">
@@ -229,9 +229,9 @@ export default function DeviceLogsPage() {
               </div>
 
               {logsQuery.isPending ? (
-                <p className="text-center text-[15px] text-vess-grey-600">Loading logs…</p>
+                <p className="text-center text-[13px] text-vess-grey-600">Loading logs…</p>
               ) : logsQuery.isError ? (
-                <p className="text-center text-[15px] text-vess-red-800">
+                <p className="text-center text-[13px] text-vess-red-800">
                   Could not load logs.{' '}
                   {logsQuery.error instanceof Error ? logsQuery.error.message : 'Request failed.'}
                 </p>
@@ -264,7 +264,7 @@ function FilterSelect({
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger
         aria-label={ariaLabel}
-        className="h-[50px] gap-3 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-950"
+        className="h-[50px] gap-3 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[13px] font-medium leading-[18px] text-vess-grey-950"
       >
         <SelectValue />
       </SelectTrigger>

@@ -12,7 +12,7 @@ export function DeviceStatusCard() {
   return (
     <section className="flex h-full flex-col gap-8 rounded-2xl bg-vess-grey-50 p-4">
       <header className="flex h-9 items-center justify-between">
-        <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">
+        <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">
           Device Status
         </h2>
       </header>
@@ -44,7 +44,7 @@ function DeviceStatusRow({ device }: { device: DeviceStatus }) {
             className={cn('size-[7px] shrink-0 rounded-full', stateClasses[device.state])}
             aria-hidden
           />
-          <p className="text-[15px] font-medium leading-[18px] text-vess-grey-950">
+          <p className="text-[13px] font-medium leading-[18px] text-vess-grey-950">
             {device.name}
           </p>
         </div>

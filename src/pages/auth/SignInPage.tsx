@@ -37,7 +37,7 @@ export default function SignInPage() {
   return (
     <div className="flex min-h-screen w-full bg-vess-primary-500">
       {/* Left Panel - Marketing (hidden on mobile/tablet) */}
-      <aside className="relative hidden h-screen w-[745px] shrink-0 overflow-hidden border-r border-vess-primary-400 bg-vess-primary-500 lg:block xl:w-[52%]">
+      <aside className="relative hidden h-screen w-[52%] shrink-0 overflow-hidden border-r border-vess-primary-400 bg-vess-primary-500 xl:block">
         {/* Globe circle - decorative, behind content */}
         <div className="pointer-events-none absolute right-[-58.5px] top-1/2 z-0 size-[619px] -translate-y-1/2 overflow-hidden rounded-full opacity-40">
           <LoginGlobe />
@@ -51,33 +51,33 @@ export default function SignInPage() {
             {/* Top: welcome message + paragraph */}
             <div className="flex flex-col gap-11">
               <div className="flex flex-col gap-3">
-                <p className="whitespace-nowrap text-[18px] font-medium leading-[21.6px] text-vess-secondary-500">
+                <p className="whitespace-nowrap text-[16px] font-medium leading-[21.6px] text-vess-secondary-500">
                   NETWORK QUALITY MONITORING
                 </p>
-                <h1 className="text-[49px] font-bold leading-[58.8px] text-vess-grey-50">
+                <h1 className="text-[47px] font-bold leading-[58.8px] text-vess-grey-50">
                   Real networks.<br />
                   Real devices.<br />
                   Real insights.
                 </h1>
               </div>
-              <p className="text-[20px] leading-[24px] text-vess-grey-400">
+              <p className="text-[18px] leading-[24px] text-vess-grey-400">
                 Monitor voice, SMS, and data service quality across your device fleet in real time. Automated testing. Instant alerts. Actionable intelligence.
               </p>
             </div>
 
             {/* Bottom: stats row */}
-            <div className="flex w-full items-center justify-between whitespace-nowrap">
+            <div className="flex w-full flex-wrap items-center justify-between gap-6">
               <div className="flex flex-col gap-3">
-                <span className="text-[25px] font-semibold leading-[30px] text-vess-grey-50">48</span>
-                <span className="text-[18px] leading-[21.6px] text-vess-grey-400">Devices monitored</span>
+                <span className="text-[23px] font-semibold leading-[30px] text-vess-grey-50">48</span>
+                <span className="text-[16px] leading-[21.6px] text-vess-grey-400">Devices monitored</span>
               </div>
               <div className="flex flex-col gap-3">
-                <span className="text-[25px] font-semibold leading-[30px] text-vess-grey-50">98.5%</span>
-                <span className="text-[18px] leading-[21.6px] text-vess-grey-400">Avg success rate</span>
+                <span className="text-[23px] font-semibold leading-[30px] text-vess-grey-50">98.5%</span>
+                <span className="text-[16px] leading-[21.6px] text-vess-grey-400">Avg success rate</span>
               </div>
               <div className="flex flex-col gap-3">
-                <span className="text-[25px] font-semibold leading-[30px] text-vess-grey-50">&lt;2s</span>
-                <span className="text-[18px] leading-[21.6px] text-vess-grey-400">Alert latency</span>
+                <span className="text-[23px] font-semibold leading-[30px] text-vess-grey-50">&lt;2s</span>
+                <span className="text-[16px] leading-[21.6px] text-vess-grey-400">Alert latency</span>
               </div>
             </div>
           </div>
@@ -91,17 +91,17 @@ export default function SignInPage() {
       <section className="flex min-h-screen flex-1 items-center justify-center bg-vess-primary-500 px-6 py-12 sm:px-10">
         <div className="w-full max-w-[539px]">
           {/* Mobile-only logo */}
-          <div className="mb-12 lg:hidden">
+          <div className="mb-12 xl:hidden">
             <VessLogoFull className="h-[27.874px] w-[96.331px] shrink-0" />
           </div>
 
           <div className="flex flex-col gap-[72px]">
             {/* Header */}
             <div className="flex flex-col gap-3">
-              <h2 className="text-[32px] font-medium leading-tight text-vess-grey-50 sm:text-[39px] sm:leading-[46.8px]">
+              <h2 className="text-[30px] font-medium leading-tight text-vess-grey-50 sm:text-[37px] sm:leading-[46.8px]">
                 Sign in
               </h2>
-              <p className="text-[18px] leading-[21.6px] text-vess-grey-400">
+              <p className="text-[16px] leading-[21.6px] text-vess-grey-400">
                 Access your monitoring dashboard
               </p>
             </div>
@@ -144,28 +144,28 @@ export default function SignInPage() {
                 <button
                   type="submit"
                   disabled={loginMutation.isPending}
-                  className="h-[50px] w-full rounded-lg bg-vess-secondary-500 text-[15px] font-semibold text-vess-grey-50 transition-opacity hover:opacity-90 disabled:opacity-60"
+                  className="h-[50px] w-full rounded-lg bg-vess-secondary-500 text-[13px] font-semibold text-vess-grey-50 transition-opacity hover:opacity-90 disabled:opacity-60"
                 >
                   {loginMutation.isPending ? 'Signing in…' : 'Sign in'}
                 </button>
 
                 <div className="flex w-full items-center gap-3">
                   <div className="h-px flex-1 bg-vess-primary-400" />
-                  <span className="text-[15px] font-light leading-[18px] text-vess-grey-400">OR</span>
+                  <span className="text-[13px] font-light leading-[18px] text-vess-grey-400">OR</span>
                   <div className="h-px flex-1 bg-vess-primary-400" />
                 </div>
 
                 <div className="flex w-full flex-col gap-4 sm:flex-row sm:gap-5">
                   <button
                     type="button"
-                    className="flex h-[50px] flex-1 items-center justify-center gap-3 rounded-lg border border-vess-primary-400 bg-vess-primary-600 px-5 text-[15px] font-medium text-vess-grey-50 transition-colors hover:border-vess-grey-400"
+                    className="flex h-[50px] flex-1 items-center justify-center gap-3 rounded-lg border border-vess-primary-400 bg-vess-primary-600 px-5 text-[13px] font-medium text-vess-grey-50 transition-colors hover:border-vess-grey-400"
                   >
                     <GoogleIcon />
                     Sign in with Google
                   </button>
                   <button
                     type="button"
-                    className="flex h-[50px] flex-1 items-center justify-center gap-3 rounded-lg border border-vess-primary-400 bg-vess-primary-600 px-5 text-[15px] font-medium text-vess-grey-50 transition-colors hover:border-vess-grey-400"
+                    className="flex h-[50px] flex-1 items-center justify-center gap-3 rounded-lg border border-vess-primary-400 bg-vess-primary-600 px-5 text-[13px] font-medium text-vess-grey-50 transition-colors hover:border-vess-grey-400"
                   >
                     <MicrosoftIcon />
                     Sign in with Microsoft

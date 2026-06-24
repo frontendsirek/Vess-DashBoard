@@ -56,7 +56,7 @@ function LogEntryRow({ entry }: { entry: DeviceLogEntry }) {
         <div className="flex flex-wrap items-center gap-2.5">
           <span
             className={cn(
-              'whitespace-nowrap text-[13px] font-normal leading-[15.6px]',
+              'whitespace-nowrap text-[11px] font-normal leading-[15.6px]',
               meta.timeClass,
             )}
           >
@@ -69,7 +69,7 @@ function LogEntryRow({ entry }: { entry: DeviceLogEntry }) {
         </div>
         <p
           className={cn(
-            'min-w-0 text-[15px] font-normal leading-[18px] break-words',
+            'min-w-0 text-[13px] font-normal leading-[18px] break-words',
             meta.messageClass,
           )}
         >
@@ -93,14 +93,14 @@ export function DeviceLogsList({ entries, totalInDataset }: DeviceLogsListProps)
   return (
     <div className="overflow-hidden rounded-lg border-2 border-vess-grey-100">
       <div className="flex flex-wrap items-center justify-between gap-3 bg-vess-grey-100 px-5 py-4">
-        <p className="text-[15px] font-normal leading-[18px] text-vess-grey-950">
+        <p className="text-[13px] font-normal leading-[18px] text-vess-grey-950">
           Showing {entries.length} of {totalInDataset} log entries
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center justify-center rounded-full bg-vess-red-50 px-3 py-1 text-[15px] font-normal leading-[18px] text-vess-red-500">
+          <span className="inline-flex items-center justify-center rounded-full bg-vess-red-50 px-3 py-1 text-[13px] font-normal leading-[18px] text-vess-red-500">
             {errorCount} Errors
           </span>
-          <span className="inline-flex items-center justify-center rounded-full bg-vess-secondary-50 px-3 py-1 text-[15px] font-normal leading-[18px] text-vess-secondary-500">
+          <span className="inline-flex items-center justify-center rounded-full bg-vess-secondary-50 px-3 py-1 text-[13px] font-normal leading-[18px] text-vess-secondary-500">
             {warningCount} Warnings
           </span>
         </div>

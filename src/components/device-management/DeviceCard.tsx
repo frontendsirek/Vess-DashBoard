@@ -22,13 +22,13 @@ export function DeviceCard({ device, onView }: DeviceCardProps) {
       <header className="px-4 py-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <h3 className="text-[15px] font-medium leading-[18px] text-vess-grey-950">{device.name}</h3>
+            <h3 className="text-[13px] font-medium leading-[18px] text-vess-grey-950">{device.name}</h3>
             <div className="mt-2 flex flex-wrap gap-1.5">
-              <span className="rounded-lg bg-vess-grey-100 px-1.5 py-1 text-[13px] font-normal leading-[15.6px] text-vess-grey-500">
+              <span className="rounded-lg bg-vess-grey-100 px-1.5 py-1 text-[11px] font-normal leading-[15.6px] text-vess-grey-500">
                 {device.badgePrimary}
               </span>
               {device.badgeSecondary && (
-                <span className="rounded-lg bg-vess-grey-100 px-1.5 py-1 text-[13px] font-normal leading-[15.6px] text-vess-grey-500">
+                <span className="rounded-lg bg-vess-grey-100 px-1.5 py-1 text-[11px] font-normal leading-[15.6px] text-vess-grey-500">
                   {device.badgeSecondary}
                 </span>
               )}
@@ -38,7 +38,7 @@ export function DeviceCard({ device, onView }: DeviceCardProps) {
         </div>
       </header>
 
-      <dl className="flex flex-col gap-3 px-4 py-4 text-[15px] leading-[18px]">
+      <dl className="flex flex-col gap-3 px-4 py-4 text-[13px] leading-[18px]">
         <ManagementCardRow label="Battery">
           <span className="inline-flex flex-wrap items-center justify-end gap-2">
             <span
@@ -50,7 +50,7 @@ export function DeviceCard({ device, onView }: DeviceCardProps) {
               {device.batteryPercent}%
             </span>
             {lowBattery && (
-              <span className="rounded-md bg-vess-red-50 px-2 py-0.5 text-[12px] font-medium text-vess-red-500">
+              <span className="rounded-md bg-vess-red-50 px-2 py-0.5 text-[11px] font-medium text-vess-red-500">
                 Low
               </span>
             )}
@@ -64,7 +64,7 @@ export function DeviceCard({ device, onView }: DeviceCardProps) {
         </ManagementCardRow>
       </dl>
 
-      <div className="flex items-center justify-between mx-4 border-t border-vess-grey-100 px-4 py-3 text-[15px] leading-[18px]">
+      <div className="flex items-center justify-between mx-4 border-t border-vess-grey-100 px-4 py-3 text-[13px] leading-[18px]">
         <span className="font-normal text-vess-grey-500">Action</span>
         <button
           type="button"

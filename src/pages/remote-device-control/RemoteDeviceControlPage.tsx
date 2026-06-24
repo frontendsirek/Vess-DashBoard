@@ -103,11 +103,11 @@ export default function RemoteDeviceControlPage() {
       <div className="px-5 py-6">
         {!accessToken ? (
           <section className="rounded-2xl bg-vess-grey-50 p-6">
-            <p className="text-[15px] text-vess-grey-800">Sign in to load devices from the API.</p>
+            <p className="text-[13px] text-vess-grey-800">Sign in to load devices from the API.</p>
           </section>
         ) : selectedPending ? (
           <section className="rounded-2xl bg-vess-grey-50 p-6">
-            <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
+            <p className="text-center text-[13px] text-vess-grey-600">Loading device…</p>
           </section>
         ) : inSession && selectedDevice ? (
           <RemoteControlSessionGate
@@ -118,10 +118,10 @@ export default function RemoteDeviceControlPage() {
         ) : (
           <section className="rounded-2xl bg-vess-grey-50 p-6">
             <div className="flex flex-col gap-1">
-              <h2 className="text-[20px] font-semibold leading-[26px] text-vess-grey-950">
+              <h2 className="text-[18px] font-semibold leading-[26px] text-vess-grey-950">
                 Select Device for Remote Control
               </h2>
-              <p className="text-[13px] font-light text-vess-grey-800">
+              <p className="text-[11px] font-light text-vess-grey-800">
                 Choose an online device to start remote control session
               </p>
             </div>
@@ -132,7 +132,7 @@ export default function RemoteDeviceControlPage() {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search devices..."
-                  className="flex-1 bg-transparent text-[14px] outline-none placeholder:text-vess-grey-500"
+                  className="flex-1 bg-transparent text-[12px] outline-none placeholder:text-vess-grey-500"
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -149,7 +149,7 @@ export default function RemoteDeviceControlPage() {
                     type="button"
                     onClick={() => setStateFilter(filter.key)}
                     className={cn(
-                      'rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors',
+                      'rounded-lg px-3 py-1.5 text-[11px] font-medium transition-colors',
                       stateFilter === filter.key
                         ? 'bg-vess-primary-500 text-vess-grey-50'
                         : 'border border-vess-grey-200 bg-vess-grey-50 text-vess-grey-800 hover:bg-vess-grey-100',
@@ -162,13 +162,13 @@ export default function RemoteDeviceControlPage() {
             </div>
 
             {(listError || searchError) && (
-              <p className="mt-4 rounded-xl border border-vess-red-200 bg-vess-red-50 px-4 py-3 text-[15px] text-vess-red-800">
+              <p className="mt-4 rounded-xl border border-vess-red-200 bg-vess-red-50 px-4 py-3 text-[13px] text-vess-red-800">
                 Could not load devices. Check your connection and try again.
               </p>
             )}
 
             {(listPending || searchPending) && (
-              <div className="mt-6 rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-8 text-center text-[15px] text-vess-grey-600">
+              <div className="mt-6 rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-8 text-center text-[13px] text-vess-grey-600">
                 Loading devices…
               </div>
             )}
@@ -188,8 +188,8 @@ export default function RemoteDeviceControlPage() {
 
                 {filteredDevices.length === 0 && (
                   <div className="col-span-full py-12 text-center">
-                    <p className="text-[14px] font-medium text-vess-grey-950">No devices found</p>
-                    <p className="mt-1 text-[13px] text-vess-grey-500">
+                    <p className="text-[12px] font-medium text-vess-grey-950">No devices found</p>
+                    <p className="mt-1 text-[11px] text-vess-grey-500">
                       Try adjusting your search or filter.
                     </p>
                   </div>
@@ -231,7 +231,7 @@ function DeviceCard({
     >
       <span
         className={cn(
-          'inline-flex w-fit rounded-full px-3 py-1 text-[12px] font-medium',
+          'inline-flex w-fit rounded-full px-3 py-1 text-[11px] font-medium',
           stateChip[device.state],
         )}
       >
@@ -239,13 +239,13 @@ function DeviceCard({
       </span>
 
       <div>
-        <p className="text-[16px] font-semibold text-vess-grey-950">{device.name}</p>
-        <p className="mt-1 inline-block rounded-md bg-vess-grey-100 px-2 py-0.5 text-[12px] text-vess-grey-800">
+        <p className="text-[14px] font-semibold text-vess-grey-950">{device.name}</p>
+        <p className="mt-1 inline-block rounded-md bg-vess-grey-100 px-2 py-0.5 text-[11px] text-vess-grey-800">
           {device.location}
         </p>
       </div>
 
-      <dl className="flex flex-col gap-2 text-[13px]">
+      <dl className="flex flex-col gap-2 text-[11px]">
         <Row label="Battery" value={`${device.battery}%`} />
         <Row label="Network" value={device.network} />
         <Row label="Signal" value={device.signal} />
@@ -257,7 +257,7 @@ function DeviceCard({
         disabled={isOffline}
         onClick={onConnect}
         className={cn(
-          'rounded-xl py-2.5 text-[14px] font-medium transition-colors',
+          'rounded-xl py-2.5 text-[12px] font-medium transition-colors',
           isOffline
             ? 'cursor-not-allowed bg-vess-grey-100 text-vess-grey-500'
             : 'bg-vess-primary-500 text-vess-grey-50 hover:bg-vess-primary-400',

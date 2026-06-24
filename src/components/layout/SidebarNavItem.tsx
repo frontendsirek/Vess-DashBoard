@@ -37,7 +37,7 @@ export function SidebarNavItem({
     >
       <Icon className="size-[25px]" aria-hidden />
       {!collapsed && (
-        <span className="text-[18px] font-medium leading-[21.6px] whitespace-nowrap">
+        <span className="text-[16px] font-medium leading-[21.6px] whitespace-nowrap">
           {label}
         </span>
       )}

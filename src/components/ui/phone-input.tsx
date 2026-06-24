@@ -9,7 +9,7 @@ const VessPhoneNumberField = forwardRef<HTMLInputElement, React.ComponentProps<'
         ref={ref}
         {...props}
         className={cn(
-          'PhoneInputInput min-w-0 flex-1 border-0 bg-transparent text-[15px] text-vess-grey-950 placeholder:text-vess-grey-400 outline-none ring-0 focus:ring-0',
+          'PhoneInputInput min-w-0 flex-1 border-0 bg-transparent text-[13px] text-vess-grey-950 placeholder:text-vess-grey-400 outline-none ring-0 focus:ring-0',
           className,
         )}
       />

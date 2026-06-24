@@ -17,7 +17,7 @@ export function DeltaPill({ value, direction, tone }: DeltaPillProps) {
       )}
     >
       <Icon className="size-[18px]" />
-      <span className="text-[13px] font-normal leading-[15.6px]">{value}</span>
+      <span className="text-[11px] font-normal leading-[15.6px]">{value}</span>
     </span>
   )
 }
