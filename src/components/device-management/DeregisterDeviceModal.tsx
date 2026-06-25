@@ -40,10 +40,10 @@ function DeregisterDeviceModalBody({
     <form onSubmit={handleSubmit} className="relative flex flex-col gap-8" noValidate>
       <div className="flex items-start justify-between gap-4 pr-1">
         <div className="flex min-w-0 flex-col gap-1.5">
-          <DialogTitle className="text-[25px] font-semibold leading-[30px] text-vess-grey-950">
+          <DialogTitle className="text-[23px] font-semibold leading-[30px] text-vess-grey-950">
             Unregister device
           </DialogTitle>
-          <DialogDescription className="text-[15px] font-light leading-[18px] text-vess-grey-950">
+          <DialogDescription className="text-[13px] font-light leading-[18px] text-vess-grey-950">
             This will soft-deregister{' '}
             <span className="font-medium">{deviceName || 'this device'}</span>. The device will be
             marked inactive and removed from the active fleet.
@@ -60,7 +60,7 @@ function DeregisterDeviceModalBody({
       <div className="flex flex-col gap-3">
         <label
           htmlFor="deregister-reason"
-          className="flex items-center gap-1 text-[18px] leading-[21.6px] text-vess-grey-950"
+          className="flex items-center gap-1 text-[16px] leading-[21.6px] text-vess-grey-950"
         >
           Reason
           <span className="text-vess-red-500">*</span>
@@ -76,11 +76,11 @@ function DeregisterDeviceModalBody({
             placeholder="e.g. Device decommissioned"
             rows={4}
             disabled={isPending}
-            className="w-full resize-none bg-transparent text-[15px] leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-950 placeholder:opacity-20 outline-none disabled:opacity-50"
+            className="w-full resize-none bg-transparent text-[13px] leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-950 placeholder:opacity-20 outline-none disabled:opacity-50"
           />
         </div>
         {error ? (
-          <p className="text-[13px] text-vess-red-800" role="alert">
+          <p className="text-[11px] text-vess-red-800" role="alert">
             {error}
           </p>
         ) : null}
@@ -91,7 +91,7 @@ function DeregisterDeviceModalBody({
           <button
             type="button"
             disabled={isPending}
-            className="inline-flex h-full items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-950 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-full items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[13px] font-medium leading-[18px] text-vess-grey-950 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancel
           </button>
@@ -99,7 +99,7 @@ function DeregisterDeviceModalBody({
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex h-full items-center justify-center rounded-lg bg-vess-red-500 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-full items-center justify-center rounded-lg bg-vess-red-500 px-6 text-[13px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isPending ? 'Unregistering…' : 'Unregister device'}
         </button>

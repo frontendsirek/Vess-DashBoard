@@ -33,11 +33,11 @@ import { useAuthStore } from '@/stores/auth-store'
 import type { TestManagementEditScheduleState } from '@/types/create-test'
 import { toast } from 'sonner'
 
-const formMessageClassName = 'text-[13px] font-normal leading-[16px] text-vess-red-500'
+const formMessageClassName = 'text-[11px] font-normal leading-[16px] text-vess-red-500'
 
 function FieldLabel({ children, required }: { children: string; required?: boolean }) {
   return (
-    <div className="flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px]">
+    <div className="flex flex-wrap items-start gap-1 text-[16px] font-normal leading-[21.6px]">
       <span className="text-vess-grey-950">{children}</span>
       {required && <span className="text-vess-red-500">*</span>}
     </div>
@@ -66,7 +66,7 @@ function ScheduleRadio({
       >
         {selected && <span className="size-[18px] rounded-full border-[5px] border-vess-primary-500 bg-white" />}
       </span>
-      <span className="text-[15px] font-normal leading-[18px] text-vess-grey-950">{label}</span>
+      <span className="text-[13px] font-normal leading-[18px] text-vess-grey-950">{label}</span>
     </label>
   )
 }
@@ -128,13 +128,6 @@ function EditTestScheduleForm({ trimId, editState, accessToken }: EditTestSchedu
   const immediate = useWatch({ control: form.control, name: 'immediate' })
 
   const dateDisabled = scheduleKind === 'one-time' && immediate
-  const nextExecutions = [
-    '13/03/2026, 17:44:45',
-    '13/03/2026, 17:44:45',
-    '13/03/2026, 17:44:45',
-    '13/03/2026, 17:44:45',
-    '13/03/2026, 17:44:45',
-  ]
 
   function goBackToConfigure() {
     navigate(`/test-management/${encodeURIComponent(trimId)}/edit/configure`)
@@ -177,12 +170,12 @@ function EditTestScheduleForm({ trimId, editState, accessToken }: EditTestSchedu
               className="flex w-fit items-center gap-4 text-vess-grey-950 transition-opacity hover:opacity-80"
             >
               <ArrowBackIcon className="size-6" />
-              <span className="text-[18px] font-light leading-[21.6px]">Back</span>
+              <span className="text-[16px] font-light leading-[21.6px]">Back</span>
             </button>
 
             <div className="flex flex-col gap-1.5">
-              <h1 className="text-[25px] font-semibold leading-[30px] text-vess-grey-950">Edit Test</h1>
-              <p className="text-[15px] font-light leading-[18px] text-vess-grey-500">Step 3: Scheduling</p>
+              <h1 className="text-[23px] font-semibold leading-[30px] text-vess-grey-950">Edit Test</h1>
+              <p className="text-[13px] font-light leading-[18px] text-vess-grey-500">Step 3: Scheduling</p>
             </div>
 
             <div
@@ -196,7 +189,7 @@ function EditTestScheduleForm({ trimId, editState, accessToken }: EditTestSchedu
                 name="scheduleKind"
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-3 space-y-0">
-                    <div className="flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px]">
+                    <div className="flex flex-wrap items-start gap-1 text-[16px] font-normal leading-[21.6px]">
                       <span className="text-vess-grey-950">Schedule Type </span>
                       <span className="text-vess-red-500">*</span>
                     </div>
@@ -230,7 +223,7 @@ function EditTestScheduleForm({ trimId, editState, accessToken }: EditTestSchedu
                       <FormItem className="space-y-0">
                         <FormControl>
                           <div className="flex items-center justify-between gap-4">
-                            <span className="text-[18px] font-normal leading-[21.6px] text-vess-grey-950">
+                            <span className="text-[16px] font-normal leading-[21.6px] text-vess-grey-950">
                               Immediate
                             </span>
                             <button
@@ -324,7 +317,7 @@ function EditTestScheduleForm({ trimId, editState, accessToken }: EditTestSchedu
                       name="endDateTime"
                       render={({ field }) => (
                         <FormItem className="flex flex-1 flex-col gap-3 space-y-0">
-                          <div className="flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px]">
+                          <div className="flex flex-wrap items-start gap-1 text-[16px] font-normal leading-[21.6px]">
                             <span className="text-vess-grey-950">End Date & Time (optional)</span>
                             <span className="text-vess-red-500">*</span>
                           </div>
@@ -342,7 +335,7 @@ function EditTestScheduleForm({ trimId, editState, accessToken }: EditTestSchedu
                     name="businessHoursOnly"
                     render={({ field }) => (
                       <FormItem className="flex flex-col gap-3 space-y-0">
-                        <span className="text-[18px] font-normal leading-[21.6px] text-vess-grey-950">
+                        <span className="text-[16px] font-normal leading-[21.6px] text-vess-grey-950">
                           Execution Window
                         </span>
                         <FormControl>
@@ -353,7 +346,7 @@ function EditTestScheduleForm({ trimId, editState, accessToken }: EditTestSchedu
                               onChange={(e) => field.onChange(e.target.checked)}
                               className="size-[18px] shrink-0 cursor-pointer rounded border border-vess-grey-400 bg-vess-grey-50 accent-vess-primary-500"
                             />
-                            <span className="text-[15px] font-normal leading-[18px] text-vess-grey-950">
+                            <span className="text-[13px] font-normal leading-[18px] text-vess-grey-950">
                               Only during business hours (9AM-5PM)
                             </span>
                           </label>
@@ -387,15 +380,6 @@ function EditTestScheduleForm({ trimId, editState, accessToken }: EditTestSchedu
                     )}
                   />
 
-                  <div className="h-px w-full bg-vess-grey-200" />
-                  <div className="flex flex-col gap-3 text-vess-grey-950">
-                    <p className="text-[18px] font-normal leading-[21.6px]">Next 5 executions:</p>
-                    <ul className="flex flex-col gap-3 text-[15px] font-normal leading-[18px]">
-                      {nextExecutions.map((line, i) => (
-                        <li key={`${line}-${i}`}>• {line}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </>
               )}
 
@@ -428,7 +412,7 @@ function EditTestScheduleForm({ trimId, editState, accessToken }: EditTestSchedu
             </div>
 
             {submitError && (
-              <p className="text-[15px] font-normal leading-[18px] text-vess-red-500" role="alert">
+              <p className="text-[13px] font-normal leading-[18px] text-vess-red-500" role="alert">
                 {submitError}
               </p>
             )}
@@ -438,14 +422,14 @@ function EditTestScheduleForm({ trimId, editState, accessToken }: EditTestSchedu
                 type="button"
                 onClick={goBackToConfigure}
                 disabled={updateMutation.isPending}
-                className="inline-flex h-12 w-[116px] items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 text-[15px] font-medium leading-[18px] text-vess-grey-950 disabled:opacity-50"
+                className="inline-flex h-12 w-[116px] items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 text-[13px] font-medium leading-[18px] text-vess-grey-950 disabled:opacity-50"
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={updateMutation.isPending}
-                className="inline-flex h-12 items-center justify-center rounded-lg bg-vess-primary-500 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-50 disabled:opacity-50"
+                className="inline-flex h-12 items-center justify-center rounded-lg bg-vess-primary-500 px-6 text-[13px] font-medium leading-[18px] text-vess-grey-50 disabled:opacity-50"
               >
                 {updateMutation.isPending ? 'Saving…' : 'Save changes'}
               </button>

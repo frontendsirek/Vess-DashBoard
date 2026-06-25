@@ -45,11 +45,11 @@ export function LiveAlertFeed() {
   return (
     <section className="flex flex-col gap-8 rounded-2xl border-2 border-vess-grey-100 bg-vess-grey-50 p-4">
       <header className="flex h-9 min-h-[36px] items-center justify-between gap-3">
-        <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">Live Alert Feed</h2>
+        <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">Live Alert Feed</h2>
         <button
           type="button"
           onClick={clearAll}
-          className="shrink-0 rounded-full bg-vess-grey-100 px-3 py-1.5 text-[15px] font-normal leading-[18px] text-vess-grey-950 transition-colors hover:bg-vess-grey-200"
+          className="shrink-0 rounded-full bg-vess-grey-100 px-3 py-1.5 text-[13px] font-normal leading-[18px] text-vess-grey-950 transition-colors hover:bg-vess-grey-200"
         >
           Clear all
         </button>
@@ -74,7 +74,7 @@ export function LiveAlertFeed() {
                     <div className="flex flex-wrap items-center gap-1.5">
                       <p
                         className={cn(
-                          'text-[15px] font-semibold leading-[18px]',
+                          'text-[13px] font-semibold leading-[18px]',
                           severityTitle[alert.severity],
                         )}
                       >
@@ -89,7 +89,7 @@ export function LiveAlertFeed() {
                         {alert.timeAgo}
                       </p>
                     </div>
-                    <p className="text-[13px] font-light leading-[15.6px] text-vess-grey-950">
+                    <p className="text-[11px] font-light leading-[15.6px] text-vess-grey-950">
                       {alert.body}
                     </p>
                   </div>
@@ -106,7 +106,7 @@ export function LiveAlertFeed() {
                   <button
                     type="button"
                     className={cn(
-                      'rounded-lg px-5 py-1.5 text-[13px] font-normal leading-[15.6px]',
+                      'rounded-lg px-5 py-1.5 text-[11px] font-normal leading-[15.6px]',
                       acknowledgePill[alert.severity],
                     )}
                   >
@@ -114,7 +114,7 @@ export function LiveAlertFeed() {
                   </button>
                   <button
                     type="button"
-                    className="inline-flex items-center gap-1.5 rounded-full py-1.5 pl-0 pr-0 text-[13px] font-normal leading-[15.6px] text-vess-primary-500 transition-colors hover:text-vess-primary-400"
+                    className="inline-flex items-center gap-1.5 rounded-full py-1.5 pl-0 pr-0 text-[11px] font-normal leading-[15.6px] text-vess-primary-500 transition-colors hover:text-vess-primary-400"
                   >
                     View details
                     <ArrowRightIcon className="size-[17px] shrink-0" aria-hidden />
@@ -125,7 +125,7 @@ export function LiveAlertFeed() {
           </article>
         ))}
         {alerts.length === 0 && (
-          <p className="text-[13px] font-light text-vess-grey-500">No active alerts.</p>
+          <p className="text-[11px] font-light text-vess-grey-500">No active alerts.</p>
         )}
       </div>
     </section>

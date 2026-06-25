@@ -69,7 +69,7 @@ export function RemoteControlSessionView({
         className="flex w-fit items-center gap-4 text-vess-grey-950 transition-opacity hover:opacity-80"
       >
         <ArrowBackIcon className="size-6" />
-        <span className="text-[18px] font-light leading-[21.6px]">Back</span>
+        <span className="text-[16px] font-light leading-[21.6px]">Back</span>
       </button>
 
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-vess-grey-50 p-4">
@@ -77,19 +77,19 @@ export function RemoteControlSessionView({
           <DeviceTabletIcon className="size-[34px] shrink-0 text-vess-grey-950" />
           <div className="flex min-w-0 flex-col gap-3">
             <div className="flex min-w-0 flex-wrap items-center gap-3 text-vess-grey-950">
-              <h1 className="text-[25px] font-semibold leading-[30px]">{device.name}</h1>
-              <p className="text-[15px] font-light leading-[18px]">{modelLabel}</p>
+              <h1 className="text-[23px] font-semibold leading-[30px]">{device.name}</h1>
+              <p className="text-[13px] font-light leading-[18px]">{modelLabel}</p>
             </div>
             <div className="flex flex-wrap items-center gap-5">
-              <span className="flex items-center gap-1.5 rounded-lg text-[15px] font-light leading-[18px] text-vess-grey-950">
+              <span className="flex items-center gap-1.5 rounded-lg text-[13px] font-light leading-[18px] text-vess-grey-950">
                 <BatteryOutlineIcon className="size-4 shrink-0" />
                 {device.battery}%
               </span>
-              <span className="flex items-center gap-1.5 rounded-lg text-[15px] font-light leading-[18px] text-vess-grey-950">
+              <span className="flex items-center gap-1.5 rounded-lg text-[13px] font-light leading-[18px] text-vess-grey-950">
                 <SignalBarsIcon className="size-4 shrink-0" />
                 {signalDisplay}
               </span>
-              <span className="flex items-center gap-1.5 rounded-lg text-[15px] font-light leading-[18px] text-vess-grey-950">
+              <span className="flex items-center gap-1.5 rounded-lg text-[13px] font-light leading-[18px] text-vess-grey-950">
                 <Signal className="size-4 shrink-0" />
                 {device.network}
               </span>
@@ -98,9 +98,9 @@ export function RemoteControlSessionView({
         </div>
         <div className="flex flex-wrap items-center gap-5">
           <div className="flex items-center gap-3 rounded-lg">
-            <span className="text-[15px] font-light leading-[18px] text-vess-grey-950">Session:</span>
+            <span className="text-[13px] font-light leading-[18px] text-vess-grey-950">Session:</span>
             <div className="flex items-center gap-1.5">
-              <span className="text-[15px] font-medium leading-[18px] text-vess-green-500">
+              <span className="text-[13px] font-medium leading-[18px] text-vess-green-500">
                 {sessionStatus}
               </span>
               <span className="size-2 shrink-0 rounded-full bg-vess-green-500" aria-hidden />
@@ -110,7 +110,7 @@ export function RemoteControlSessionView({
             type="button"
             disabled={isEnding}
             onClick={onExitSession}
-            className="rounded-lg bg-vess-red-500 px-6 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg bg-vess-red-500 px-6 py-3 text-[13px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isEnding ? 'Ending…' : 'End Session'}
           </button>
@@ -129,7 +129,7 @@ export function RemoteControlSessionView({
               <div className="absolute inset-0 rounded-[2rem] bg-vess-grey-800 p-[6px] shadow-lg">
                 <div className="absolute left-1/2 top-[8px] z-10 h-3 w-16 -translate-x-1/2 rounded-full bg-vess-grey-950/40" />
                 <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[1.75rem] bg-vess-grey-100">
-                  <span className="px-4 text-center text-[13px] font-normal leading-[15.6px] text-vess-grey-500">
+                  <span className="px-4 text-center text-[11px] font-normal leading-[15.6px] text-vess-grey-500">
                     Mirror preview
                   </span>
                 </div>
@@ -166,7 +166,7 @@ export function RemoteControlSessionView({
                 type="button"
                 disabled={isCommandPending}
                 onClick={() => onSendCommand('screenshot')}
-                className="inline-flex h-[45px] items-center justify-center gap-1.5 rounded-lg bg-vess-grey-100 px-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-200 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-[45px] items-center justify-center gap-1.5 rounded-lg bg-vess-grey-100 px-3 text-[13px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-200 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <RemoteScreenshotIcon className="size-[25px] shrink-0" />
                 Screenshot
@@ -175,7 +175,7 @@ export function RemoteControlSessionView({
                 type="button"
                 disabled={isCommandPending}
                 onClick={() => onSendCommand('record')}
-                className="inline-flex h-[45px] items-center justify-center gap-1.5 rounded-lg bg-vess-grey-100 px-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-200 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-[45px] items-center justify-center gap-1.5 rounded-lg bg-vess-grey-100 px-3 text-[13px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-200 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <RemoteRecordIcon className="size-[25px] shrink-0" />
                 Record
@@ -183,7 +183,7 @@ export function RemoteControlSessionView({
               <Select value={quality} onValueChange={setQuality}>
                 <SelectTrigger
                   aria-label="Stream quality"
-                  className="h-[45px] w-[180px] gap-2 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 text-[15px] font-normal leading-[18px] text-vess-grey-950 shadow-none"
+                  className="h-[45px] w-[180px] gap-2 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 text-[13px] font-normal leading-[18px] text-vess-grey-950 shadow-none"
                 >
                   <SelectValue />
                 </SelectTrigger>
@@ -236,7 +236,7 @@ export function RemoteControlSessionView({
                   type="button"
                   disabled={isCommandPending}
                   onClick={() => onSendCommand(command)}
-                  className="w-full rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-6 py-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="w-full rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-6 py-3 text-[13px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {label}
                 </button>
@@ -247,10 +247,10 @@ export function RemoteControlSessionView({
           <SessionCard title="Connection Info">
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between gap-4">
-                <span className="w-[135px] text-[18px] font-light leading-[21.6px] text-vess-grey-950">
+                <span className="w-[135px] text-[16px] font-light leading-[21.6px] text-vess-grey-950">
                   Status
                 </span>
-                <span className="inline-flex min-w-[102px] justify-center rounded-full bg-vess-green-50 px-3 py-1 text-[15px] font-normal leading-[18px] text-vess-green-500">
+                <span className="inline-flex min-w-[102px] justify-center rounded-full bg-vess-green-50 px-3 py-1 text-[13px] font-normal leading-[18px] text-vess-green-500">
                   {sessionStatus}
                 </span>
               </div>
@@ -263,11 +263,11 @@ export function RemoteControlSessionView({
           <SessionCard title="Device Logs">
             <div className="rounded-lg bg-vess-grey-950 p-3">
               <div className="flex flex-col gap-4 font-light leading-[18px]">
-                <p className="text-[15px] text-vess-green-500">
+                <p className="text-[13px] text-vess-green-500">
                   [{new Date().toLocaleTimeString()}] Remote control session active
                 </p>
                 {session?.reason ?
-                  <p className="text-[15px] text-vess-green-500">
+                  <p className="text-[13px] text-vess-green-500">
                     [{new Date().toLocaleTimeString()}] {session.reason}
                   </p>
                 : null}
@@ -283,7 +283,7 @@ export function RemoteControlSessionView({
 function SessionCard({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-6 rounded-lg bg-vess-grey-50 px-4 py-5">
-      <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">{title}</h2>
+      <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">{title}</h2>
       {children}
     </section>
   )
@@ -291,7 +291,7 @@ function SessionCard({ title, children }: { title: string; children: ReactNode }
 
 function ConnectionRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between gap-4 text-[18px] text-vess-grey-950">
+    <div className="flex items-center justify-between gap-4 text-[16px] text-vess-grey-950">
       <span className="max-w-[154px] font-light leading-[21.6px]">{label}</span>
       <span className="whitespace-nowrap font-medium leading-[21.6px]">{value}</span>
     </div>
@@ -322,7 +322,7 @@ function ManualTestButton({
       disabled={disabled}
       onClick={() => onSendCommand(command)}
       className={cn(
-        'w-full rounded-lg px-6 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60',
+        'w-full rounded-lg px-6 py-3 text-[13px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60',
         toneClass,
       )}
     >

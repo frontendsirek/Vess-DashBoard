@@ -31,7 +31,7 @@ export default function DashboardPage() {
             label="AVG. Network Speed"
             value={
               <>
-                50 <span className="text-[18px] font-normal leading-[21.6px]">Mbps</span>
+                50 <span className="text-[16px] font-normal leading-[21.6px]">Mbps</span>
               </>
             }
             icon={SpeedometerIcon}

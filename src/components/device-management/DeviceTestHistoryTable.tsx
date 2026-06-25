@@ -31,7 +31,7 @@ function OutcomeBadge({ outcome }: { outcome: DeviceTestHistoryOutcome }) {
   return (
     <span
       className={cn(
-        'inline-flex min-w-[102px] justify-center rounded-full px-3 py-1 text-[15px] font-normal leading-[18px]',
+        'inline-flex min-w-[102px] justify-center rounded-full px-3 py-1 text-[13px] font-normal leading-[18px]',
         outcome === 'Success' && 'bg-vess-green-50 text-vess-green-500',
         outcome === 'Failed' && 'bg-vess-red-50 text-vess-red-500',
         outcome === 'Running' && 'bg-vess-primary-50 text-vess-primary-500',
@@ -76,10 +76,10 @@ export function DeviceTestHistoryTable({ rows }: DeviceTestHistoryTableProps) {
               </td>
               <td className="px-5 py-4 align-middle">
                 <div className="flex flex-col gap-1.5">
-                  <span className="text-[15px] font-normal leading-[18px] text-vess-grey-950">
+                  <span className="text-[13px] font-normal leading-[18px] text-vess-grey-950">
                     {row.targetMsisdn}
                   </span>
-                  <span className="text-[13px] font-normal leading-[15.6px] text-vess-grey-500">
+                  <span className="text-[11px] font-normal leading-[15.6px] text-vess-grey-500">
                     {row.detailLine}
                   </span>
                 </div>
@@ -89,15 +89,15 @@ export function DeviceTestHistoryTable({ rows }: DeviceTestHistoryTableProps) {
               </td>
               <td className="px-5 py-4 align-middle">
                 <div className="flex flex-col gap-1.5">
-                  <span className="text-[15px] font-normal leading-[18px] text-vess-grey-950">
+                  <span className="text-[13px] font-normal leading-[18px] text-vess-grey-950">
                     {row.dateDisplay}
                   </span>
-                  <span className="text-[13px] font-normal leading-[15.6px] text-vess-grey-500">
+                  <span className="text-[11px] font-normal leading-[15.6px] text-vess-grey-500">
                     {row.timeDisplay}
                   </span>
                 </div>
               </td>
-              <td className="px-5 py-4 align-middle text-[15px] font-normal leading-[18px]">
+              <td className="px-5 py-4 align-middle text-[13px] font-normal leading-[18px]">
                 {row.additionalInfo}
               </td>
               <td className="px-5 py-4 align-middle">

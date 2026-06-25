@@ -68,13 +68,13 @@ export default function DeviceDetailPage() {
     return (
       <>
         <div className="flex flex-col gap-4 px-5 py-6">
-          <p className="text-center text-[15px] text-vess-grey-800">
+          <p className="text-center text-[13px] text-vess-grey-800">
             Sign in to load this device from the API.
           </p>
           <button
             type="button"
             onClick={() => navigate('/device-management')}
-            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
+            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[13px] font-medium text-vess-primary-500"
           >
             Back to devices
           </button>
@@ -87,7 +87,7 @@ export default function DeviceDetailPage() {
     return (
       <>
         <div className="px-5 py-6">
-          <p className="text-center text-[15px] text-vess-grey-600">Loading device…</p>
+          <p className="text-center text-[13px] text-vess-grey-600">Loading device…</p>
         </div>
       </>
     )
@@ -99,13 +99,13 @@ export default function DeviceDetailPage() {
     return (
       <>
         <div className="flex flex-col gap-4 px-5 py-6">
-          <p className="text-center text-[15px] text-vess-red-800">
+          <p className="text-center text-[13px] text-vess-red-800">
             Could not load this device from the API. {errMsg}
           </p>
           <button
             type="button"
             onClick={() => navigate('/device-management')}
-            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
+            className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[13px] font-medium text-vess-primary-500"
           >
             Back to devices
           </button>
@@ -152,19 +152,19 @@ export default function DeviceDetailPage() {
             className="flex w-fit items-center gap-4 text-vess-grey-950 transition-opacity hover:opacity-80"
           >
             <ArrowBackIcon className="size-6" />
-            <span className="text-[18px] font-light leading-[21.6px]">Back</span>
+            <span className="text-[16px] font-light leading-[21.6px]">Back</span>
           </button>
 
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex min-w-0 flex-col gap-3">
-              <h1 className="text-[25px] font-semibold leading-[30px] text-vess-grey-950">{model.displayName}</h1>
-              <p className="text-[15px] font-light leading-[18px] text-vess-grey-950">{model.subtitle}</p>
+              <h1 className="text-[23px] font-semibold leading-[30px] text-vess-grey-950">{model.displayName}</h1>
+              <p className="text-[13px] font-light leading-[18px] text-vess-grey-950">{model.subtitle}</p>
             </div>
             <div className="flex flex-wrap items-center gap-5">
               <button
                 type="button"
                 onClick={() => navigate(`/device-management/${encodeURIComponent(routeId)}/edit`)}
-                className="inline-flex items-center justify-center gap-3 rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
+                className="inline-flex items-center justify-center gap-3 rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[13px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
               >
                 <EditOutlineIcon className="size-6 shrink-0 text-vess-primary-500" />
                 Edit
@@ -172,7 +172,7 @@ export default function DeviceDetailPage() {
               <button
                 type="button"
                 onClick={goRemote}
-                className="inline-flex items-center justify-center gap-3 rounded-lg bg-vess-primary-500 px-4 py-3 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90"
+                className="inline-flex items-center justify-center gap-3 rounded-lg bg-vess-primary-500 px-4 py-3 text-[13px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90"
               >
                 <RemoteDeviceIcon className="size-6 shrink-0 text-vess-grey-50" />
                 Remote control
@@ -183,10 +183,10 @@ export default function DeviceDetailPage() {
           <div className="rounded-lg bg-vess-grey-50 px-4 py-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="text-[18px] font-light leading-[21.6px] text-vess-grey-950">Status</span>
+                <span className="text-[16px] font-light leading-[21.6px] text-vess-grey-950">Status</span>
                 <DeviceStatusBadge status={model.managementStatus} />
               </div>
-              <div className="flex flex-wrap items-center gap-3 text-[18px] leading-[21.6px] text-vess-grey-950">
+              <div className="flex flex-wrap items-center gap-3 text-[16px] leading-[21.6px] text-vess-grey-950">
                 <span className="font-light">Last seen</span>
                 <span className="font-medium">{model.lastSeen}</span>
               </div>
@@ -211,27 +211,27 @@ export default function DeviceDetailPage() {
               <DetailSectionCard icon={HealthMetricsIcon} title="Health Metrics">
                 <div className="flex flex-col gap-6">
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between gap-4 text-[18px] font-light leading-[21.6px] text-vess-grey-950">
+                    <div className="flex items-center justify-between gap-4 text-[16px] font-light leading-[21.6px] text-vess-grey-950">
                       <span>Battery</span>
                       <span>{model.health.batteryCaption}</span>
                     </div>
                     <MetricProgressBar percent={model.health.batteryPercent} />
                   </div>
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between gap-4 text-[18px] font-light leading-[21.6px] text-vess-grey-950">
+                    <div className="flex items-center justify-between gap-4 text-[16px] font-light leading-[21.6px] text-vess-grey-950">
                       <span>Storage</span>
                       <span>{model.health.storageCaption}</span>
                     </div>
                     <MetricProgressBar percent={model.health.storagePercent} />
                   </div>
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between gap-4 text-[18px] font-light leading-[21.6px] text-vess-grey-950">
+                    <div className="flex items-center justify-between gap-4 text-[16px] font-light leading-[21.6px] text-vess-grey-950">
                       <span>Memory</span>
                       <span>{model.health.memoryCaption}</span>
                     </div>
                     <MetricProgressBar percent={model.health.memoryPercent} />
                   </div>
-                  <div className="flex items-center justify-between gap-4 text-[18px] font-light leading-[21.6px] text-vess-grey-950">
+                  <div className="flex items-center justify-between gap-4 text-[16px] font-light leading-[21.6px] text-vess-grey-950">
                     <span>Signal</span>
                     <span>{model.health.signalCaption}</span>
                   </div>
@@ -250,7 +250,7 @@ export default function DeviceDetailPage() {
                   </div>
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start">
                     <div className="flex flex-col gap-2">
-                      <span className="text-[18px] font-light leading-[21.6px] text-vess-grey-950">Status</span>
+                      <span className="text-[16px] font-light leading-[21.6px] text-vess-grey-950">Status</span>
                       <DeviceStatusBadge status={model.managementStatus} />
                     </div>
                   </div>
@@ -278,9 +278,9 @@ export default function DeviceDetailPage() {
 
             <aside className="flex w-full shrink-0 flex-col gap-8 lg:w-[354px]">
               <SidebarCard>
-                <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">Recent Tests (24h)</h2>
+                <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">Recent Tests (24h)</h2>
                 <div className="flex flex-col gap-4">
-                  <div className="flex items-start justify-between gap-4 text-[18px]">
+                  <div className="flex items-start justify-between gap-4 text-[16px]">
                     <div className="flex flex-col gap-2 text-vess-grey-950">
                       <span className="font-light leading-[21.6px]">Total</span>
                       <span className="font-medium leading-[21.6px]">{model.tests24h.totalDisplay}</span>
@@ -294,21 +294,21 @@ export default function DeviceDetailPage() {
                   </div>
                   <div className="h-px w-full bg-vess-grey-200" />
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between text-[18px] font-light text-vess-grey-950">
+                    <div className="flex items-center justify-between text-[16px] font-light text-vess-grey-950">
                       <span>Successful</span>
-                      <span className="flex min-w-[30px] justify-center rounded-lg bg-vess-green-50 px-1 py-1 text-[18px] font-medium text-vess-green-500">
+                      <span className="flex min-w-[30px] justify-center rounded-lg bg-vess-green-50 px-1 py-1 text-[16px] font-medium text-vess-green-500">
                         {model.tests24h.successfulDisplay}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-[18px] font-light text-vess-grey-950">
+                    <div className="flex items-center justify-between text-[16px] font-light text-vess-grey-950">
                       <span>Failed</span>
-                      <span className="flex min-w-[30px] justify-center rounded-lg bg-vess-red-50 px-1 py-1 text-[18px] font-medium text-vess-red-500">
+                      <span className="flex min-w-[30px] justify-center rounded-lg bg-vess-red-50 px-1 py-1 text-[16px] font-medium text-vess-red-500">
                         {model.tests24h.failedDisplay}
                       </span>
                     </div>
                   </div>
                   <div className="h-px w-full bg-vess-grey-200" />
-                  <div className="flex flex-col gap-2 text-[18px] text-vess-grey-950">
+                  <div className="flex flex-col gap-2 text-[16px] text-vess-grey-950">
                     <span className="font-light leading-[21.6px]">Last test</span>
                     <span className="font-medium leading-[21.6px]">{model.tests24h.lastTestDisplay}</span>
                   </div>
@@ -316,31 +316,31 @@ export default function DeviceDetailPage() {
                 <button
                   type="button"
                   onClick={() => navigate(`/device-management/${encodeURIComponent(routeId)}/test-history`)}
-                  className="flex h-[50px] w-full items-center justify-center rounded-lg border border-vess-primary-500 bg-vess-grey-50 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
+                  className="flex h-[50px] w-full items-center justify-center rounded-lg border border-vess-primary-500 bg-vess-grey-50 text-[13px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
                 >
                   View full test history
                 </button>
               </SidebarCard>
 
               <SidebarCard>
-                <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">Device Info</h2>
+                <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">Device Info</h2>
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-2">
-                    <span className="text-[18px] font-light leading-[21.6px] text-vess-grey-950">Group</span>
-                    <span className="inline-flex w-fit rounded-lg bg-vess-grey-100 px-2 py-1 text-[13px] font-normal leading-[15.6px] text-vess-grey-500">
+                    <span className="text-[16px] font-light leading-[21.6px] text-vess-grey-950">Group</span>
+                    <span className="inline-flex w-fit rounded-lg bg-vess-grey-100 px-2 py-1 text-[11px] font-normal leading-[15.6px] text-vess-grey-500">
                       {model.sidebar.group}
                     </span>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <span className="text-[18px] font-light leading-[21.6px] text-vess-grey-950">Tags</span>
+                    <span className="text-[16px] font-light leading-[21.6px] text-vess-grey-950">Tags</span>
                     <div className="flex flex-wrap gap-2">
                       {model.sidebar.tags.length === 0 ? (
-                        <span className="text-[13px] text-vess-grey-500">{MISSING_API_FIELD_DISPLAY}</span>
+                        <span className="text-[11px] text-vess-grey-500">{MISSING_API_FIELD_DISPLAY}</span>
                       ) : (
                         model.sidebar.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="inline-flex rounded-lg bg-vess-grey-100 px-2 py-1 text-[13px] font-normal leading-[15.6px] text-vess-grey-500"
+                            className="inline-flex rounded-lg bg-vess-grey-100 px-2 py-1 text-[11px] font-normal leading-[15.6px] text-vess-grey-500"
                           >
                             {tag}
                           </span>
@@ -352,12 +352,12 @@ export default function DeviceDetailPage() {
               </SidebarCard>
 
               <SidebarCard>
-                <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">Quick Actions</h2>
+                <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">Quick Actions</h2>
                 <div className="flex flex-col gap-4">
                   <button
                     type="button"
                     onClick={() => navigate(`/device-management/${encodeURIComponent(routeId)}/logs`)}
-                    className="flex h-[50px] w-full items-center justify-center rounded-lg border border-vess-primary-500 bg-vess-grey-50 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
+                    className="flex h-[50px] w-full items-center justify-center rounded-lg border border-vess-primary-500 bg-vess-grey-50 text-[13px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100"
                   >
                     View device logs
                   </button>
@@ -365,7 +365,7 @@ export default function DeviceDetailPage() {
                     type="button"
                     disabled={exportDeviceDataMutation.isPending}
                     onClick={handleExportDeviceData}
-                    className="flex h-[50px] w-full items-center justify-center rounded-lg border border-vess-primary-500 bg-vess-grey-50 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flex h-[50px] w-full items-center justify-center rounded-lg border border-vess-primary-500 bg-vess-grey-50 text-[13px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {exportDeviceDataMutation.isPending ? 'Exporting…' : 'Export device data'}
                   </button>
@@ -373,7 +373,7 @@ export default function DeviceDetailPage() {
                     type="button"
                     disabled={diagnosticsMutation.isPending}
                     onClick={handleRunDiagnostics}
-                    className="flex h-[50px] w-full items-center justify-center rounded-lg border border-vess-primary-500 bg-vess-grey-50 text-[15px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flex h-[50px] w-full items-center justify-center rounded-lg border border-vess-primary-500 bg-vess-grey-50 text-[13px] font-medium leading-[18px] text-vess-primary-500 transition-colors hover:bg-vess-grey-100 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {diagnosticsMutation.isPending ? 'Running…' : 'Run diagnostics'}
                   </button>
@@ -381,7 +381,7 @@ export default function DeviceDetailPage() {
                     type="button"
                     disabled={deregisterMutation.isPending}
                     onClick={() => setDeregisterModalOpen(true)}
-                    className="flex h-[50px] w-full items-center justify-center rounded-lg bg-vess-red-500 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-50"
+                    className="flex h-[50px] w-full items-center justify-center rounded-lg bg-vess-red-500 text-[13px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-50"
                   >
                     Unregister device
                   </button>
@@ -425,7 +425,7 @@ function DetailSectionCard({
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-3">
           <Icon className="size-6 shrink-0 text-vess-grey-950" />
-          <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">{title}</h2>
+          <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">{title}</h2>
         </div>
         {children}
       </div>
@@ -442,8 +442,8 @@ function SidebarCard({ children }: { children: React.ReactNode }) {
 function DetailField({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-[18px] font-light leading-[21.6px] text-vess-grey-950">{label}</span>
-      <span className="text-[18px] font-medium leading-[21.6px] text-vess-grey-950">{value}</span>
+      <span className="text-[16px] font-light leading-[21.6px] text-vess-grey-950">{label}</span>
+      <span className="text-[16px] font-medium leading-[21.6px] text-vess-grey-950">{value}</span>
     </div>
   )
 }

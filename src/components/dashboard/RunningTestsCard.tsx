@@ -5,10 +5,10 @@ export function RunningTestsCard() {
   return (
     <section className="flex h-full flex-col gap-8 rounded-2xl bg-vess-grey-50 p-4">
       <header className="flex h-9 items-center justify-between">
-        <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">
+        <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">
           Running Test ({runningTests.length})
         </h2>
-        <span className="rounded-full bg-vess-green-50 px-1.5 py-1.5 text-[15px] font-normal leading-[18px] text-vess-green-900">
+        <span className="rounded-full bg-vess-green-50 px-1.5 py-1.5 text-[13px] font-normal leading-[18px] text-vess-green-900">
           {runningTests.length} active
         </span>
       </header>
@@ -33,7 +33,7 @@ function ProgressRow({ test }: { test: (typeof runningTests)[number] }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <span className={cn('size-[7px] rounded-full', dotClass)} aria-hidden />
-          <p className="text-[15px] font-medium leading-[18px] text-vess-grey-950">
+          <p className="text-[13px] font-medium leading-[18px] text-vess-grey-950">
             {test.name}
           </p>
         </div>

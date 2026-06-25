@@ -98,7 +98,7 @@ export default function ReportsPage() {
     <>
       <div className="flex flex-col gap-6 px-5 py-6">
         <div className="flex flex-col gap-3">
-          <h2 className="text-[24px] font-semibold leading-[30px] text-vess-grey-950">
+          <h2 className="text-[22px] font-semibold leading-[30px] text-vess-grey-950">
             Reports & Analytics
           </h2>
           <PageTabs tabs={tabs} active={tab} onChange={setTab} />
@@ -130,10 +130,10 @@ function OverviewTab() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,_1.4fr)_minmax(0,_1fr)]">
         <section className="rounded-2xl bg-vess-grey-50 p-5">
-          <h3 className="text-[18px] font-semibold leading-6 text-vess-grey-950">
+          <h3 className="text-[16px] font-semibold leading-6 text-vess-grey-950">
             Weekly Test Volume
           </h3>
-          <p className="mt-1 text-[13px] text-vess-grey-500">
+          <p className="mt-1 text-[11px] text-vess-grey-500">
             Successful vs failed tests this week
           </p>
           <div className="mt-4 h-[220px] w-full">
@@ -183,7 +183,7 @@ function OverviewTab() {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-3 flex items-center gap-5 text-[13px]">
+          <div className="mt-3 flex items-center gap-5 text-[11px]">
             <span className="flex items-center gap-2">
               <span className="size-2.5 rounded-full bg-vess-green-500" />
               Successful
@@ -196,10 +196,10 @@ function OverviewTab() {
         </section>
 
         <section className="rounded-2xl bg-vess-grey-50 p-5">
-          <h3 className="text-[18px] font-semibold leading-6 text-vess-grey-950">
+          <h3 className="text-[16px] font-semibold leading-6 text-vess-grey-950">
             Network Distribution
           </h3>
-          <p className="mt-1 text-[13px] text-vess-grey-500">
+          <p className="mt-1 text-[11px] text-vess-grey-500">
             Test coverage by network type
           </p>
           <div className="mt-4 flex items-center justify-center">
@@ -233,7 +233,7 @@ function OverviewTab() {
           </div>
           <div className="mt-4 grid grid-cols-2 gap-3">
             {networkBreakdown.map((item) => (
-              <div key={item.name} className="flex items-center gap-2 text-[13px]">
+              <div key={item.name} className="flex items-center gap-2 text-[11px]">
                 <span
                   className="size-2.5 rounded-full"
                   style={{ backgroundColor: item.color }}
@@ -253,12 +253,12 @@ function TemplatesTab() {
   return (
     <section className="rounded-2xl bg-vess-grey-50 p-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-[18px] font-semibold leading-6 text-vess-grey-950">
+        <h3 className="text-[16px] font-semibold leading-6 text-vess-grey-950">
           Standard Reports
         </h3>
         <button
           type="button"
-          className="rounded-xl bg-vess-primary-500 px-4 py-2 text-[14px] font-medium text-vess-grey-50 transition-colors hover:bg-vess-primary-400"
+          className="rounded-xl bg-vess-primary-500 px-4 py-2 text-[12px] font-medium text-vess-grey-50 transition-colors hover:bg-vess-primary-400"
         >
           Custom Report
         </button>
@@ -278,20 +278,20 @@ function TemplatesTab() {
                 <Icon className="size-6" />
               </div>
               <div>
-                <p className="text-[16px] font-semibold text-vess-grey-950">{r.title}</p>
-                <p className="mt-1 text-[13px] text-vess-grey-800">{r.description}</p>
+                <p className="text-[14px] font-semibold text-vess-grey-950">{r.title}</p>
+                <p className="mt-1 text-[11px] text-vess-grey-800">{r.description}</p>
               </div>
-              <p className="text-[12px] text-vess-grey-500">{r.meta}</p>
+              <p className="text-[11px] text-vess-grey-500">{r.meta}</p>
               <div className="mt-2 flex items-center gap-3">
                 <button
                   type="button"
-                  className="flex-1 rounded-lg bg-vess-primary-500 py-2 text-[13px] font-medium text-vess-grey-50 transition-colors hover:bg-vess-primary-400"
+                  className="flex-1 rounded-lg bg-vess-primary-500 py-2 text-[11px] font-medium text-vess-grey-50 transition-colors hover:bg-vess-primary-400"
                 >
                   Generate now
                 </button>
                 <button
                   type="button"
-                  className="flex-1 rounded-lg border border-vess-grey-200 py-2 text-[13px] font-medium text-vess-grey-800 transition-colors hover:bg-vess-grey-100"
+                  className="flex-1 rounded-lg border border-vess-grey-200 py-2 text-[11px] font-medium text-vess-grey-800 transition-colors hover:bg-vess-grey-100"
                 >
                   Quick preview
                 </button>
@@ -315,18 +315,18 @@ function GeneratedTab() {
     <section className="rounded-2xl bg-vess-grey-50 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-[18px] font-semibold leading-6 text-vess-grey-950">
+          <h3 className="text-[16px] font-semibold leading-6 text-vess-grey-950">
             Generated Reports
           </h3>
-          <p className="mt-1 text-[13px] text-vess-grey-500">
+          <p className="mt-1 text-[11px] text-vess-grey-500">
             Download or view previously generated reports
           </p>
         </div>
       </div>
 
       <div className="mt-5 overflow-x-auto">
-        <table className="w-full text-left text-[14px]">
-          <thead className="text-[13px] text-vess-grey-800">
+        <table className="w-full text-left text-[12px]">
+          <thead className="text-[11px] text-vess-grey-800">
             <tr className="border-b border-vess-grey-200">
               <th className="py-3 font-medium">Report</th>
               <th className="py-3 font-medium">Type</th>
@@ -343,16 +343,16 @@ function GeneratedTab() {
                   <p className="font-medium text-vess-grey-950">{r.title}</p>
                 </td>
                 <td className="py-4">
-                  <span className="rounded-md bg-vess-grey-100 px-2 py-0.5 text-[12px] text-vess-grey-800">
+                  <span className="rounded-md bg-vess-grey-100 px-2 py-0.5 text-[11px] text-vess-grey-800">
                     {r.type}
                   </span>
                 </td>
-                <td className="py-4 text-[13px] text-vess-grey-800">{r.generatedAt}</td>
-                <td className="py-4 text-[13px] text-vess-grey-800">{r.size}</td>
+                <td className="py-4 text-[11px] text-vess-grey-800">{r.generatedAt}</td>
+                <td className="py-4 text-[11px] text-vess-grey-800">{r.size}</td>
                 <td className="py-4">
                   <span
                     className={cn(
-                      'rounded-md px-2 py-0.5 text-[12px] font-medium capitalize',
+                      'rounded-md px-2 py-0.5 text-[11px] font-medium capitalize',
                       reportStatusChip[r.status],
                     )}
                   >
@@ -363,16 +363,16 @@ function GeneratedTab() {
                   {r.status === 'ready' ? (
                     <button
                       type="button"
-                      className="text-[13px] font-medium text-vess-primary-500 transition-opacity hover:opacity-80"
+                      className="text-[11px] font-medium text-vess-primary-500 transition-opacity hover:opacity-80"
                     >
                       Download
                     </button>
                   ) : r.status === 'generating' ? (
-                    <span className="text-[13px] text-vess-grey-500">Processing…</span>
+                    <span className="text-[11px] text-vess-grey-500">Processing…</span>
                   ) : (
                     <button
                       type="button"
-                      className="text-[13px] font-medium text-vess-red-500 transition-opacity hover:opacity-80"
+                      className="text-[11px] font-medium text-vess-red-500 transition-opacity hover:opacity-80"
                     >
                       Retry
                     </button>
@@ -400,16 +400,16 @@ function ScheduledTab() {
     <section className="rounded-2xl bg-vess-grey-50 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-[18px] font-semibold leading-6 text-vess-grey-950">
+          <h3 className="text-[16px] font-semibold leading-6 text-vess-grey-950">
             Scheduled Reports
           </h3>
-          <p className="mt-1 text-[13px] text-vess-grey-500">
+          <p className="mt-1 text-[11px] text-vess-grey-500">
             Automate report generation on a recurring schedule
           </p>
         </div>
         <button
           type="button"
-          className="rounded-xl bg-vess-primary-500 px-4 py-2 text-[14px] font-medium text-vess-grey-50 transition-colors hover:bg-vess-primary-400"
+          className="rounded-xl bg-vess-primary-500 px-4 py-2 text-[12px] font-medium text-vess-grey-50 transition-colors hover:bg-vess-primary-400"
         >
           + Schedule Report
         </button>
@@ -427,8 +427,8 @@ function ScheduledTab() {
             )}
           >
             <div className="flex flex-col gap-1">
-              <h4 className="text-[15px] font-semibold text-vess-grey-950">{s.title}</h4>
-              <div className="flex flex-wrap items-center gap-3 text-[12px] text-vess-grey-500">
+              <h4 className="text-[13px] font-semibold text-vess-grey-950">{s.title}</h4>
+              <div className="flex flex-wrap items-center gap-3 text-[11px] text-vess-grey-500">
                 <span className="rounded-md bg-vess-grey-100 px-2 py-0.5">{s.frequency}</span>
                 <span>Next: {s.nextRun}</span>
                 <span>Last: {s.lastRun}</span>
@@ -439,7 +439,7 @@ function ScheduledTab() {
             <div className="flex items-center gap-4">
               <button
                 type="button"
-                className="text-[13px] font-medium text-vess-primary-500 transition-opacity hover:opacity-80"
+                className="text-[11px] font-medium text-vess-primary-500 transition-opacity hover:opacity-80"
               >
                 Edit
               </button>
@@ -466,8 +466,8 @@ function ScheduledTab() {
 
         {schedules.length === 0 && (
           <div className="rounded-xl border border-dashed border-vess-grey-200 px-6 py-12 text-center">
-            <p className="text-[14px] font-medium text-vess-grey-950">No Scheduled Reports</p>
-            <p className="mt-1 text-[13px] text-vess-grey-500">
+            <p className="text-[12px] font-medium text-vess-grey-950">No Scheduled Reports</p>
+            <p className="mt-1 text-[11px] text-vess-grey-500">
               Schedule a report to see it appear here.
             </p>
           </div>

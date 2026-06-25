@@ -13,11 +13,11 @@ export function TestCard({ test, onView }: TestCardProps) {
   return (
     <article className="flex flex-col rounded-2xl border border-vess-grey-100 bg-vess-grey-50">
       <header className="border-b border-vess-grey-100 px-4 py-4">
-        <h3 className="text-[15px] font-medium leading-[18px] text-vess-grey-950">
+        <h3 className="text-[13px] font-medium leading-[18px] text-vess-grey-950">
           {test.name}
         </h3>
       </header>
-      <dl className="flex flex-col gap-3 px-4 py-4 text-[15px] leading-[18px]">
+      <dl className="flex flex-col gap-3 px-4 py-4 text-[13px] leading-[18px]">
         <ManagementCardRow label="Type">
           <TestTypeCell type={test.type} />
         </ManagementCardRow>
@@ -31,11 +31,11 @@ export function TestCard({ test, onView }: TestCardProps) {
           <span>{test.lastRun}</span>
         </ManagementCardRow>
       </dl>
-      <div className="flex items-center justify-between border-t border-vess-grey-100 px-4 py-3 text-[15px] leading-[18px]">
+      <div className="flex items-center justify-between border-t border-vess-grey-100 px-4 py-3 text-[13px] leading-[18px]">
         <span className="font-normal text-vess-grey-500">Status</span>
         <TestStatusBadge status={test.status} />
       </div>
-      <div className="flex items-center justify-between border-t border-vess-grey-100 px-4 py-3 text-[15px] leading-[18px]">
+      <div className="flex items-center justify-between border-t border-vess-grey-100 px-4 py-3 text-[13px] leading-[18px]">
         <span className="font-normal text-vess-grey-500">Action</span>
         <button
           type="button"

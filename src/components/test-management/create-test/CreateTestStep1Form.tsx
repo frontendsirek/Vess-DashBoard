@@ -14,7 +14,7 @@ import { testService } from '@/services/test.service'
 import type { Step1FormValues } from '@/schemas/create-test/step1.schema'
 import { toast } from 'sonner'
 
-const formMessageClassName = 'text-[13px] font-normal leading-[16px] text-vess-red-500'
+const formMessageClassName = 'text-[11px] font-normal leading-[16px] text-vess-red-500'
 
 const testTypes = [
   {
@@ -102,7 +102,7 @@ export function CreateTestStep1Form() {
         name="creationMethod"
         render={({ field }) => (
           <FormItem className="flex flex-col gap-4 space-y-0">
-            <div className="flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px] text-vess-grey-950">
+            <div className="flex flex-wrap items-start gap-1 text-[16px] font-normal leading-[21.6px] text-vess-grey-950">
               <span>Select Creation Method</span>
               <span className="text-vess-red-500">*</span>
             </div>
@@ -139,7 +139,7 @@ export function CreateTestStep1Form() {
             )}
           />
           <div className="flex flex-col gap-3">
-            <p className="text-[18px] font-normal leading-[21.6px] text-vess-grey-950">Bulk Upload</p>
+            <p className="text-[16px] font-normal leading-[21.6px] text-vess-grey-950">Bulk Upload</p>
             <input
               ref={fileInputRef}
               id="bulk-csv-input"
@@ -185,7 +185,7 @@ export function CreateTestStep1Form() {
               <div className="flex size-[61px] items-center justify-center rounded-full bg-vess-grey-100">
                 <CsvFileOutlineIcon className="size-[33px] text-vess-grey-800" />
               </div>
-              <p className="text-center text-[15px] leading-[18px]">
+              <p className="text-center text-[13px] leading-[18px]">
                 <span className="text-vess-primary-500 underline decoration-solid">Upload a CSV file</span>
                 <span className="text-vess-grey-500"> or drag and drop</span>
               </p>
@@ -194,18 +194,18 @@ export function CreateTestStep1Form() {
 
           <div className="flex items-center gap-3">
             <div className="h-px min-w-0 flex-1 bg-vess-grey-200" aria-hidden />
-            <span className="shrink-0 text-[15px] font-normal leading-[18px] text-vess-grey-950">or</span>
+            <span className="shrink-0 text-[13px] font-normal leading-[18px] text-vess-grey-950">or</span>
             <div className="h-px min-w-0 flex-1 bg-vess-grey-200" aria-hidden />
           </div>
 
           <div className="flex flex-col gap-3">
-            <p className="text-[18px] font-normal leading-[21.6px] text-vess-grey-950">Download Template</p>
+            <p className="text-[16px] font-normal leading-[21.6px] text-vess-grey-950">Download Template</p>
             <div className="flex items-center justify-between gap-3 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 py-3">
               <div className="flex min-w-0 items-center gap-3">
                 <div className="flex size-[33px] shrink-0 items-center justify-center">
                   <CsvFileOutlineIcon className="size-8 text-vess-primary-500" />
                 </div>
-                <span className="truncate text-[15px] font-normal leading-[18px] text-vess-grey-950">
+                <span className="truncate text-[13px] font-normal leading-[18px] text-vess-grey-950">
                   template.csv
                 </span>
               </div>
@@ -224,7 +224,7 @@ export function CreateTestStep1Form() {
             </div>
           </div>
           {templateDownloadError ?
-            <p className="text-[13px] font-normal leading-[16px] text-vess-red-500">{templateDownloadError}</p>
+            <p className="text-[11px] font-normal leading-[16px] text-vess-red-500">{templateDownloadError}</p>
           : null}
         </div>
       )}
@@ -235,7 +235,7 @@ export function CreateTestStep1Form() {
           name="testType"
           render={({ field }) => (
             <FormItem className="flex flex-col gap-4 space-y-0">
-              <div className="flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px] text-vess-grey-950">
+              <div className="flex flex-wrap items-start gap-1 text-[16px] font-normal leading-[21.6px] text-vess-grey-950">
                 <span>Select Test Type</span>
                 <span className="text-vess-red-500">*</span>
               </div>
@@ -261,8 +261,8 @@ export function CreateTestStep1Form() {
                         <Icon className="size-5" />
                       </div>
                       <div className="flex w-full flex-col items-center gap-3">
-                        <p className="text-[18px] font-medium leading-[21.6px] text-vess-grey-950">{title}</p>
-                        <p className="text-center text-[15px] font-light leading-[18px] text-vess-grey-950">
+                        <p className="text-[16px] font-medium leading-[21.6px] text-vess-grey-950">{title}</p>
+                        <p className="text-center text-[13px] font-light leading-[18px] text-vess-grey-950">
                           {description}
                         </p>
                       </div>
@@ -315,7 +315,7 @@ function RadioChoice({
           />
         )}
       </span>
-      <span className="text-[15px] font-normal leading-[18px] text-vess-grey-950">{label}</span>
+      <span className="text-[13px] font-normal leading-[18px] text-vess-grey-950">{label}</span>
     </label>
   )
 }

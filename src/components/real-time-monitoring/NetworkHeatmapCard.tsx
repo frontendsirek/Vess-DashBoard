@@ -21,7 +21,7 @@ export function NetworkHeatmapCard() {
   return (
     <section className="flex flex-col gap-6 rounded-2xl border-2 border-vess-grey-100 bg-vess-grey-50 p-4">
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">Network Heatmap</h2>
+        <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">Network Heatmap</h2>
         <Select value={period} onValueChange={setPeriod}>
           <SelectTrigger className="h-11 w-fit max-w-[200px] shrink-0 rounded-xl border border-vess-grey-200 bg-vess-grey-50 px-3">
             <SelectValue />
@@ -46,7 +46,7 @@ export function NetworkHeatmapCard() {
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-5 text-[13px] font-normal leading-[15.6px] text-vess-grey-950">
+      <div className="flex flex-wrap items-center gap-5 text-[11px] font-normal leading-[15.6px] text-vess-grey-950">
         <LegendDot label="Healthy" className="bg-vess-green-500" />
         <LegendDot label="Warning" className="bg-vess-secondary-500" />
         <LegendDot label="Offline" className="bg-vess-red-500" />

@@ -97,7 +97,7 @@ export function OtpInput({ length = 6, onChange }: OtpInputProps) {
           onKeyDown={(e) => handleKeyDown(index, e)}
           onPaste={handlePaste}
           onFocus={(e) => e.target.select()}
-          className="h-[56px] w-0 flex-1 rounded-lg border-2 border-vess-primary-400 bg-vess-primary-600 text-center text-[24px] font-semibold text-vess-grey-50 outline-none transition-colors focus:border-vess-secondary-500 sm:h-[73px]"
+          className="h-[56px] w-0 flex-1 rounded-lg border-2 border-vess-primary-400 bg-vess-primary-600 text-center text-[22px] font-semibold text-vess-grey-50 outline-none transition-colors focus:border-vess-secondary-500 sm:h-[73px]"
           aria-label={`Digit ${index + 1} of ${length}`}
         />
       ))}

@@ -24,12 +24,12 @@ export function RecentAlertsCard() {
   return (
     <section className="flex h-full flex-col gap-8 rounded-2xl bg-vess-grey-50 p-4">
       <header className="flex items-center justify-between">
-        <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">
+        <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">
           Recent Alerts
         </h2>
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 rounded-full py-1.5 text-[15px] font-normal leading-[18px] text-vess-primary-500 transition-colors hover:text-vess-primary-400"
+          className="inline-flex items-center gap-1.5 rounded-full py-1.5 text-[13px] font-normal leading-[18px] text-vess-primary-500 transition-colors hover:text-vess-primary-400"
         >
           View all
           <ChevronRightIcon className="size-5" />
@@ -64,7 +64,7 @@ function AlertItem({ alert }: { alert: RecentAlert }) {
               <div className="flex items-center gap-3">
                 <p
                   className={cn(
-                    'text-[15px] font-semibold leading-[18px]',
+                    'text-[13px] font-semibold leading-[18px]',
                     toneTitleClasses[alert.tone],
                   )}
                 >
@@ -76,7 +76,7 @@ function AlertItem({ alert }: { alert: RecentAlert }) {
                   </span>
                 )}
               </div>
-              <p className="text-[13px] font-light leading-[15.6px] text-vess-grey-950">
+              <p className="text-[11px] font-light leading-[15.6px] text-vess-grey-950">
                 {alert.body}
               </p>
             </div>

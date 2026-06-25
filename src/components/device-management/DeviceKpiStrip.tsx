@@ -32,7 +32,7 @@ export function DeviceKpiStrip({ summary, summaryPending }: DeviceKpiStripProps)
 
   const valueClass = (dimmed: boolean) =>
     cn(
-      'text-[31px] font-medium leading-[37.2px] text-vess-grey-950',
+      'text-[29px] font-medium leading-[37.2px] text-vess-grey-950',
       dimmed && 'text-vess-grey-400',
     )
 
@@ -93,8 +93,8 @@ function KpiMiniTile({
     <div className="rounded-2xl bg-vess-grey-50 p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="flex flex-col gap-5">
-          <p className="text-[15px] font-normal leading-[18px] text-vess-grey-950">{label}</p>
-          <p className={valueClassName ?? 'text-[31px] font-medium leading-[37.2px] text-vess-grey-950'}>
+          <p className="text-[13px] font-normal leading-[18px] text-vess-grey-950">{label}</p>
+          <p className={valueClassName ?? 'text-[29px] font-medium leading-[37.2px] text-vess-grey-950'}>
             {value}
           </p>
         </div>

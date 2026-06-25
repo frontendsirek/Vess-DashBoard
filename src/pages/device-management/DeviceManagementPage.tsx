@@ -105,7 +105,7 @@ export default function DeviceManagementPage() {
 
         <section className="flex flex-col gap-8 rounded-2xl bg-vess-grey-50 p-4">
           <header className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">
+            <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">
               Device Management List
             </h2>
           </header>
@@ -121,19 +121,19 @@ export default function DeviceManagementPage() {
             />
 
             {!accessToken && (
-              <p className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[15px] text-vess-grey-800">
+              <p className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-3 text-[13px] text-vess-grey-800">
                 Sign in to load devices from the API.
               </p>
             )}
 
             {listError && (
-              <p className="rounded-xl border border-vess-red-200 bg-vess-red-50 px-4 py-3 text-[15px] text-vess-red-800">
+              <p className="rounded-xl border border-vess-red-200 bg-vess-red-50 px-4 py-3 text-[13px] text-vess-red-800">
                 Could not load devices. Check your connection and try again.
               </p>
             )}
 
             {listPending && accessToken ? (
-              <div className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-8 text-center text-[15px] text-vess-grey-600">
+              <div className="rounded-xl border border-vess-grey-100 bg-vess-grey-50 px-4 py-8 text-center text-[13px] text-vess-grey-600">
                 Loading devices…
               </div>
             ) : (
@@ -144,12 +144,12 @@ export default function DeviceManagementPage() {
                   <DeviceCardGrid devices={devices} onView={handleViewDevice} />
                 )}
                 {accessToken && !listPending && devices.length === 0 ?
-                  <p className="py-2 text-center text-[14px] text-vess-grey-500">
+                  <p className="py-2 text-center text-[12px] text-vess-grey-500">
                     No devices match your filters.
                   </p>
                 : null}
                 {!accessToken ? (
-                  <p className="py-2 text-center text-[14px] text-vess-grey-500">Sign in to see your fleet.</p>
+                  <p className="py-2 text-center text-[12px] text-vess-grey-500">Sign in to see your fleet.</p>
                 ) : null}
               </>
             )}

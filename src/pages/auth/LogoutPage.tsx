@@ -29,7 +29,7 @@ export default function LogoutPage() {
     <div className="flex min-h-screen items-center justify-center bg-vess-grey-100">
       <div className="flex flex-col items-center gap-3 rounded-2xl bg-vess-grey-50 p-8">
         <div className="size-8 animate-spin rounded-full border-2 border-vess-grey-300 border-t-vess-primary-500" />
-        <p className="text-[14px] text-vess-grey-800">Signing out…</p>
+        <p className="text-[12px] text-vess-grey-800">Signing out…</p>
       </div>
     </div>
   )

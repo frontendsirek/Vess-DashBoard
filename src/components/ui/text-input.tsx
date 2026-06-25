@@ -37,7 +37,7 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className={cn('flex items-center gap-1 text-[18px] leading-[21.6px]', styles.label)}
+            className={cn('flex items-center gap-1 text-[16px] leading-[21.6px]', styles.label)}
           >
             {label}
             {required && (
@@ -51,7 +51,7 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
           id={inputId}
           ref={ref}
           className={cn(
-            'h-[50px] w-full rounded-lg border px-4 text-[15px] outline-none transition-colors',
+            'h-[50px] w-full rounded-lg border px-4 text-[13px] outline-none transition-colors',
             styles.input,
             className,
           )}
@@ -60,7 +60,7 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
           {...props}
         />
         {error && (
-          <p id={`${inputId}-error`} className={cn('text-[13px]', styles.error)} role="alert">
+          <p id={`${inputId}-error`} className={cn('text-[11px]', styles.error)} role="alert">
             {error}
           </p>
         )}

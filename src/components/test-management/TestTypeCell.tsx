@@ -24,7 +24,7 @@ export function TestTypeCell({ type, className }: TestTypeCellProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 text-[15px] font-normal leading-[18px]',
+        'inline-flex items-center gap-1.5 text-[13px] font-normal leading-[18px]',
         typeToneClasses[type],
         className,
       )}
