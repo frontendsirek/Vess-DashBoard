@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ActiveTestsIcon, CheckCircleIcon, FailedTestsIcon, SpeedometerIcon } from '@/components/icons'
 import { KpiCard } from '@/components/dashboard/KpiCard'
@@ -43,10 +43,6 @@ export default function TestManagementPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false)
 
   const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS)
-
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [typeFilter, statusFilter, debouncedSearch])
 
   const listParams = useMemo((): ListProbesParams => {
     const params: ListProbesParams = {
@@ -101,6 +97,21 @@ export default function TestManagementPage() {
   const listError = !!accessToken && listQuery.isError
 
   const rowsOnPage = displayedTests
+
+  function handleSearchChange(nextValue: string) {
+    setCurrentPage(1)
+    setSearch(nextValue)
+  }
+
+  function handleTypeFilterChange(nextValue: string) {
+    setCurrentPage(1)
+    setTypeFilter(nextValue)
+  }
+
+  function handleStatusFilterChange(nextValue: string) {
+    setCurrentPage(1)
+    setStatusFilter(nextValue)
+  }
 
   function handleViewTest(test: TestRecord) {
     navigate(`/test-management/${test.id}`)
@@ -180,11 +191,11 @@ export default function TestManagementPage() {
             </h2>
             <TestFilterBar
               search={search}
-              onSearchChange={setSearch}
+              onSearchChange={handleSearchChange}
               typeFilter={typeFilter}
-              onTypeFilterChange={setTypeFilter}
+              onTypeFilterChange={handleTypeFilterChange}
               statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
+              onStatusFilterChange={handleStatusFilterChange}
               view={view}
               onViewChange={setView}
             />

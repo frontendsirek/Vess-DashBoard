@@ -29,7 +29,8 @@ const variantStyles: Record<InputVariant, { wrapper: string; label: string; inpu
 
 const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
   ({ className, label, required, error, variant = 'default', id, ...props }, ref) => {
-    const inputId = id ?? React.useId()
+    const generatedId = React.useId()
+    const inputId = id ?? generatedId
     const styles = variantStyles[variant]
 
     return (

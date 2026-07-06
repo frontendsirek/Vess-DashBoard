@@ -259,7 +259,7 @@ export function buildDeviceManagementDetailPageModel(api: ApiDeviceDetail): Devi
       operator: readableString(operatorReadable),
       networkType: netTypeMeta,
       msisdnDisplay: msisdnBlock,
-      imeiDisplay: readableString((api as any).imei),
+      imeiDisplay: readableString(api.imei),
     },
     location: {
       coordinates: coordinatesReadable,

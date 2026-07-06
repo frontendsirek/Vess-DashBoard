@@ -41,7 +41,6 @@ export function buildDeviceEditDetectedLocationFromApi(
 
 export function buildDeviceEditDefaultsFromApi(
   api: ApiDeviceDetail,
-  _routeDeviceId: string,
 ): DeviceEditDefaults {
   const allowedGroupSlugs = new Set<string>(
     registerDeviceGroupOptions.map((o) => o.value).filter((v) => v !== ''),
@@ -68,7 +67,7 @@ export function buildDeviceEditDefaultsFromApi(
       : '',
     deviceGroup,
     msisdn,
-    imei: (api as any).imei?.trim() ?? '',
+    imei: api.imei?.trim() ?? '',
     tags: tagsJoined,
     lowBatteryPercent:
       typeof batteryThreshold === 'number' && Number.isFinite(batteryThreshold) ?

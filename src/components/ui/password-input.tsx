@@ -32,7 +32,8 @@ const variantStyles: Record<InputVariant, { label: string; input: string; toggle
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
   ({ className, label, required, error, variant = 'default', id, ...props }, ref) => {
     const [visible, setVisible] = useState(false)
-    const inputId = id ?? React.useId()
+    const generatedId = React.useId()
+    const inputId = id ?? generatedId
     const styles = variantStyles[variant]
 
     return (
