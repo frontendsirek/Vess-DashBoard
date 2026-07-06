@@ -84,6 +84,7 @@ export type DeviceEditDefaults = {
   deviceGroup: string
   /** Compact E.164 digits suitable for `VessPhoneInput` `value`. */
   msisdn: string
+  imei: string
   tags: string
   lowBatteryPercent: number
   offlineMinutes: number

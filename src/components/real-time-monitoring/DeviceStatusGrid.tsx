@@ -14,12 +14,12 @@ const statusDot: Record<MonitoringDevice['status'], string> = {
 }
 
 const footnote =
-  'text-[11px] font-normal leading-3 text-vess-grey-500 tracking-[0.4px]'
+  'text-[10px] font-normal leading-3 text-vess-grey-500 tracking-[0.4px]'
 
 export function DeviceStatusGrid() {
   return (
     <section className="flex flex-col gap-8 rounded-2xl border-2 border-vess-grey-100 bg-vess-grey-50 p-4">
-      <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">Device Status Grid</h2>
+      <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">Device Status Grid</h2>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {monitoringDevices.map((device) => (
@@ -45,7 +45,7 @@ function DeviceTile({ device }: { device: MonitoringDevice }) {
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex h-5 w-full items-center justify-between gap-2">
-            <p className="min-w-0 truncate text-[15px] font-normal leading-[18px] text-vess-grey-950">
+            <p className="min-w-0 truncate text-[13px] font-normal leading-[18px] text-vess-grey-950">
               {device.name}
             </p>
             <span
@@ -79,7 +79,7 @@ function Legend({ label, dotClass }: { label: string; dotClass: string }) {
   return (
     <div className="flex items-center gap-1.5">
       <span className={cn('size-2.5 shrink-0 rounded-full', dotClass)} aria-hidden />
-      <span className="text-[13px] font-medium leading-[15.6px] text-vess-grey-950">{label}</span>
+      <span className="text-[11px] font-medium leading-[15.6px] text-vess-grey-950">{label}</span>
     </div>
   )
 }

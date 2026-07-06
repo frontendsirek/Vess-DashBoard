@@ -16,11 +16,11 @@ export function Topbar() {
   return (
     <header className="flex w-full items-center justify-between bg-vess-grey-50 px-5 py-5">
       <div className="flex flex-col justify-center gap-1.5">
-        <h1 className="text-[20px] font-medium leading-[24px] text-vess-grey-950">
+        <h1 className="text-[18px] font-medium leading-[24px] text-vess-grey-950">
           {meta.title}
         </h1>
         {meta.subtitle ? (
-          <p className="text-[13px] font-light leading-[15.6px] text-vess-grey-500">
+          <p className="text-[11px] font-light leading-[15.6px] text-vess-grey-500">
             {meta.subtitle}
           </p>
         ) : null}
@@ -36,11 +36,11 @@ export function Topbar() {
         </button>
 
         <div className="flex items-center gap-3">
-          <div className="flex size-[45px] items-center justify-center rounded-full bg-vess-primary-500 text-[18px] font-medium leading-[21.6px] text-vess-grey-50">
+          <div className="flex size-[45px] items-center justify-center rounded-full bg-vess-primary-500 text-[16px] font-medium leading-[21.6px] text-vess-grey-50">
             {userInitials}
           </div>
           <div className="flex flex-col items-start justify-center gap-1.5">
-            <p className="text-[15px] font-medium leading-[18px] text-vess-grey-950">
+            <p className="text-[13px] font-medium leading-[18px] text-vess-grey-950">
               {userEmail}
             </p>
             <span className="rounded-full bg-vess-primary-50 px-1.5 py-1 text-[10px] font-normal leading-[12px] tracking-[0.4px] text-vess-primary-500">

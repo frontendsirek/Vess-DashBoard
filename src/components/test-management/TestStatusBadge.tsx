@@ -18,7 +18,7 @@ export function TestStatusBadge({ status, className }: TestStatusBadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center justify-center rounded-full px-3 py-1 text-[13px] font-medium leading-[15.6px]',
+        'inline-flex items-center justify-center rounded-full px-3 py-1 text-[11px] font-medium leading-[15.6px]',
         statusClasses[status],
         className,
       )}

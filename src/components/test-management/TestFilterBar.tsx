@@ -40,7 +40,7 @@ export function TestFilterBar({
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder="Search tests…."
-          className="flex-1 bg-transparent text-[15px] font-normal leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-400 focus:outline-none"
+          className="flex-1 bg-transparent text-[13px] font-normal leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-400 focus:outline-none"
         />
       </label>
 
@@ -83,7 +83,7 @@ function FilterSelect({
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger
         className={cn(
-          'h-11 w-fit max-w-[200px] shrink-0 rounded-xl border border-vess-grey-200 bg-vess-grey-50 px-3 text-[15px] font-normal leading-[18px] text-vess-grey-950',
+          'h-11 w-fit max-w-[200px] shrink-0 rounded-xl border border-vess-grey-200 bg-vess-grey-50 px-3 text-[13px] font-normal leading-[18px] text-vess-grey-950',
           className,
         )}
       >

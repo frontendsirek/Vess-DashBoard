@@ -16,7 +16,7 @@ import type { BrowserGeolocationState } from '@/hooks/use-browser-geolocation'
 export const DEVICE_CONFIG_GROUP_NONE = '__none__'
 
 export const deviceConfigurationInputClass =
-  'h-[50px] w-full rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 text-[15px] text-vess-grey-950 placeholder:text-vess-grey-400 outline-none transition-colors focus:border-vess-primary-500 focus:ring-2 focus:ring-vess-primary-500/20'
+  'h-[50px] w-full rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 text-[13px] text-vess-grey-950 placeholder:text-vess-grey-400 outline-none transition-colors focus:border-vess-primary-500 focus:ring-2 focus:ring-vess-primary-500/20'
 
 export function DeviceConfigurationFieldLabel({
   children,
@@ -30,7 +30,7 @@ export function DeviceConfigurationFieldLabel({
   return (
     <div
       className={cn(
-        'flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px] text-vess-grey-950',
+        'flex flex-wrap items-start gap-1 text-[16px] font-normal leading-[21.6px] text-vess-grey-950',
         className,
       )}
     >
@@ -42,7 +42,7 @@ export function DeviceConfigurationFieldLabel({
 
 export function DeviceConfigurationFieldLabelLight({ children }: { children: string }) {
   return (
-    <span className="text-[15px] font-light leading-[18px] text-vess-grey-950">{children}</span>
+    <span className="text-[13px] font-light leading-[18px] text-vess-grey-950">{children}</span>
   )
 }
 
@@ -62,9 +62,12 @@ export type DeviceConfigurationGeolocationControls = {
 
 /** Must render under `<Form {...useForm()}>` (`FormProvider`). */
 export function DeviceConfigurationForm({
+  mode = 'register',
   detectedLocationPreview,
   geolocationControls,
 }: {
+  /** Whether this form is used for registration or editing. Controls IMEI required state. */
+  mode?: 'register' | 'edit'
   /**
    * Detected-location card contents: server-backed (edit) until the browser succeeds,
    * then parents usually replace this with formatted GPS coordinates.
@@ -94,7 +97,7 @@ export function DeviceConfigurationForm({
                 autoComplete="off"
               />
             </FormControl>
-            <FormMessage className="text-[13px] font-normal text-vess-red-800" />
+            <FormMessage className="text-[11px] font-normal text-vess-red-800" />
           </FormItem>
         )}
       />
@@ -105,39 +108,39 @@ export function DeviceConfigurationForm({
           {locationMode === 'detected' ?
             status === 'loading' ?
               <div className="flex min-h-[101px] flex-col justify-center rounded-lg border border-vess-grey-200 bg-vess-grey-100 px-4 py-3">
-                <p className="text-[15px] font-normal leading-[18px] text-vess-grey-950">Reading location…</p>
-                <p className="mt-1 text-[13px] font-light leading-[18px] text-vess-grey-800">
+                <p className="text-[13px] font-normal leading-[18px] text-vess-grey-950">Reading location…</p>
+                <p className="mt-1 text-[11px] font-light leading-[18px] text-vess-grey-800">
                   Keep this browser tab in the foreground until we receive GPS.
                 </p>
               </div>
             : detectedLocationPreview ?
               <div className="flex flex-col gap-2">
                 <div className="flex min-h-[101px] flex-col justify-center gap-2 rounded-lg border border-vess-grey-200 bg-vess-grey-100 px-4 py-3">
-                  <p className="text-[20px] font-medium leading-6 text-vess-grey-950">
+                  <p className="text-[18px] font-medium leading-6 text-vess-grey-950">
                     {detectedLocationPreview.headline}
                   </p>
-                  <div className="flex flex-wrap gap-6 text-[15px] leading-[18px] text-vess-grey-950">
+                  <div className="flex flex-wrap gap-6 text-[13px] leading-[18px] text-vess-grey-950">
                     <span className="font-light">{detectedLocationPreview.city}</span>
                     <span className="font-normal">{detectedLocationPreview.coordinates}</span>
                   </div>
                 </div>
                 {status === 'error' && errorMessage ?
-                  <p className="text-[13px] font-normal leading-[18px] text-vess-red-800" role="alert">
+                  <p className="text-[11px] font-normal leading-[18px] text-vess-red-800" role="alert">
                     {errorMessage} Tap "Use detected location" below to try again.
                   </p>
                 : null}
               </div>
             : status === 'error' && errorMessage ?
               <div className="flex flex-col gap-2 rounded-lg border border-dashed border-vess-grey-300 bg-vess-grey-100 px-4 py-3">
-                <p className="text-[13px] font-normal leading-[18px] text-vess-red-800" role="alert">
+                <p className="text-[11px] font-normal leading-[18px] text-vess-red-800" role="alert">
                   {errorMessage}
                 </p>
-                <p className="text-[15px] font-light leading-[18px] text-vess-grey-800">
+                <p className="text-[13px] font-light leading-[18px] text-vess-grey-800">
                   Tap "Use detected location" below to retry.
                 </p>
               </div>
             : <div className="flex min-h-[101px] flex-col justify-center rounded-lg border border-dashed border-vess-grey-300 bg-vess-grey-100 px-4 py-3">
-                <p className="text-[15px] font-light leading-[18px] text-vess-grey-800">
+                <p className="text-[13px] font-light leading-[18px] text-vess-grey-800">
                   No position captured yet. Tap "Use detected location" below - your browser will ask to share GPS.
                 </p>
               </div>
@@ -156,19 +159,19 @@ export function DeviceConfigurationForm({
                         autoComplete="off"
                       />
                     </FormControl>
-                    <FormMessage className="text-[13px] font-normal text-vess-red-800" />
+                    <FormMessage className="text-[11px] font-normal text-vess-red-800" />
                   </FormItem>
                 )}
               />
               {hasCoords ?
-                <p className="text-[13px] font-light leading-[18px] text-vess-grey-800">
+                <p className="text-[11px] font-light leading-[18px] text-vess-grey-800">
                   GPS coordinates:{' '}
                   <span className="font-normal text-vess-grey-950">
                     {formatDeviceCoordinatesDisplay(latitude as number, longitude as number)}
                   </span>
                   . Tap "Use detected location" below to refresh from this computer.
                 </p>
-              : <p className="text-[13px] font-light leading-[18px] text-vess-grey-800">
+              : <p className="text-[11px] font-light leading-[18px] text-vess-grey-800">
                   Tap "Use detected location" below to capture GPS coordinates. This field is the location label only (it does not look up
                   coordinates).
                 </p>}
@@ -185,7 +188,7 @@ export function DeviceConfigurationForm({
               void onRequestPosition()
             }}
             className={cn(
-              'inline-flex h-12 items-center justify-center rounded-lg px-6 text-[15px] font-medium leading-[18px] transition-colors disabled:cursor-not-allowed disabled:opacity-60',
+              'inline-flex h-12 items-center justify-center rounded-lg px-6 text-[13px] font-medium leading-[18px] transition-colors disabled:cursor-not-allowed disabled:opacity-60',
               locationMode === 'detected'
                 ? 'bg-vess-primary-500 text-vess-grey-50 hover:opacity-90'
                 : 'border-2 border-vess-grey-100 bg-vess-grey-50 text-vess-grey-950 hover:bg-vess-grey-100',
@@ -197,7 +200,7 @@ export function DeviceConfigurationForm({
             type="button"
             onClick={() => setValue('locationMode', 'manual', { shouldDirty: true, shouldValidate: true })}
             className={cn(
-              'inline-flex h-12 items-center justify-center rounded-lg px-6 text-[15px] font-medium leading-[18px] transition-colors',
+              'inline-flex h-12 items-center justify-center rounded-lg px-6 text-[13px] font-medium leading-[18px] transition-colors',
               locationMode === 'manual'
                 ? 'bg-vess-primary-500 text-vess-grey-50 hover:opacity-90'
                 : 'border-2 border-vess-grey-100 bg-vess-grey-50 text-vess-grey-950 hover:bg-vess-grey-100',
@@ -222,7 +225,7 @@ export function DeviceConfigurationForm({
                 onValueChange={(v) => field.onChange(v === DEVICE_CONFIG_GROUP_NONE ? '' : v)}
               >
                 <FormControl>
-                  <SelectTrigger className="h-[50px] w-full rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 text-[15px] font-normal text-vess-grey-950">
+                  <SelectTrigger className="h-[50px] w-full rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4 text-[13px] font-normal text-vess-grey-950">
                     <SelectValue placeholder="Select group" />
                   </SelectTrigger>
                 </FormControl>
@@ -234,7 +237,7 @@ export function DeviceConfigurationForm({
                   ))}
                 </SelectContent>
               </Select>
-              <FormMessage className="text-[13px] font-normal text-vess-red-800" />
+              <FormMessage className="text-[11px] font-normal text-vess-red-800" />
             </FormItem>
           )}
         />
@@ -253,11 +256,35 @@ export function DeviceConfigurationForm({
                   autoComplete="tel"
                 />
               </FormControl>
-              <FormMessage className="text-[13px] font-normal text-vess-red-800" />
+              <FormMessage className="text-[11px] font-normal text-vess-red-800" />
             </FormItem>
           )}
         />
       </div>
+
+      <FormField
+        control={control}
+        name="imei"
+        render={({ field }) => (
+          <FormItem>
+            <DeviceConfigurationFieldLabel required={mode === 'register'}>
+              IMEI
+            </DeviceConfigurationFieldLabel>
+            <FormControl>
+              <input
+                {...field}
+                type="text"
+                inputMode="numeric"
+                maxLength={15}
+                className={deviceConfigurationInputClass}
+                placeholder="e.g. 353456789012345"
+                autoComplete="off"
+              />
+            </FormControl>
+            <FormMessage className="text-[13px] font-normal text-vess-red-800" />
+          </FormItem>
+        )}
+      />
 
       <FormField
         control={control}
@@ -274,7 +301,7 @@ export function DeviceConfigurationForm({
                 autoComplete="off"
               />
             </FormControl>
-            <FormMessage className="text-[13px] font-normal text-vess-red-800" />
+            <FormMessage className="text-[11px] font-normal text-vess-red-800" />
           </FormItem>
         )}
       />
@@ -301,7 +328,7 @@ export function DeviceConfigurationForm({
                     }}
                   />
                 </FormControl>
-                <FormMessage className="text-[13px] font-normal text-vess-red-800" />
+                <FormMessage className="text-[11px] font-normal text-vess-red-800" />
               </FormItem>
             )}
           />
@@ -323,7 +350,7 @@ export function DeviceConfigurationForm({
                     }}
                   />
                 </FormControl>
-                <FormMessage className="text-[13px] font-normal text-vess-red-800" />
+                <FormMessage className="text-[11px] font-normal text-vess-red-800" />
               </FormItem>
             )}
           />

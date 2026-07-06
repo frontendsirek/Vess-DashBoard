@@ -34,7 +34,7 @@ export function TestTable({ tests, onView }: TestTableProps) {
   return (
     <div className="overflow-x-auto rounded-xl border border-vess-grey-100">
       <table className="w-full min-w-[800px] table-fixed text-left">
-        <thead className="bg-vess-grey-100 text-[13px] font-medium leading-[15.6px] text-vess-grey-950">
+        <thead className="bg-vess-grey-100 text-[11px] font-medium leading-[15.6px] text-vess-grey-950">
           <tr>
             <th className="w-10 px-4 py-4">
               <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
@@ -48,7 +48,7 @@ export function TestTable({ tests, onView }: TestTableProps) {
             <th className="w-24 px-4 py-4 font-medium">Action</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-vess-grey-100 bg-vess-grey-50 text-[15px] font-normal leading-[18px] text-vess-grey-950">
+        <tbody className="divide-y divide-vess-grey-100 bg-vess-grey-50 text-[13px] font-normal leading-[18px] text-vess-grey-950">
           {tests.map((test) => (
             <tr key={test.id} className="hover:bg-vess-grey-100/40">
               <td className="px-4 py-4">

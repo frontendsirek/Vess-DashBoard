@@ -71,11 +71,11 @@ function CreateNewTestModalBody({
           <div className="flex min-w-0 flex-col gap-1.5">
             <DialogTitle
               id="create-test-title"
-              className="text-[25px] font-semibold leading-[30px] text-vess-grey-950"
+              className="text-[23px] font-semibold leading-[30px] text-vess-grey-950"
             >
               Create New Test
             </DialogTitle>
-            <DialogDescription className="text-[15px] font-light leading-[18px] text-vess-grey-950">
+            <DialogDescription className="text-[13px] font-light leading-[18px] text-vess-grey-950">
               Step 1: Select how you want to create the test.
             </DialogDescription>
           </div>
@@ -90,7 +90,7 @@ function CreateNewTestModalBody({
         <CreateTestStep1Form />
 
         {(bulkMutationError || bulkRowFailures) && (
-          <div className="flex flex-col gap-2 rounded-xl border border-vess-red-200 bg-vess-red-50 px-4 py-3 text-[15px] text-vess-red-800">
+          <div className="flex flex-col gap-2 rounded-xl border border-vess-red-200 bg-vess-red-50 px-4 py-3 text-[13px] text-vess-red-800">
             {bulkMutationError ? <p>{bulkMutationError}</p> : null}
             {bulkRowFailures ?
               <>
@@ -99,7 +99,7 @@ function CreateNewTestModalBody({
                   {bulkRowFailures.failureCount === 1 ? 'failure' : 'failures'}).
                 </p>
                 {bulkRowFailures.errors.length > 0 ?
-                  <ul className="max-h-40 list-inside list-disc overflow-y-auto text-[14px]">
+                  <ul className="max-h-40 list-inside list-disc overflow-y-auto text-[12px]">
                     {bulkRowFailures.errors.map((row, index) => (
                       <li key={`${row.rowNumber}-${index}-${row.error}`}>
                         Row {row.rowNumber}: {row.error}
@@ -116,7 +116,7 @@ function CreateNewTestModalBody({
           <DialogClose asChild>
             <button
               type="button"
-              className="inline-flex h-full items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-950 transition-colors hover:bg-vess-grey-100"
+              className="inline-flex h-full items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-6 text-[13px] font-medium leading-[18px] text-vess-grey-950 transition-colors hover:bg-vess-grey-100"
             >
               Cancel
             </button>
@@ -124,7 +124,7 @@ function CreateNewTestModalBody({
           <button
             type="submit"
             disabled={form.formState.isSubmitting || bulkCsvMutation.isPending}
-            className="inline-flex h-full items-center justify-center rounded-lg bg-vess-primary-500 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex h-full items-center justify-center rounded-lg bg-vess-primary-500 px-6 text-[13px] font-medium leading-[18px] text-vess-grey-50 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Continue
           </button>

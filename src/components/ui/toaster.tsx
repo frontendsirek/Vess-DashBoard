@@ -12,10 +12,10 @@ export function Toaster() {
         classNames: {
           toast: cn(
             'rounded-xl border-2 border-vess-grey-200 bg-vess-grey-50 px-4 py-3 shadow-lg',
-            '[&_[data-description]]:text-[13px] [&_[data-description]]:text-vess-grey-800',
+            '[&_[data-description]]:text-[11px] [&_[data-description]]:text-vess-grey-800',
           ),
-          title: 'text-[15px] font-medium text-vess-grey-950',
-          description: 'text-[13px] font-normal text-vess-grey-800',
+          title: 'text-[13px] font-medium text-vess-grey-950',
+          description: 'text-[11px] font-normal text-vess-grey-800',
           error: '!border-vess-red-200 !bg-vess-red-50 !text-red-500',
           success: '!border-vess-green-200 !bg-vess-green-50 !text-green-500',
           closeButton:

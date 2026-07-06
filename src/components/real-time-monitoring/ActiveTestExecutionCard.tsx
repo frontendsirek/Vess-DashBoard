@@ -11,8 +11,8 @@ export function ActiveTestExecutionCard({ rows }: ActiveTestExecutionCardProps) 
   return (
     <section className="flex flex-col gap-6 rounded-2xl border-2 border-vess-grey-100 bg-vess-grey-50 p-4">
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-[20px] font-medium leading-6 text-vess-grey-950">Active Test Execution</h2>
-        <span className="inline-flex shrink-0 rounded-full bg-vess-green-50 px-3 py-1.5 text-[15px] font-normal leading-[18px] text-vess-green-900">
+        <h2 className="text-[18px] font-medium leading-6 text-vess-grey-950">Active Test Execution</h2>
+        <span className="inline-flex shrink-0 rounded-full bg-vess-green-50 px-3 py-1.5 text-[13px] font-normal leading-[18px] text-vess-green-900">
           {activeExecutionRunningCount} running
         </span>
       </header>
@@ -32,7 +32,7 @@ export function ActiveTestExecutionCard({ rows }: ActiveTestExecutionCardProps) 
                   )}
                   aria-hidden
                 />
-                <p className="text-[15px] font-medium leading-[18px] text-vess-grey-950">{row.title}</p>
+                <p className="text-[13px] font-medium leading-[18px] text-vess-grey-950">{row.title}</p>
               </div>
               <p className="text-[10px] font-light leading-3 tracking-[0.4px] text-vess-grey-950">{row.percent}%</p>
             </div>

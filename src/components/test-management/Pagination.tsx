@@ -19,7 +19,7 @@ export function Pagination({ currentPage, totalPages, onChange }: PaginationProp
         onClick={() => onChange(Math.max(1, currentPage - 1))}
         disabled={currentPage === 1}
         className={cn(
-          'rounded-md px-2 py-1 text-[15px] font-normal leading-[18px] transition-colors',
+          'rounded-md px-2 py-1 text-[13px] font-normal leading-[18px] transition-colors',
           currentPage === 1
             ? 'text-vess-grey-400'
             : 'text-vess-grey-950 hover:text-vess-primary-500',
@@ -43,7 +43,7 @@ export function Pagination({ currentPage, totalPages, onChange }: PaginationProp
             onClick={() => onChange(page)}
             aria-current={page === currentPage ? 'page' : undefined}
             className={cn(
-              'flex size-8 items-center justify-center rounded-md text-[15px] font-medium leading-[18px] transition-colors',
+              'flex size-8 items-center justify-center rounded-md text-[13px] font-medium leading-[18px] transition-colors',
               page === currentPage
                 ? 'bg-vess-primary-500 text-vess-grey-50'
                 : 'text-vess-grey-950 hover:bg-vess-grey-100',
@@ -58,7 +58,7 @@ export function Pagination({ currentPage, totalPages, onChange }: PaginationProp
         onClick={() => onChange(Math.min(totalPages, currentPage + 1))}
         disabled={currentPage === totalPages}
         className={cn(
-          'rounded-md px-2 py-1 text-[15px] font-normal leading-[18px] transition-colors',
+          'rounded-md px-2 py-1 text-[13px] font-normal leading-[18px] transition-colors',
           currentPage === totalPages
             ? 'text-vess-grey-400'
             : 'text-vess-grey-950 hover:text-vess-primary-500',

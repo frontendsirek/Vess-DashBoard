@@ -2,7 +2,7 @@
   "info": {
     "name": "Vess Device Service",
     "_postman_id": "vess-device-service-collection",
-    "description": "Complete collection for the Vess Device Management Service API.\n\n**Setup:**\n1. Set `baseUrl` to your deployment URL.\n2. Set `accessToken` to a valid JWT from the auth-service (or import the auth collection and run Login first \u2014 the token is shared via the `accessToken` variable if both collections share an environment).\n3. After registering a device, the `deviceId` and `apiKey` variables are auto-populated for use in heartbeat and location requests.\n\n**Auth types used:**\n- `UserJWTAuthentication` \u2014 `Authorization: Bearer <accessToken>` for dashboard/user-facing endpoints.\n- `DeviceAPIKeyAuthentication` \u2014 `X-API-Key: <apiKey>` for device-originated endpoints (heartbeat, location).\n- Registration endpoints use a dashboard JWT decoded with `SECRET_KEY` (same Bearer token).",
+    "description": "Complete collection for the Vess Device Management Service API.\n\n**Setup:**\n1. Set `baseUrl` to your deployment URL.\n2. Set `accessToken` to a valid JWT from the auth-service (or import the auth collection and run Login first \u2014 the token is shared via the `accessToken` variable if both collections share an environment).\n3. After registering a device, the `deviceId` and `apiKey` variables are auto-populated for use in heartbeat and location requests.\n\n**Auth types used:**\n- `UserJWTAuthentication` \u2014 `Authorization: Bearer <accessToken>` for dashboard/user-facing endpoints.\n- `DeviceAPIKeyAuthentication` \u2014 `X-API-Key: <apiKey>` for device-originated endpoints (heartbeat, location).\n- Registration endpoints use a dashboard JWT decoded with `SECRET_KEY` (same Bearer token).\n- `Device Authentication` \u2014 Hybrid RSA+AES encryption for secure JWT token exchange (device-to-server).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -46,6 +46,12 @@
       "value": "",
       "type": "string",
       "description": "Active remote-control session ID (set by Start Remote Control Session)."
+    },
+    {
+      "key": "testServiceBaseUrl",
+      "value": "http://vess-dev-alb-385758613.us-east-1.elb.amazonaws.com/test/v1",
+      "type": "string",
+      "description": "Base URL for the test service (ALB path-prefixed)"
     }
   ],
   "item": [
@@ -495,7 +501,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"device_id\": \"DEV-001\",\n  \"device_name\": \"Test Device Lagos\",\n  \"location\": \"Lagos Island, Lagos\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"msisdn\": \"+2348012345678\",\n  \"device_group\": \"south-west\",\n  \"tags\": [\"urban\", \"speedtest\", \"4G\"],\n  \"manufacturer\": \"Samsung\",\n  \"model\": \"Galaxy A54\",\n  \"os\": \"Android\",\n  \"os_version\": \"13\",\n  \"app_version\": \"2.4.1\",\n  \"alert_battery_threshold\": 15,\n  \"alert_offline_duration_minutes\": 30,\n  \"metadata\": {}\n}"
+              "raw": "{\n  \"device_id\": \"DEV-001\",\n  \"device_name\": \"Test Device Lagos\",\n  \"location\": \"Lagos Island, Lagos\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"msisdn\": \"+2348012345678\",\n  \"device_group\": \"south-west\",\n  \"tags\": [\"urban\", \"speedtest\", \"4G\"],\n  \"manufacturer\": \"Samsung\",\n  \"model\": \"Galaxy A54\",\n  \"os\": \"Android\",\n  \"os_version\": \"13\",\n  \"app_version\": \"2.4.1\",\n  \"device_public_key\": \"test-device-public-key\",\n  \"device_key_version\": null,\n  \"alert_battery_threshold\": 15,\n  \"alert_offline_duration_minutes\": 30,\n  \"metadata\": {}\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/devices/",
@@ -509,7 +515,7 @@
                 ""
               ]
             },
-            "description": "Register a new device. Returns a one-time `api_key` \u2014 store it immediately as it cannot be retrieved again. Coordinates must be within Nigeria bounds (lat 4\u201314\u00b0N, lng 3\u201315\u00b0E). The `owner_id` is automatically set from the caller's JWT `user_id`. Non-admin users (operator/viewer) can only access their own devices after registration. The `deviceId` and `apiKey` variables are auto-saved."
+            "description": "Register a new device. Returns a one-time `api_key` \u2014 store it immediately as it cannot be retrieved again. Coordinates must be within Nigeria bounds (lat 4\u201314\u00b0N, lng 3\u201315\u00b0E). The `owner_id` is automatically set from the caller's JWT `user_id`. Non-admin users (operator/viewer) can only access their own devices after registration. `device_public_key` is required, and `device_key_version` defaults to `1` when omitted or sent as `null`. The `deviceId` and `apiKey` variables are auto-saved."
           },
           "response": [
             {
@@ -534,7 +540,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"device_id\": \"DEV-001\",\n  \"device_name\": \"Test Device Lagos\",\n  \"location\": \"Lagos Island, Lagos\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"msisdn\": \"+2348012345678\",\n  \"device_group\": \"south-west\",\n  \"tags\": [\"urban\", \"speedtest\", \"4G\"],\n  \"manufacturer\": \"Samsung\",\n  \"model\": \"Galaxy A54\",\n  \"os\": \"Android\",\n  \"os_version\": \"13\",\n  \"app_version\": \"2.4.1\",\n  \"alert_battery_threshold\": 15,\n  \"alert_offline_duration_minutes\": 30\n}"
+                  "raw": "{\n  \"device_id\": \"DEV-001\",\n  \"device_name\": \"Test Device Lagos\",\n  \"location\": \"Lagos Island, Lagos\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"msisdn\": \"+2348012345678\",\n  \"device_group\": \"south-west\",\n  \"tags\": [\"urban\", \"speedtest\", \"4G\"],\n  \"manufacturer\": \"Samsung\",\n  \"model\": \"Galaxy A54\",\n  \"os\": \"Android\",\n  \"os_version\": \"13\",\n  \"app_version\": \"2.4.1\",\n  \"device_public_key\": \"test-device-public-key\",\n  \"device_key_version\": null,\n  \"alert_battery_threshold\": 15,\n  \"alert_offline_duration_minutes\": 30\n}"
                 },
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/devices/",
@@ -548,7 +554,7 @@
                     ""
                   ]
                 },
-                "description": "Register a new device. Returns a one-time `api_key` \u2014 store it immediately as it cannot be retrieved again. Coordinates must be within Nigeria bounds (lat 4\u201314\u00b0N, lng 3\u201315\u00b0E). The `deviceId` and `apiKey` variables are auto-saved."
+                "description": "Register a new device. Returns a one-time `api_key` \u2014 store it immediately as it cannot be retrieved again. Coordinates must be within Nigeria bounds (lat 4\u201314\u00b0N, lng 3\u201315\u00b0E). `device_public_key` is required, and `device_key_version` defaults to `1` when omitted or sent as `null`. The `deviceId` and `apiKey` variables are auto-saved."
               },
               "status": "Created",
               "code": 201,
@@ -1097,6 +1103,224 @@
       ]
     },
     {
+      "name": "Device Authentication",
+      "description": "Endpoints for secure device authentication and WebSocket token exchange. Uses RSA+AES encryption for API key protection.",
+      "item": [
+        {
+          "name": "Get Server RSA Public Key",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/auth/public-key/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "auth",
+                "public-key",
+                ""
+              ]
+            },
+            "description": "Retrieve the server's RSA public key used for encrypting API keys during JWT exchange.\n\n**Response includes:**\n- `algorithm`: Encryption algorithm (RSA-OAEP-256/AES-256-GCM)\n- `kid`: Key ID for rotation tracking\n- `public_key_pem`: PEM-formatted RSA public key\n\n**Used by:** Devices preparing encrypted JWT exchange requests"
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/auth/public-key/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    "auth",
+                    "public-key",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"algorithm\": \"RSA-OAEP-256/AES-256-GCM\",\n  \"kid\": \"device-auth-rsa-v1\",\n  \"public_key_pem\": \"-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\\n-----END PUBLIC KEY-----\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Exchange API Key for WebSocket JWT",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"device_id\": \"device-123\",\n  \"nonce\": \"{{$randomUUID}}\",\n  \"timestamp\": \"2026-06-04T10:30:00Z\",\n  \"encrypted_aes_key\": \"base64-encoded-aes-key-encrypted-with-server-public-key\",\n  \"encrypted_payload\": \"base64-encoded-payload-encrypted-with-aes-key\",\n  \"iv\": \"base64-encoded-12-byte-iv\",\n  \"signature\": \"base64-encoded-rsa-pss-signature\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/auth/ws-token/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "auth",
+                "ws-token",
+                ""
+              ]
+            },
+            "description": "Exchange an encrypted API key for a short-lived JWT for WebSocket authentication.\n\n**Request structure:**\n- `device_id`: Device UUID\n- `nonce`: One-time request ID (UUID4) for replay protection\n- `timestamp`: Request timestamp (ISO 8601); must be within \u00b160s of server time\n- `encrypted_aes_key`: AES key encrypted with server RSA public key (base64)\n- `encrypted_payload`: JSON payload {\"api_key\": \"...\"}  encrypted with AES-256-GCM (base64)\n- `iv`: 12-byte initialization vector for GCM (base64)\n- `signature`: Request signature using device's private key (RSA-PSS with SHA256, base64)\n\n**Encryption flow:**\n1. Device generates random 256-bit AES key\n2. Encrypts AES key with server's RSA public key (OAEP padding)\n3. Encrypts {\"api_key\": \"...\"}  with AES-256-GCM\n4. Signs canonical message: encrypted_payload.device_id.nonce.timestamp.iv.encrypted_aes_key\n5. Sends all components to server\n\n**Response:**\n- `access_token`: HS256 JWT with device_id in 'sub' claim\n- `token_type`: Bearer\n- `expires_in`: TTL in seconds (default 300s)\n\n**Error codes:**\n- 400: Invalid request format or missing fields\n- 401: Invalid signature or credentials\n- 409: Nonce already used (replay detected)\n- 500: Server configuration error"
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"device_id\": \"device-123\",\n  \"nonce\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"timestamp\": \"2026-06-04T10:30:00Z\",\n  \"encrypted_aes_key\": \"GkjxH4K5...\",\n  \"encrypted_payload\": \"8mK2pL9...\",\n  \"iv\": \"rZ7fK3M...\",\n  \"signature\": \"QpXw9K...\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/auth/ws-token/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    "auth",
+                    "ws-token",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkZXZpY2Utc2VydmljZSIsInN1YiI6ImRldmljZS0xMjMiLCJ0eXBlIjoiZGV2aWNlIiwiYXVkIjoid3Mtc2VydmljZSIsInNjb3BlIjoid3M6Y29ubmVjdCIsImp0aSI6IjU1MGU4NDAwLWUyOWItNDFkNC1hNzE2LTQ0NjY1NTQ0MDAwMCIsImthdiI6MSwiaWF0IjoxNjc0NDA1NDAwLCJleHAiOjE2NzQ0MDU3MDB9.signature\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 300\n}"
+            },
+            {
+              "name": "Example Error: Invalid Signature",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"device_id\": \"device-123\", \"nonce\": \"...\", \"signature\": \"invalid\"}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/auth/ws-token/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    "auth",
+                    "ws-token",
+                    ""
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"detail\": \"Invalid request signature.\"\n}"
+            },
+            {
+              "name": "Example Error: Nonce Already Used",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"device_id\": \"device-123\", \"nonce\": \"550e8400-e29b-41d4-a716-446655440000\"}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/auth/ws-token/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    "auth",
+                    "ws-token",
+                    ""
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"detail\": \"Nonce already used.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Device Operations",
       "item": [
         {
@@ -1116,10 +1340,10 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"battery_level\": 78,\n  \"is_charging\": false,\n  \"storage_available_mb\": 12800,\n  \"storage_used_mb\": 3200,\n  \"memory_available_mb\": 1500,\n  \"memory_used_mb\": 2500,\n  \"network_type\": \"4G\",\n  \"network_operator\": \"MTN Nigeria\",\n  \"signal_strength\": -75,\n  \"os_version\": \"13\",\n  \"app_version\": \"2.4.1\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"location\": \"Lagos Island, Lagos\",\n  \"physical_address\": \"Plot 123 Ikoyi, Lagos\"\n}"
+              "raw": "{\n  \"device_id\": \"{{deviceId}}\",\n  \"battery_level\": 78,\n  \"is_charging\": false,\n  \"storage_available_mb\": 12800,\n  \"storage_used_mb\": 3200,\n  \"memory_available_mb\": 1500,\n  \"memory_used_mb\": 2500,\n  \"network_type\": \"4G\",\n  \"network_operator\": \"MTN Nigeria\",\n  \"signal_strength\": -75,\n  \"os_version\": \"13\",\n  \"app_version\": \"2.4.1\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"location\": \"Lagos Island, Lagos\",\n  \"physical_address\": \"Plot 123 Ikoyi, Lagos\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/heartbeat/",
+              "raw": "{{baseUrl}}/api/v1/devices/heartbeat/",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -1127,12 +1351,11 @@
                 "api",
                 "v1",
                 "devices",
-                "{{deviceId}}",
                 "heartbeat",
                 ""
               ]
             },
-            "description": "Device-originated endpoint. Authenticated via `X-API-Key` header (not Bearer JWT).\n\nUpdates device status based on health metrics:\n- `battery_level < 15` \u2192 DEGRADED (low_battery)\n- `signal_strength < -100` \u2192 DEGRADED (low_signal)\n- `storage_available_mb < 500` \u2192 DEGRADED (low_storage)\n- `network_type == '2G'` \u2192 DEGRADED (poor_network)\n- Otherwise \u2192 ONLINE\n- TESTING status is preserved regardless of metrics.\n\nReturns `pending_commands` count and `next_heartbeat_in_ms`."
+            "description": "Device-originated endpoint. Authenticated via `X-API-Key` header (not Bearer JWT).\n\n`device_id` is now passed in the request body (not the URL).\n\nUpdates device status based on health metrics:\n- `battery_level < 15` \u2192 DEGRADED (low_battery)\n- `signal_strength < -100` \u2192 DEGRADED (low_signal)\n- `storage_available_mb < 500` \u2192 DEGRADED (low_storage)\n- `network_type == '2G'` \u2192 DEGRADED (poor_network)\n- Otherwise \u2192 ONLINE\n- TESTING status is preserved regardless of metrics.\n\nReturns `pending_commands` count and `next_heartbeat_in_ms`."
           },
           "response": [
             {
@@ -1152,10 +1375,10 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"battery_level\": 78,\n  \"is_charging\": false,\n  \"storage_available_mb\": 12800,\n  \"storage_used_mb\": 3200,\n  \"memory_available_mb\": 1500,\n  \"memory_used_mb\": 2500,\n  \"network_type\": \"4G\",\n  \"network_operator\": \"MTN Nigeria\",\n  \"signal_strength\": -75,\n  \"os_version\": \"13\",\n  \"app_version\": \"2.4.1\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"location\": \"Lagos Island, Lagos\",\n  \"physical_address\": \"Plot 123 Ikoyi, Lagos\"\n}"
+                  "raw": "{\n  \"device_id\": \"{{deviceId}}\",\n  \"battery_level\": 78,\n  \"is_charging\": false,\n  \"storage_available_mb\": 12800,\n  \"storage_used_mb\": 3200,\n  \"memory_available_mb\": 1500,\n  \"memory_used_mb\": 2500,\n  \"network_type\": \"4G\",\n  \"network_operator\": \"MTN Nigeria\",\n  \"signal_strength\": -75,\n  \"os_version\": \"13\",\n  \"app_version\": \"2.4.1\",\n  \"latitude\": 6.4541,\n  \"longitude\": 3.3947,\n  \"location\": \"Lagos Island, Lagos\",\n  \"physical_address\": \"Plot 123 Ikoyi, Lagos\"\n}"
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/api/v1/devices/{{deviceId}}/heartbeat/",
+                  "raw": "{{baseUrl}}/api/v1/devices/heartbeat/",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -1163,12 +1386,11 @@
                     "api",
                     "v1",
                     "devices",
-                    "{{deviceId}}",
                     "heartbeat",
                     ""
                   ]
                 },
-                "description": "Device-originated endpoint. Authenticated via `X-API-Key` header (not Bearer JWT).\n\nUpdates device status based on health metrics:\n- `battery_level < 15` \u2192 DEGRADED (low_battery)\n- `signal_strength < -100` \u2192 DEGRADED (low_signal)\n- `storage_available_mb < 500` \u2192 DEGRADED (low_storage)\n- `network_type == '2G'` \u2192 DEGRADED (poor_network)\n- Otherwise \u2192 ONLINE\n- TESTING status is preserved regardless of metrics.\n\nReturns `pending_commands` count and `next_heartbeat_in_ms`."
+                "description": "Device-originated endpoint. Authenticated via `X-API-Key` header (not Bearer JWT).\n\n`device_id` is now passed in the request body (not the URL).\n\nUpdates device status based on health metrics:\n- `battery_level < 15` \u2192 DEGRADED (low_battery)\n- `signal_strength < -100` \u2192 DEGRADED (low_signal)\n- `storage_available_mb < 500` \u2192 DEGRADED (low_storage)\n- `network_type == '2G'` \u2192 DEGRADED (poor_network)\n- Otherwise \u2192 ONLINE\n- TESTING status is preserved regardless of metrics.\n\nReturns `pending_commands` count and `next_heartbeat_in_ms`."
               },
               "status": "OK",
               "code": 200,
@@ -1996,6 +2218,97 @@
               "body": "{\n  \"ended\": true,\n  \"session\": {\n    \"session_id\": \"d3a5d5b4-5ff1-42dd-a5de-56cf4e725e9f\",\n    \"device_id\": \"DEV-001\"\n  }\n}"
             }
           ]
+        },
+        {
+          "name": "Get Commands",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "description": "Device API key returned at registration"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/devices/commands/?deviceId={{deviceId}}&limit=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "commands",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "deviceId",
+                  "value": "{{deviceId}}",
+                  "description": "Device identifier"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Maximum number of commands to return"
+                }
+              ]
+            },
+            "description": "Fetch pending commands for a device from the test service. Authenticated via X-API-Key header."
+          },
+          "response": [
+            {
+              "name": "Example Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{apiKey}}",
+                    "description": "Device API key returned at registration"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/devices/commands/?deviceId={{deviceId}}&limit=20",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "devices",
+                    "commands",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "deviceId",
+                      "value": "{{deviceId}}"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"action\": \"start_test\",\n      \"deviceId\": \"Lagos-1\",\n      \"id\": \"run_start_test_12_1777724434_Lagos-1\",\n      \"parameters\": {\n        \"key_0\": 8146,\n        \"key_1\": false,\n        \"key_2\": \"string\"\n      },\n      \"retryPolicy\": {\n        \"attempts\": 7988\n      },\n      \"schedule\": {\n        \"businessHoursEnd\": \"string\",\n        \"businessHoursOnly\": true,\n        \"businessHoursStart\": \"string\",\n        \"endAt\": \"string\",\n        \"frequency\": \"string\",\n        \"mode\": \"string\",\n        \"runAt\": \"string\",\n        \"startAt\": \"string\",\n        \"timezone\": \"string\",\n        \"type\": \"string\"\n      },\n      \"type\": \"call\"\n    }\n  ],\n  \"error\": {\n    \"code\": \"string\",\n    \"description\": \"string\"\n  },\n  \"isSuccess\": true,\n  \"message\": \"string\"\n}"
+            }
+          ]
         }
       ]
     },
@@ -2494,7 +2807,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/registration/sync/{{syncToken}}/",
+              "raw": "{{baseUrl}}/api/v1/registration/sync/",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -2503,11 +2816,10 @@
                 "v1",
                 "registration",
                 "sync",
-                "{{syncToken}}",
                 ""
               ]
             },
-            "description": "Called by the device app when the field agent opens the sync URL. Validates the token and returns registration metadata (phone number, reference, expiry). Returns 404 for invalid tokens, 410 for used or expired ones.\n\nRate-limited (validate throttle)."
+            "description": "Deprecated in current API flow. Use the POST sync endpoint with IMEI + MSISDN to complete registration."
           },
           "response": [
             {
@@ -2516,7 +2828,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/api/v1/registration/sync/{{syncToken}}/",
+                  "raw": "{{baseUrl}}/api/v1/registration/sync/",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -2525,11 +2837,10 @@
                     "v1",
                     "registration",
                     "sync",
-                    "{{syncToken}}",
                     ""
                   ]
                 },
-                "description": "Called by the device app when the field agent opens the sync URL. Validates the token and returns registration metadata (phone number, reference, expiry). Returns 404 for invalid tokens, 410 for used or expired ones.\n\nRate-limited (validate throttle)."
+                "description": "Deprecated in current API flow. Use the POST sync endpoint with IMEI + MSISDN to complete registration."
               },
               "status": "OK",
               "code": 200,
@@ -2574,10 +2885,10 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"device_id\": \"DEV-SYNC-001\",\n  \"device_name\": \"Field Device Kano\",\n  \"location\": \"Kano Municipal, Kano\",\n  \"latitude\": 12.0022,\n  \"longitude\": 8.5920,\n  \"metadata\": {\n    \"manufacturer\": \"Tecno\",\n    \"model\": \"Spark 10\",\n    \"android_version\": \"12\",\n    \"app_version\": \"1.0.0\"\n  }\n}"
+              "raw": "{\n  \"imei\": \"354678901234561\",\n  \"msisdn\": \"+2348011111111\",\n  \"device_id\": \"DEV-SYNC-001\",\n  \"device_name\": \"Field Device Kano\",\n  \"location\": \"Kano Municipal, Kano\",\n  \"latitude\": 12.0022,\n  \"longitude\": 8.5920,\n  \"device_public_key\": \"test-device-public-key\",\n  \"device_key_version\": null,\n  \"metadata\": {\n    \"manufacturer\": \"Tecno\",\n    \"model\": \"Spark 10\",\n    \"android_version\": \"12\",\n    \"app_version\": \"1.0.0\"\n  }\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/v1/registration/sync/{{syncToken}}/",
+              "raw": "{{baseUrl}}/api/v1/registration/sync/",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -2586,11 +2897,10 @@
                 "v1",
                 "registration",
                 "sync",
-                "{{syncToken}}",
                 ""
               ]
             },
-            "description": "Called by the device app to complete registration via the sync link. Atomically creates the device record, marks the registration request as `approved`, and returns a one-time `api_key`. The sync link is consumed and cannot be reused.\n\nRate-limited (complete throttle). `deviceId` and `apiKey` are auto-saved."
+            "description": "Called by the device app to complete registration using IMEI + MSISDN. Atomically creates the device record, marks the registration request as `approved`, and returns a one-time `api_key`. `device_public_key` is required, and `device_key_version` defaults to `1` when omitted or sent as `null`.\n\nRate-limited (complete throttle). `deviceId` and `apiKey` are auto-saved."
           },
           "response": [
             {
@@ -2605,10 +2915,10 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"device_id\": \"DEV-SYNC-001\",\n  \"device_name\": \"Field Device Kano\",\n  \"location\": \"Kano Municipal, Kano\",\n  \"latitude\": 12.0022,\n  \"longitude\": 8.5920,\n  \"metadata\": {\n    \"manufacturer\": \"Tecno\",\n    \"model\": \"Spark 10\",\n    \"android_version\": \"12\",\n    \"app_version\": \"1.0.0\"\n  }\n}"
+                  "raw": "{\n  \"imei\": \"354678901234561\",\n  \"msisdn\": \"+2348011111111\",\n  \"device_id\": \"DEV-SYNC-001\",\n  \"device_name\": \"Field Device Kano\",\n  \"location\": \"Kano Municipal, Kano\",\n  \"latitude\": 12.0022,\n  \"longitude\": 8.5920,\n  \"device_public_key\": \"test-device-public-key\",\n  \"device_key_version\": null,\n  \"metadata\": {\n    \"manufacturer\": \"Tecno\",\n    \"model\": \"Spark 10\",\n    \"android_version\": \"12\",\n    \"app_version\": \"1.0.0\"\n  }\n}"
                 },
                 "url": {
-                  "raw": "{{baseUrl}}/api/v1/registration/sync/{{syncToken}}/",
+                  "raw": "{{baseUrl}}/api/v1/registration/sync/",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -2617,11 +2927,10 @@
                     "v1",
                     "registration",
                     "sync",
-                    "{{syncToken}}",
                     ""
                   ]
                 },
-                "description": "Called by the device app to complete registration via the sync link. Atomically creates the device record, marks the registration request as `approved`, and returns a one-time `api_key`. The sync link is consumed and cannot be reused.\n\nRate-limited (complete throttle). `deviceId` and `apiKey` are auto-saved."
+                "description": "Called by the device app to complete registration using IMEI + MSISDN. Atomically creates the device record, marks the registration request as `approved`, and returns a one-time `api_key`. `device_public_key` is required, and `device_key_version` defaults to `1` when omitted or sent as `null`.\n\nRate-limited (complete throttle). `deviceId` and `apiKey` are auto-saved."
               },
               "status": "OK",
               "code": 200,

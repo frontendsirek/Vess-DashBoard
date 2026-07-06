@@ -63,7 +63,7 @@ export function DateTimePickerField({
         >
           <span
             className={cn(
-              'w-full min-w-0 truncate text-[15px] font-normal leading-[18px]',
+              'w-full min-w-0 truncate text-[13px] font-normal leading-[18px]',
               display ? 'text-vess-grey-950' : 'text-vess-grey-950 opacity-20',
             )}
           >
@@ -81,13 +81,13 @@ export function DateTimePickerField({
           defaultMonth={parsed ?? new Date()}
         />
         <div className="flex items-center gap-3 border-t border-vess-grey-200 pt-3">
-          <span className="shrink-0 text-[15px] font-normal leading-[18px] text-vess-grey-950">Time</span>
+          <span className="shrink-0 text-[13px] font-normal leading-[18px] text-vess-grey-950">Time</span>
           <input
             type="time"
             value={timeStr}
             onChange={handleTimeChange}
             disabled={disabled}
-            className="h-10 min-w-0 flex-1 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-3 text-[15px] font-normal leading-[18px] text-vess-grey-950 outline-none focus-visible:ring-2 focus-visible:ring-vess-primary-500"
+            className="h-10 min-w-0 flex-1 rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-3 text-[13px] font-normal leading-[18px] text-vess-grey-950 outline-none focus-visible:ring-2 focus-visible:ring-vess-primary-500"
           />
         </div>
       </PopoverContent>

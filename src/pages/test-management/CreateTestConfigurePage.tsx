@@ -37,7 +37,7 @@ const DEVICE_LIST_PAGE_SIZE = 100
 
 function FieldLabel({ children, required }: { children: string; required?: boolean }) {
   return (
-    <div className="flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px]">
+    <div className="flex flex-wrap items-start gap-1 text-[16px] font-normal leading-[21.6px]">
       <span className="text-vess-grey-950">{children}</span>
       {required && <span className="text-vess-red-500">*</span>}
     </div>
@@ -46,7 +46,7 @@ function FieldLabel({ children, required }: { children: string; required?: boole
 
 function SubFieldLabel({ children }: { children: string }) {
   return (
-    <span className="text-[15px] font-light leading-[18px] text-vess-grey-950">{children}</span>
+    <span className="text-[13px] font-light leading-[18px] text-vess-grey-950">{children}</span>
   )
 }
 
@@ -55,7 +55,7 @@ const DATA_METHOD_OPTIONS: { value: DataTestMethod; label: string }[] = [
   { value: 'ping', label: 'Ping' },
 ]
 
-const formMessageClassName = 'text-[13px] font-normal leading-[16px] text-vess-red-500'
+const formMessageClassName = 'text-[11px] font-normal leading-[16px] text-vess-red-500'
 
 function NumberStepperRow({
   value,
@@ -66,7 +66,7 @@ function NumberStepperRow({
 }) {
   return (
     <div className="flex h-[50px] w-full items-center justify-between rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4">
-      <span className="text-[15px] font-normal leading-[18px] text-vess-grey-950">{value}</span>
+      <span className="text-[13px] font-normal leading-[18px] text-vess-grey-950">{value}</span>
       <div className="flex flex-col">
         <button
           type="button"
@@ -164,14 +164,14 @@ function CreateTestConfigureForm({ step1, restore }: CreateTestConfigureFormProp
               className="flex w-fit items-center gap-4 text-vess-grey-950 transition-opacity hover:opacity-80"
             >
               <ArrowBackIcon className="size-6" />
-              <span className="text-[18px] font-light leading-[21.6px]">Back</span>
+              <span className="text-[16px] font-light leading-[21.6px]">Back</span>
             </button>
 
             <div className="flex flex-col gap-1.5">
-              <h1 className="text-[25px] font-semibold leading-[30px] text-vess-grey-950">
+              <h1 className="text-[23px] font-semibold leading-[30px] text-vess-grey-950">
                 Create New Test
               </h1>
-              <p className="text-[15px] font-light leading-[18px] text-vess-grey-950">
+              <p className="text-[13px] font-light leading-[18px] text-vess-grey-950">
                 Step 2 : Configuration
               </p>
             </div>
@@ -188,7 +188,7 @@ function CreateTestConfigureForm({ step1, restore }: CreateTestConfigureFormProp
                         <input
                           {...field}
                           placeholder="Enter test name"
-                          className="w-full bg-transparent text-[15px] leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-950 placeholder:opacity-20 outline-none"
+                          className="w-full bg-transparent text-[13px] leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-950 placeholder:opacity-20 outline-none"
                         />
                       </div>
                     </FormControl>
@@ -209,7 +209,7 @@ function CreateTestConfigureForm({ step1, restore }: CreateTestConfigureFormProp
                           {...field}
                           placeholder="Enter description"
                           rows={4}
-                          className="w-full resize-none bg-transparent text-[15px] leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-950 placeholder:opacity-20 outline-none"
+                          className="w-full resize-none bg-transparent text-[13px] leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-950 placeholder:opacity-20 outline-none"
                         />
                       </div>
                     </FormControl>
@@ -242,7 +242,7 @@ function CreateTestConfigureForm({ step1, restore }: CreateTestConfigureFormProp
 
               {showDataTesting && (
                 <div className="flex w-full flex-col gap-4">
-                  <div className="flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px]">
+                  <div className="flex flex-wrap items-start gap-1 text-[16px] font-normal leading-[21.6px]">
                     <span className="text-vess-grey-950">Data Testing </span>
                     <span className="text-vess-red-500">*</span>
                   </div>
@@ -290,7 +290,7 @@ function CreateTestConfigureForm({ step1, restore }: CreateTestConfigureFormProp
                                     ? '192.168.1.1'
                                     : 'https://api.example.com/v1'
                                 }
-                                className="w-full bg-transparent text-[15px] leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-950 placeholder:opacity-20 outline-none"
+                                className="w-full bg-transparent text-[13px] leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-950 placeholder:opacity-20 outline-none"
                               />
                             </div>
                           </FormControl>
@@ -331,7 +331,7 @@ function CreateTestConfigureForm({ step1, restore }: CreateTestConfigureFormProp
                             {...field}
                             placeholder="Enter message"
                             rows={4}
-                            className="w-full resize-none bg-transparent text-[15px] leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-950 placeholder:opacity-20 outline-none"
+                            className="w-full resize-none bg-transparent text-[13px] leading-[18px] text-vess-grey-950 placeholder:text-vess-grey-950 placeholder:opacity-20 outline-none"
                           />
                         </div>
                       </FormControl>
@@ -362,14 +362,14 @@ function CreateTestConfigureForm({ step1, restore }: CreateTestConfigureFormProp
               <button
                 type="button"
                 onClick={goBack}
-                className="inline-flex h-full w-[116px] items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 text-[15px] font-medium leading-[18px] text-vess-grey-950"
+                className="inline-flex h-full w-[116px] items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 text-[13px] font-medium leading-[18px] text-vess-grey-950"
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className="inline-flex h-full items-center justify-center rounded-lg bg-vess-primary-500 px-6 text-[15px] font-medium leading-[18px] text-vess-grey-50 disabled:opacity-50"
+                className="inline-flex h-full items-center justify-center rounded-lg bg-vess-primary-500 px-6 text-[13px] font-medium leading-[18px] text-vess-grey-50 disabled:opacity-50"
               >
                 Schedule
               </button>

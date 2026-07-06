@@ -41,7 +41,7 @@ export function RemoteControlSessionGate({
   if (sessionQuery.isPending) {
     return (
       <section className="rounded-2xl bg-vess-grey-50 p-6">
-        <p className="text-center text-[15px] text-vess-grey-600">Starting remote control session…</p>
+        <p className="text-center text-[13px] text-vess-grey-600">Starting remote control session…</p>
       </section>
     )
   }
@@ -53,11 +53,11 @@ export function RemoteControlSessionGate({
       : 'Could not start remote control session.'
     return (
       <section className="flex flex-col gap-4 rounded-2xl bg-vess-grey-50 p-6">
-        <p className="text-center text-[15px] text-vess-red-800">{message}</p>
+        <p className="text-center text-[13px] text-vess-red-800">{message}</p>
         <button
           type="button"
           onClick={onExitSession}
-          className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[15px] font-medium text-vess-primary-500"
+          className="mx-auto w-fit rounded-lg border border-vess-primary-500 bg-vess-grey-50 px-4 py-3 text-[13px] font-medium text-vess-primary-500"
         >
           Back to device list
         </button>

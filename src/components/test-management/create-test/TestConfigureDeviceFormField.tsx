@@ -17,7 +17,7 @@ import type { ApiDevice } from '@/types/device'
 
 const NONE = '__none__'
 
-const formMessageClassName = 'text-[13px] font-normal leading-[16px] text-vess-red-500'
+const formMessageClassName = 'text-[11px] font-normal leading-[16px] text-vess-red-500'
 
 type TestConfigureDeviceFormFieldProps = {
   control: Control<ConfigureFormValues>
@@ -52,7 +52,7 @@ export function TestConfigureDeviceFormField({
 
         return (
           <FormItem className="flex w-full flex-col gap-3 space-y-0">
-            <div className="flex flex-wrap items-start gap-1 text-[18px] font-normal leading-[21.6px]">
+            <div className="flex flex-wrap items-start gap-1 text-[16px] font-normal leading-[21.6px]">
               <span className="text-vess-grey-950">{label}</span>
               <span className="text-vess-red-500">*</span>
             </div>
@@ -79,12 +79,12 @@ export function TestConfigureDeviceFormField({
                   </SelectContent>
                 </Select>
                 <div className="flex h-[88px] flex-col items-center justify-center rounded-lg border-2 border-vess-grey-100 bg-vess-grey-50 px-4">
-                  <div className="flex flex-wrap items-center justify-center gap-1.5 text-[15px] font-light leading-[18px] text-vess-grey-500">
+                  <div className="flex flex-wrap items-center justify-center gap-1.5 text-[13px] font-light leading-[18px] text-vess-grey-500">
                     <span>No Device Found?</span>
                     <button
                       type="button"
                       onClick={onCreateDevice}
-                      className="text-[15px] font-light text-vess-primary-500 underline decoration-solid"
+                      className="text-[13px] font-light text-vess-primary-500 underline decoration-solid"
                     >
                       Create New device
                     </button>

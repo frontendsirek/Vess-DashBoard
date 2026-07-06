@@ -12,7 +12,7 @@ export function DeviceStatusBadge({ status }: { status: DeviceManagementStatus }
   return (
     <span
       className={cn(
-        'inline-flex min-w- justify-center rounded-full px-3 py-1 text-[15px] font-normal leading-[18px]',
+        'inline-flex min-w- justify-center rounded-full px-3 py-1 text-[13px] font-normal leading-[18px]',
         statusClass[status],
       )}
     >

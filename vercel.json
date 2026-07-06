@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/auth/api/(.*)", "destination": "/api/proxy?path=/auth/api/$1" },
+    { "source": "/device/api/(.*)", "destination": "/api/proxy?path=/device/api/$1" },
+    { "source": "/test/(.*)", "destination": "/api/proxy?path=/test/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

@@ -61,7 +61,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
           )}
         </button>
         {label && (
-          <span className={cn('text-[15px] font-light leading-[18px]', styles.label)}>
+          <span className={cn('text-[13px] font-light leading-[18px]', styles.label)}>
             {label}
           </span>
         )}

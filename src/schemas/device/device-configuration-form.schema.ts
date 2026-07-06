@@ -9,6 +9,7 @@ export const deviceConfigurationFormSchema = z
     deviceGroup: z.string(),
     /** E.164 or empty — aligned with `VessPhoneInput` */
     msisdn: z.string(),
+    imei: z.string().regex(/^\d{0,15}$/, 'IMEI must be up to 15 digits'),
     tags: z.string(),
     lowBatteryPercent: z.number().int().min(1).max(100),
     offlineMinutes: z.number().int().min(1).max(525600),
@@ -34,6 +35,26 @@ export const deviceConfigurationFormSchema = z
     }
   })
 
+/** Registration-specific schema — IMEI is required (exactly 15 digits). */
+export const registerDeviceConfigurationFormSchema = deviceConfigurationFormSchema.superRefine(
+  (data, ctx) => {
+    const imei = data.imei.trim()
+    if (!imei.length) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'IMEI is required',
+        path: ['imei'],
+      })
+    } else if (!/^\d{15}$/.test(imei)) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'IMEI must be exactly 15 digits',
+        path: ['imei'],
+      })
+    }
+  },
+)
+
 export type DeviceConfigurationFormValues = z.infer<typeof deviceConfigurationFormSchema>
 
 export const deviceConfigurationFormDefaultValues: DeviceConfigurationFormValues = {
@@ -42,6 +63,7 @@ export const deviceConfigurationFormDefaultValues: DeviceConfigurationFormValues
   locationManual: '',
   deviceGroup: '',
   msisdn: '',
+  imei: '',
   tags: '',
   lowBatteryPercent: 15,
   offlineMinutes: 10,

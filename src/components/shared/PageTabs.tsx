@@ -15,7 +15,7 @@ export function PageTabs<T extends string>({ tabs, active, onChange }: PageTabsP
           type="button"
           onClick={() => onChange(tab.id)}
           className={cn(
-            'rounded-lg px-4 py-2 text-[14px] font-medium leading-[18px] transition-colors',
+            'rounded-lg px-4 py-2 text-[12px] font-medium leading-[18px] transition-colors',
             active === tab.id
               ? 'bg-vess-primary-500 text-vess-grey-50'
               : 'text-vess-grey-800 hover:bg-vess-grey-200',
