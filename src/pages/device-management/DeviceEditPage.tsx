@@ -212,8 +212,8 @@ export default function DeviceEditPage() {
 
   const formDefaults = useMemo((): DeviceEditDefaults | null => {
     if (!apiSnapshot) return null
-    return buildDeviceEditDefaultsFromApi(apiSnapshot, deviceId)
-  }, [apiSnapshot, deviceId])
+    return buildDeviceEditDefaultsFromApi(apiSnapshot)
+  }, [apiSnapshot])
 
   const detectedCard = useMemo(() => {
     if (!apiSnapshot) return null

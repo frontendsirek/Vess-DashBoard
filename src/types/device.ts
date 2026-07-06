@@ -129,6 +129,7 @@ export type ApiDeviceDetail = {
   last_heartbeat: string | null
   last_heartbeat_ago_seconds: number | null
   msisdn?: string
+  imei?: string
   device_group?: string
   tags?: string[]
   hardware?: ApiDeviceHardware | null

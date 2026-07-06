@@ -10,7 +10,8 @@ export function useResendOtpMutation() {
   return useMutation({
     mutationKey: authQueryKeys.resendOtp(),
     meta: { suppressErrorToast: true },
-    mutationFn: async (_email: string) => {
+    mutationFn: async (email: string) => {
+      void email
       throw new Error(RESEND_UNAVAILABLE_MESSAGE)
     },
     onError: () => {
