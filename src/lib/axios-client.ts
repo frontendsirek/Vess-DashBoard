@@ -2,10 +2,8 @@ import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestCo
 import { isAuthEnvelopeError, parseTokenPairFromAuthEnvelope } from '@/lib/api-auth-errors'
 import { TOKEN_KEYS, useAuthStore } from '@/stores/auth-store'
 
-/** API base URL — empty string so paths hit same origin.
- *  Vercel rewrites route /auth/*, /device/*, /test/* to the proxy function.
- *  Vite dev server proxies those same paths to the backend. */
-const baseURL = ''
+/** Direct backend API URL configured per environment. */
+const baseURL = import.meta.env.VITE_API_BASE_URL || ''
 
 export const apiClient = axios.create({
   baseURL,

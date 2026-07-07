@@ -61,7 +61,7 @@ jobs:
 
       - name: Build app
         env:
-          API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
           VITE_TEST_TENANT_ID: ${{ vars.VITE_TEST_TENANT_ID }}
         run: npm run build
 
@@ -138,7 +138,7 @@ jobs:
             echo "### GitHub variables"
             echo "- DROPLET_NAME"
             echo "- DEPLOY_PATH (optional, defaults to /www/vess-dashboard)"
-            echo "- API_PROXY_TARGET (optional for local build-time config)"
+            echo "- VITE_API_BASE_URL (optional for local build-time config)"
             echo "- VITE_TEST_TENANT_ID (optional for local build-time config)"
             echo ""
             echo "### GitHub secrets"
