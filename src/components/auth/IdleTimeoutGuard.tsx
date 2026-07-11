@@ -67,12 +67,6 @@ export function IdleTimeoutGuard() {
     return () => clearInterval(interval)
   }, [getRemainingTime])
 
-  useEffect(() => {
-    if (remaining < 1 && showModal) {
-      handleLogout()
-    }
-  }, [remaining, showModal])
-
   return (
     <DialogPrimitive.Root open={showModal}>
       <DialogPrimitive.Portal>
