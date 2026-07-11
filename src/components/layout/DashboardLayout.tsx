@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Topbar } from '@/components/layout/Topbar'
+import { IdleTimeoutGuard } from '@/components/auth/IdleTimeoutGuard'
+import { useProactiveTokenRefresh } from '@/hooks/auth/use-proactive-token-refresh'
 import { useRouteTopbarMeta } from '@/hooks/use-route-topbar-meta'
 import { applyThemeHslVariables, resolveInitialColorMode } from '@/lib/theme'
 import { useAuthStore } from '@/stores/auth-store'
@@ -10,6 +12,8 @@ export function DashboardLayout() {
   const isAuthenticated = useAuthStore((s) => !!s.accessToken)
   const topbarMeta = useRouteTopbarMeta()
   const showTopbar = topbarMeta && !topbarMeta.hideTopbar && !!topbarMeta.title
+
+  useProactiveTokenRefresh()
 
   useEffect(() => {
     applyThemeHslVariables(resolveInitialColorMode())
@@ -26,6 +30,7 @@ export function DashboardLayout() {
         {showTopbar ? <Topbar /> : null}
         <Outlet />
       </div>
+      <IdleTimeoutGuard />
     </div>
   )
 }
