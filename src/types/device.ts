@@ -151,6 +151,8 @@ export type ApiDevice = {
   latitude: number
   longitude: number
   status: DeviceStatus
+  imei?: string
+  msisdn?: string
   is_active?: boolean
   metadata?: ApiDeviceMetadata
   created_at?: string
