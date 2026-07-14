@@ -1,0 +1,151 @@
+name: Deploy VESS Dashboard (DigitalOcean)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Deploy environment
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+        default: dev
+
+concurrency:
+  group: deploy-vess-dashboard
+  cancel-in-progress: true
+
+env:
+  APP_NAME: vess-dashboard
+  DEPLOY_PATH: /www/vess-dashboard
+
+jobs:
+  deploy:
+    name: Build and deploy static site
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'dev' }}
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set deployment variables
+        id: vars
+        run: |
+          ENVIRONMENT="${{ inputs.environment || 'dev' }}"
+          DROPLET_NAME="${{ vars.DROPLET_NAME }}"
+          DEPLOY_PATH="${{ vars.DEPLOY_PATH || env.DEPLOY_PATH }}"
+
+          if [ -z "$DROPLET_NAME" ]; then
+            echo "DROPLET_NAME GitHub variable is required"
+            exit 1
+          fi
+
+          echo "environment=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
+          echo "droplet_name=$DROPLET_NAME" >> "$GITHUB_OUTPUT"
+          echo "deploy_path=$DEPLOY_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build app
+        env:
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+          VITE_TEST_TENANT_ID: ${{ vars.VITE_TEST_TENANT_ID }}
+        run: npm run build
+
+      - name: Prepare deploy artifact
+        run: tar -czf vess-dashboard-dist.tgz -C dist .
+
+      - name: Resolve droplet target
+        id: target
+        env:
+          DO_TOKEN: ${{ secrets.DO_TOKEN }}
+          DROPLET_NAME: ${{ steps.vars.outputs.droplet_name }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$DO_TOKEN" ]; then
+            echo "DO_TOKEN secret is required"
+            exit 1
+          fi
+
+          HOST=$(curl -fsSL \
+            -H "Authorization: Bearer $DO_TOKEN" \
+            "https://api.digitalocean.com/v2/droplets?name=$DROPLET_NAME&per_page=1" | \
+            python3 -c "import json,sys; data=json.load(sys.stdin); droplets=data.get('droplets') or []; print(next((n.get('ip_address') for n in (droplets[0].get('networks', {}).get('v4', []) if droplets else []) if n.get('type') == 'public'), ''))")
+
+          if [ -z "$HOST" ]; then
+            echo "Could not resolve droplet host from the DigitalOcean API"
+            exit 1
+          fi
+
+          echo "host=$HOST" >> "$GITHUB_OUTPUT"
+
+      - name: Copy build to droplet
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ steps.target.outputs.host }}
+          username: root
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          port: ${{ secrets.DROPLET_SSH_PORT || 22 }}
+          source: vess-dashboard-dist.tgz
+          target: /tmp
+
+      - name: Deploy build on droplet
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DEPLOY_PATH: ${{ steps.vars.outputs.deploy_path }}
+        with:
+          host: ${{ steps.target.outputs.host }}
+          username: root
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          port: ${{ secrets.DROPLET_SSH_PORT || 22 }}
+          script_stop: true
+          envs: DEPLOY_PATH
+          script: |
+            set -euo pipefail
+            sudo mkdir -p "$DEPLOY_PATH"
+            sudo find "$DEPLOY_PATH" -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+            sudo tar -xzf /tmp/vess-dashboard-dist.tgz -C "$DEPLOY_PATH"
+            sudo rm -f /tmp/vess-dashboard-dist.tgz
+            sudo chown -R www-data:www-data "$DEPLOY_PATH"
+            sudo chmod -R 755 "$DEPLOY_PATH"
+
+      - name: Deployment summary
+        if: always()
+        run: |
+          {
+            echo "## VESS Dashboard Deployment Summary"
+            echo ""
+            echo "- Environment: ${{ steps.vars.outputs.environment }}"
+            echo "- Droplet: ${{ steps.vars.outputs.droplet_name }}"
+            echo "- Host: ${{ steps.target.outputs.host }}"
+            echo "- Deploy path: ${{ steps.vars.outputs.deploy_path }}"
+            echo "- Build command: npm run build"
+            echo ""
+            echo "### GitHub variables"
+            echo "- DROPLET_NAME"
+            echo "- DEPLOY_PATH (optional, defaults to /www/vess-dashboard)"
+            echo "- VITE_API_BASE_URL (optional for local build-time config)"
+            echo "- VITE_TEST_TENANT_ID (optional for local build-time config)"
+            echo ""
+            echo "### GitHub secrets"
+            echo "- DO_TOKEN"
+            echo "- DROPLET_SSH_KEY"
+            echo "- DROPLET_SSH_PORT (optional)"
+            echo ""
+            echo "### Important constraint"
+            echo "- Any value that must stay secret should live on the droplet or in a backend service, not in the frontend bundle."
+          } >> "$GITHUB_STEP_SUMMARY"
